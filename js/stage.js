@@ -25,7 +25,8 @@ precision mediump float;
 uniform sampler2D uProps;   // props layer (see stage-art.js)
 uniform sampler2D uClawd;   // Clawd, in colour
 uniform vec2 uSize;         // 212, 118
-uniform float uTime;        // seconds, for the curtain sway and the dust
+uniform float uTime;        // seconds since the loop started, for the curtain sway and the dust
+uniform float uLoop;        // length of the loop: the sway repeats exactly once per loop
 uniform float uMotion;      // 1 = full motion, 0 = reduced motion
 uniform float uAmbient;     // house lights: high in the light theme, low in the dark one
 uniform vec3 uSpot;         // spot centre x, y and radius, in cells
@@ -57,7 +58,7 @@ float stage(vec2 p, out float front) {
   float x = p.x, y = p.y;
 
   // Side curtains: broad folds, a slow sway, a bulge when Clawd passes behind.
-  float sway = uMotion * 0.8 * sin(uTime * 0.7 + y * 0.06);
+  float sway = uMotion * 0.8 * sin(6.28318 * 6.0 * uTime / uLoop + y * 0.06);   // 6 sways per loop
   float low = smoothstep(56.0, 98.0, y);
   float left = 19.0 + sway + uPush.x * 3.0 * low;
   float right = uSize.x - 19.0 + sway - uPush.y * 3.0 * low;
@@ -195,7 +196,7 @@ function createStage(canvas) {
   gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
   const u = {};
-  for (const name of ["uProps", "uClawd", "uSize", "uTime", "uMotion", "uAmbient", "uSpot", "uPower", "uPush", "uLight", "uDark"]) {
+  for (const name of ["uProps", "uClawd", "uSize", "uTime", "uLoop", "uMotion", "uAmbient", "uSpot", "uPower", "uPush", "uLight", "uDark"]) {
     u[name] = gl.getUniformLocation(program, name);
   }
 
@@ -222,6 +223,7 @@ function createStage(canvas) {
     draw(v) {
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.uniform1f(u.uTime, v.time);
+      gl.uniform1f(u.uLoop, v.loop);
       gl.uniform1f(u.uMotion, v.motion);
       gl.uniform1f(u.uAmbient, v.ambient);
       gl.uniform3f(u.uSpot, v.spot.x, v.spot.y, v.spot.r);

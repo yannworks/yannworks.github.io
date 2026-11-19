@@ -1,0 +1,5 @@
+Links checked 2026-11-19 from the session container.
+Order on the page (verify.json): X, GitHub, Experiments.
+https://x.com/yannworks                    HTTP 200 (curl)
+https://github.com/yannworks               the account exists (GitHub search API: login yannworks, type User); github.com blocks curl from this container (403)
+https://yannworks.github.io/experiments/   HTTP 200 (curl), page title "experiments"

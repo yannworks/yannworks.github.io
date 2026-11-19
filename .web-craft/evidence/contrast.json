@@ -1,0 +1,15 @@
+{
+ "light": {
+  "ink_on_paper": 18.88,
+  "clawd_on_paper": 3.12,
+  "clawd_eye_on_body": 6.05
+ },
+ "dark": {
+  "ink_on_paper": 16.6,
+  "clawd_on_paper": 6.23
+ },
+ "thresholds": {
+  "text_AA": 4.5,
+  "graphics": 3
+ }
+}

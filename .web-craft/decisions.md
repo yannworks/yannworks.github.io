@@ -20,4 +20,6 @@ Date | decision | source or reason | scope | to check
 - 2026-11-19 | `?at=SECONDS` shows a fixed moment, paused; `window.sceneDebug` exposes seek/step/capture | screenshots, recordings and Yann's own tests | code | -
 - 2026-11-19 | Pause state is not remembered between visits | a frozen scene on a later visit could look broken; reduced-motion visitors already get the calmer show | scene | -
 - 2026-11-19 | Fan-art note kept to the README and the canvas label; no logo | clawd skill rule | content | -
+- 2026-11-19 | Slow cycles (curtain sway, spot drift and breathing, flicker) run on the loop clock, a whole number of times per loop | a recorded loop jumped at its seam (405 cells changed vs 20 for a normal step); live playback was already continuous | scene | seam now 22 cells (light), 34 (dark): loop-seam.txt
+- 2026-11-19 | Phone-size recording of the theme switch dropped | Chrome's screen capture of an emulated phone stays at 390 px, which turns 1.67 px dots into grey; the desktop clip shows the same dissolve | evidence | -
 - 2026-11-19 | No independent reviewer: this session only spawns sub-agents when Yann asks | environment rule | review | self-review recorded instead

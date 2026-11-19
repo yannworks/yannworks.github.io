@@ -96,11 +96,15 @@ function startScene() {
     }
 
     // Where the spot wants to go: the mouse, a tap, or the operator's choice.
+    // Slow cycles (drift, breathing, flicker, curtain sway) run on the loop's own
+    // clock, a whole number of times per loop, so the end meets the start exactly.
     const reduced = timeline.reduced;
+    const L = timeline.length;
+    const cycle = (n) => (2 * Math.PI * n * s.t) / L;
     let target = s.focus;
     const aimed = !reduced && (pointer.active || time < pointer.until);
     if (aimed) target = pointer;
-    else if (!reduced) target = { x: s.focus.x + 3 * Math.sin(time * 0.5), y: s.focus.y + 2 * Math.sin(time * 0.37 + 1) };
+    else if (!reduced) target = { x: s.focus.x + 3 * Math.sin(cycle(4)), y: s.focus.y + 2 * Math.sin(cycle(3) + 1) };
     if (reduced || !spot.ready) {
       Object.assign(spot, { x: target.x, y: target.y, vx: 0, vy: 0, ready: true });
     } else if (dt > 0) {
@@ -124,11 +128,12 @@ function startScene() {
       : [0, 0];
 
     stage.draw({
-      time,
+      time: s.t,
+      loop: L,
       motion: reduced ? 0 : 1,
       ambient: house,
-      spot: { x: spot.x, y: spot.y, r: SCENE.SPOT_RADIUS + 0.6 * Math.sin(time * 1.3) },
-      power: s.dim * flicker(time),
+      spot: { x: spot.x, y: spot.y, r: SCENE.SPOT_RADIUS + 0.6 * Math.sin(cycle(10)) },
+      power: s.dim * flicker(s.t),
       push,
       light: colours.light,
       dark: colours.dark,

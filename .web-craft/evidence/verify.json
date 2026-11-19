@@ -1,0 +1,266 @@
+{
+  "date": "2026-11-19T17:42:28.692Z",
+  "screenshots": [
+    {
+      "file": "screens/phone-light-normal.png",
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "theme": "light",
+      "live": true,
+      "playing": true,
+      "fonts": [
+        "Geist",
+        "Geist Serif"
+      ],
+      "canvasCss": "353.333px",
+      "cell": "1.6666666666666667px",
+      "hint": [
+        "Tap the stage to move the spotlight."
+      ],
+      "horizontalScroll": false,
+      "consoleProblems": [],
+      "driverNotesAfterScreenshot": 4
+    },
+    {
+      "file": "screens/phone-light-reduced.png",
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "theme": "light",
+      "live": true,
+      "playing": true,
+      "fonts": [
+        "Geist",
+        "Geist Serif"
+      ],
+      "canvasCss": "353.333px",
+      "cell": "1.6666666666666667px",
+      "hint": [],
+      "horizontalScroll": false,
+      "consoleProblems": [],
+      "driverNotesAfterScreenshot": 0
+    },
+    {
+      "file": "screens/phone-dark-normal.png",
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "theme": "dark",
+      "live": true,
+      "playing": true,
+      "fonts": [
+        "Geist",
+        "Geist Serif"
+      ],
+      "canvasCss": "353.333px",
+      "cell": "1.6666666666666667px",
+      "hint": [
+        "Tap the stage to move the spotlight."
+      ],
+      "horizontalScroll": false,
+      "consoleProblems": [],
+      "driverNotesAfterScreenshot": 0
+    },
+    {
+      "file": "screens/phone-dark-reduced.png",
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "theme": "dark",
+      "live": true,
+      "playing": true,
+      "fonts": [
+        "Geist",
+        "Geist Serif"
+      ],
+      "canvasCss": "353.333px",
+      "cell": "1.6666666666666667px",
+      "hint": [],
+      "horizontalScroll": false,
+      "consoleProblems": [],
+      "driverNotesAfterScreenshot": 0
+    },
+    {
+      "file": "screens/desktop-light-normal.png",
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "theme": "light",
+      "live": true,
+      "playing": true,
+      "fonts": [
+        "Geist",
+        "Geist Serif"
+      ],
+      "canvasCss": "848px",
+      "cell": "4px",
+      "hint": [
+        "Point at the stage to move the spotlight."
+      ],
+      "horizontalScroll": false,
+      "consoleProblems": [],
+      "driverNotesAfterScreenshot": 0
+    },
+    {
+      "file": "screens/desktop-light-reduced.png",
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "theme": "light",
+      "live": true,
+      "playing": true,
+      "fonts": [
+        "Geist",
+        "Geist Serif"
+      ],
+      "canvasCss": "848px",
+      "cell": "4px",
+      "hint": [],
+      "horizontalScroll": false,
+      "consoleProblems": [],
+      "driverNotesAfterScreenshot": 0
+    },
+    {
+      "file": "screens/desktop-dark-normal.png",
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "theme": "dark",
+      "live": true,
+      "playing": true,
+      "fonts": [
+        "Geist",
+        "Geist Serif"
+      ],
+      "canvasCss": "848px",
+      "cell": "4px",
+      "hint": [
+        "Point at the stage to move the spotlight."
+      ],
+      "horizontalScroll": false,
+      "consoleProblems": [],
+      "driverNotesAfterScreenshot": 0
+    },
+    {
+      "file": "screens/desktop-dark-reduced.png",
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "theme": "dark",
+      "live": true,
+      "playing": true,
+      "fonts": [
+        "Geist",
+        "Geist Serif"
+      ],
+      "canvasCss": "848px",
+      "cell": "4px",
+      "hint": [],
+      "horizontalScroll": false,
+      "consoleProblems": [],
+      "driverNotesAfterScreenshot": 0
+    }
+  ],
+  "checks": {
+    "links": [
+      {
+        "text": "X",
+        "href": "https://x.com/yannworks"
+      },
+      {
+        "text": "GitHub",
+        "href": "https://github.com/yannworks"
+      },
+      {
+        "text": "Experiments",
+        "href": "https://yannworks.github.io/experiments/"
+      }
+    ],
+    "accessibleNames": [
+      "Switch to dark theme",
+      "X",
+      "GitHub",
+      "Experiments",
+      "Pause the scene"
+    ],
+    "focusOrder": [
+      {
+        "name": "Switch to dark theme",
+        "outline": "solid 2px",
+        "x": 1358,
+        "y": 8,
+        "w": 44,
+        "h": 44
+      },
+      {
+        "name": "XX",
+        "outline": "solid 2px",
+        "x": 39.5,
+        "y": 485.1875,
+        "w": 44.5625,
+        "h": 37.375
+      },
+      {
+        "name": "GitHubGitHub",
+        "outline": "solid 2px",
+        "x": 39.5,
+        "y": 524.28125,
+        "w": 88.3125,
+        "h": 37.375
+      },
+      {
+        "name": "ExperimentsExperiments",
+        "outline": "solid 2px",
+        "x": 39.5,
+        "y": 563.375,
+        "w": 133.40625,
+        "h": 37.375
+      },
+      {
+        "name": "Play the scene",
+        "outline": "solid 2px",
+        "x": 1358,
+        "y": 655,
+        "w": 44,
+        "h": 44
+      }
+    ],
+    "pause": {
+      "offscreenStart": 4,
+      "offscreenAfter1s": 4,
+      "visibleAfter1s": 35,
+      "visibleAfter2s": 65,
+      "pauseLabel": "Play the scene",
+      "pausedFramesAdded": 0,
+      "pausedTimeAdvanced": 0,
+      "playLabel": "Pause the scene",
+      "resumedFramesAdded": 30,
+      "hiddenFramesAdded": 0,
+      "visibleAgainFramesAdded": 30,
+      "scrolledAwayFramesAdded": 0
+    },
+    "theme": {
+      "afterClick": [
+        "dark",
+        "dark",
+        "Switch to light theme"
+      ],
+      "afterReload": [
+        "dark",
+        "rgb(13, 13, 13)"
+      ]
+    },
+    "themeConsole": [],
+    "noJs": {
+      "still": 212,
+      "linksVisible": [
+        true,
+        true,
+        true
+      ],
+      "toggleShown": false,
+      "introOpacity": "1"
+    },
+    "noWebgl": {
+      "still": true,
+      "canvas": false,
+      "img": "stage-light.png",
+      "pauseHidden": true,
+      "afterToggle": "stage-dark.png",
+      "console": []
+    }
+  }
+}

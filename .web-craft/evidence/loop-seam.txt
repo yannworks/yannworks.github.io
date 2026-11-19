@@ -1,0 +1,2 @@
+light: 1515 frames at 30 fps after one warm-up loop; cells changed per step (every 3rd step): median 20, 90th percentile 124, max 220; last frame -> first frame: 22
+dark: 1515 frames at 30 fps after one warm-up loop; cells changed per step (every 3rd step): median 30, 90th percentile 142, max 545; last frame -> first frame: 34

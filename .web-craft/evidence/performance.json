@@ -1,0 +1,17 @@
+{
+ "browser": "headless Chromium, WebGL in software (SwiftShader): GPU numbers are not those of a real phone",
+ "js_ms_per_frame": 0.08,
+ "long_tasks_over_5s_of_running": [],
+ "renders_per_second": [
+  "second 0: renders 30, rAF calls 104, ms 1004",
+  "second 1: renders 30, rAF calls 61, ms 1003",
+  "second 2: renders 30, rAF calls 60, ms 1004",
+  "second 3: renders 30, rAF calls 60, ms 1005",
+  "second 4: renders 31, rAF calls 61, ms 1003",
+  "second 5: renders 30, rAF calls 60, ms 1002",
+  "second 6: renders 30, rAF calls 60, ms 1004",
+  "second 7: renders 30, rAF calls 60, ms 1003"
+ ],
+ "canvas_cells_per_frame": 25016,
+ "page_transfer_bytes": 203432
+}

@@ -1,0 +1,6 @@
+Clawd in the WebGL canvas (Chromium) against clawd.py pose() stamped at the same place; cells inside the curtains only.
+t=41: front/happy at x=146: 264 cells compared, 0 differ
+t=3.05: side_right at x=-6: 0 cells compared, 0 differ (Clawd still behind the left curtain)
+t=10.3: side_right/typing at x=30: 252 cells compared, 0 differ
+t=40.05: front/happy/right_up at x=146: 264 cells compared, 0 differ
+t=24.2: side_right at x=92: 252 cells compared, 0 differ

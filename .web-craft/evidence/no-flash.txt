@@ -1,0 +1,9 @@
+Reload with theme=dark stored while the device is in light mode (Chromium 1440x900).
+Share of white and dark pixels in every screencast frame; r000 is about:blank before navigation.
+r000_-0.300.png white 1.000 dark 0.000
+r001_0.113.png white 0.000 dark 1.000
+r002_0.130.png white 0.000 dark 0.999
+r003_0.146.png white 0.000 dark 0.999
+r004_0.163.png white 0.000 dark 0.999
+r005_0.180.png white 0.000 dark 0.999
+frames after navigation: 64, highest share of white pixels in any of them: 0.042 (the white text and the spot)
