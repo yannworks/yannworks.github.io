@@ -1,0 +1,13 @@
+Code files (no framework, no build step):
+  index.html: 97 lines
+  style.css: 403 lines
+  js/show.js: 259 lines
+  js/stage-art.js: 253 lines
+  js/stage.js: 237 lines
+  js/scene.js: 257 lines
+  js/main.js: 121 lines
+  js/board.js: 118 lines
+  board.html: 145 lines
+  js/clawd-sprites.js: 51 lines
+  tools/make-clawd.py: 102 lines
+Tokens (colours, fonts, sizes, timings) are CSS variables in :root at the top of style.css.

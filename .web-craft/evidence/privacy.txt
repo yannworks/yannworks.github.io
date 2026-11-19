@@ -1,0 +1,5 @@
+Privacy check, 2026-11-19, whole repository (site, README, .web-craft notes, evidence, git history).
+Personal facts on the site: the first name Yann, the public name yannworks, "a student", "living in France", and the interests given by Yann. Nothing else.
+Searched (case-insensitive) for e-mail addresses, school words, ages, city names, the former account name and local Mac paths: no hit except unrelated words (the letters "age" inside "image", "page", "stage").
+Commits of this build use the environment's identity (Claude <noreply@anthropic.com>). The repository's initial commit was made by its owner before this work.
+Screenshots and recordings show only the page itself.

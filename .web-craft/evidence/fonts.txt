@@ -1,0 +1,8 @@
+Fonts hosted in the repo (from the npm package geist 1.9.2):
+  fonts/Geist-Variable.woff2  69488 bytes  sha256 3626eba547294501
+  fonts/GeistSerifVF.woff2  49036 bytes  sha256 022e59b139ab2ce6
+  fonts/OFL.txt  4368 bytes  sha256 930853ee1daa6855
+Variable axes (read with fontTools): Geist wght 100-900; Geist Serif ELSH 0-100 only (Regular 0, Square 25, Triangle 50, Heart 100).
+Geist Serif has a single weight: keywords stand out by size (1.24 em) and contrast; body has font-synthesis: none.
+OFL.txt is the LICENSE.txt of the package: SIL Open Font License 1.1, Copyright (c) 2023 Vercel, in collaboration with basement.studio.
+Both families load in every screenshot run (verify.json, 'fonts').

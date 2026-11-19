@@ -1,0 +1,18 @@
+Poses used by the show (both timelines, sampled every 0.02 s): 14
+  front
+  front/blink
+  front/blink/crouch
+  front/happy
+  front/happy/right_up
+  side_right
+  side_right/blink
+  side_right/blink/crouch
+  side_right/blink/typing
+  side_right/crouch
+  side_right/legsA
+  side_right/legsB
+  side_right/typing
+  side_right/typing/crouch
+Poses missing from js/clawd-sprites.js: 0
+All come from pose() of the clawd skill (tools/make-clawd.py): documented views, faces and moves only.
+Bow = front + crouch + blink. Peek into the robot = side_right + crouch. Wave back = front + happy + right_up. No new pose was drawn.

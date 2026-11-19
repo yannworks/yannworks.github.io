@@ -1,0 +1,5 @@
+Reduced-motion loop, light theme, 30 fps, recorded after one warm-up loop (scene-loop-reduced-motion.mp4).
+Left edge of Clawd's orange cells per frame (rows 60-91); a walk would show every cell in between.
+frames: 1053  loop seconds: 35.1
+distinct positions: [30, 31, 93, 146, 147]
+changes (seconds, from, to): [(2.0, None, 31), (9.8, 31, 30), (11.03, 30, 31), (11.83, 31, 93), (21.93, 93, 147), (26.93, 147, 146), (31.73, 146, 147), (32.93, 147, None)]

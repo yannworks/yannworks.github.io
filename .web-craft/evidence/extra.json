@@ -1,0 +1,33 @@
+{
+ "hoverFillClip": "inset(0px)",
+ "pressTransform": "matrix(0.97, 0, 0, 0.97, 0, 0)",
+ "crossFade": {
+  "hasViewTransitions": false,
+  "mid": {
+   "fading": true,
+   "theme": "dark",
+   "bg": "rgb(165, 165, 165)",
+   "transition": "background-color, color, fill"
+  },
+  "end": {
+   "fading": false,
+   "bg": "rgb(13, 13, 13)"
+  },
+  "errors": []
+ },
+ "board": {
+  "printingDuringReplay": 2,
+  "entranceOpacityAt100ms": "0.497581",
+  "poses": 42,
+  "levels": 65,
+  "timelineRows": 16,
+  "contrast": [
+   "light: ink #111111 on paper #ffffff: 18.88:1 (needs 4.5:1) pass",
+   "light: Clawd orange on paper: 3.12:1 (needs 3:1) pass",
+   "dark: ink #ededed on paper #0d0d0d: 16.60:1 (needs 4.5:1) pass",
+   "dark: Clawd orange on paper: 6.23:1 (needs 3:1) pass"
+  ],
+  "errors": []
+ },
+ "keywordVariation": "\"ELSH\" 25"
+}
