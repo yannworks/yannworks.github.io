@@ -1,0 +1,287 @@
+{
+  "schema_version": 1,
+  "id": "yannworks-site",
+  "project_root": "/home/user/yannworks.github.io",
+  "mode": "new",
+  "status": "active",
+  "phase": "build",
+  "updated_at": "2026-11-19T17:01:16.538110+00:00",
+  "brief": "brief.md",
+  "direction": "direction.md",
+  "decisions": "decisions.md",
+  "skill_path": "/home/user/aios/.agents/skills/web-craft",
+  "skill_sha256": "f0e54d7ccfc1812de7edddd7c63f9ed634b270e7dce9e9a3b52a6aaa13b4f395",
+  "skill_files": {
+    "SKILL.md": "f0e54d7ccfc1812de7edddd7c63f9ed634b270e7dce9e9a3b52a6aaa13b4f395",
+    "agents/openai.yaml": "6422c08e24828948111ffbf7032ab0dbff3435b9df52780d710532454863a4a3",
+    "assets/brief.md": "1ec801358f3cc2ab97dfc60efbf57a8c07c3b5763e19b0041caa398a21c602e1",
+    "assets/decisions.md": "53bff9f1ceb5e5b898d7c2ac85516af021e361fec5dcbf9dd3ac107fd0bea452",
+    "assets/direction.md": "ca8f01b30387b6860b4df2e706cab90aceddfc0a74546abb1cde471926441638",
+    "assets/review.md": "f42ae2b61ee47f447a74b727f9d6f1983323da1d28f90754de7e730b38a74958",
+    "references/build.md": "da28bd76931f59779210eefb3f36ea1c924c5f94b7a8be9c9ee9e06b83795e5f",
+    "references/continuity.md": "ee1e71924a0126afbf5a0a175ecdf716f1b57bfb6e2b64406645208aa9f8a3b9",
+    "references/direction.md": "267bc7d2e6c35d2ed57ea04ea0d49cbba8e1c923356161a3ceb8877341e9efe7",
+    "references/frame.md": "e3854476771a93011282fb1e8fa2b0b074f649f8aedc3a84ad4f5c00821047d3",
+    "references/motion.md": "692a7c7610503f20faa568188b0a9d7c256175edde88b4a2505ac4eaffdd353c",
+    "references/provenance.md": "5382761e2e6f0642069a6755db7f47fbae3d623287a5841641941b6df5aea650",
+    "references/resources.md": "f577c942e0757fcef22bd5933c86f47041749d73816200cae179ccb81d891fc0",
+    "references/review.md": "13d8da99d9a4f5add3920edac4b0bbf9b45c9315fa2edee48c02dac0d8e7e4da",
+    "references/system-board.md": "f9816725797e5be23f08f1b49df76ac36654378f3ce0e9569babc782997d77a2",
+    "scripts/mission.py": "68fe74044e245437370e60daf1b34a1ae68eeac96731eacdaaad6493f1c18c09"
+  },
+  "requirement_changes": [],
+  "frontend_owner": "principal",
+  "next_action": "Generate Clawd sprite data, then build the WebGL stage and the page",
+  "requirements": [
+    {
+      "id": "R1",
+      "description": "Content: approved intro with 4 highlighted keywords, name yannworks lowercase; no other personal information anywhere in the public repo",
+      "status": "planned",
+      "required_kinds": [
+        "static",
+        "review"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R2",
+      "description": "Links X, GitHub, Experiments in this order with the given URLs, all working; no /experiments path in this repo",
+      "status": "planned",
+      "required_kinds": [
+        "interaction",
+        "test"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R3",
+      "description": "Geist Sans for text, Geist Serif upright for keywords at a size that stands out; woff2 self-hosted with the OFL licence next to them",
+      "status": "planned",
+      "required_kinds": [
+        "static",
+        "code"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R4",
+      "description": "Minimal precise look: ink, paper and Clawd orange only; one column on phones; none of the banned patterns; the scene is the only big visual",
+      "status": "planned",
+      "required_kinds": [
+        "static",
+        "review"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R5",
+      "description": "On load, intro and links enter with a staggered fade plus slight rise finished within about 1 s; keywords get one subtle extra touch",
+      "status": "planned",
+      "required_kinds": [
+        "motion"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R6",
+      "description": "Links and buttons react clearly on hover and press; keyboard focus visible",
+      "status": "planned",
+      "required_kinds": [
+        "interaction",
+        "accessibility"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R7",
+      "description": "Light and dark themes: default follows the device, toggle switches and remembers, no flash of the wrong theme on load",
+      "status": "planned",
+      "required_kinds": [
+        "interaction",
+        "test"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R8",
+      "description": "Theme switch plays a whole-page dither dissolve in the scene's dot pattern in about 0.5 s; cross-fade where unsupported",
+      "status": "planned",
+      "required_kinds": [
+        "motion",
+        "interaction"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R9",
+      "description": "Favicon is a small Clawd from the clawd skill icon preset",
+      "status": "planned",
+      "required_kinds": [
+        "static"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R10",
+      "description": "Scene: Clawd in orange from the approved grids and motions, never dithered; everything else 1-bit Bayer dither in ink and paper (black on white light, white on black dark with dimmed house lights); crisp whole-number scaling, no brown palette",
+      "status": "planned",
+      "required_kinds": [
+        "static",
+        "test"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R11",
+      "description": "Theatre scene: scripted 30 to 60 s loop (enter, piano, typewriter, robot peek and wake, bow, exit) with no visible jump; different from the X banner",
+      "status": "planned",
+      "required_kinds": [
+        "motion"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R12",
+      "description": "One follow-spot glows and flickers through the dither; follows the mouse on a computer, drifts on its own on a phone",
+      "status": "planned",
+      "required_kinds": [
+        "motion",
+        "interaction"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R13",
+      "description": "Scene pauses off screen and when the tab is hidden, stays light on phones, and shows a still dithered frame without WebGL",
+      "status": "planned",
+      "required_kinds": [
+        "test",
+        "performance"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R14",
+      "description": "Pause/play button for the scene works; canvas has an aria-label describing the scene",
+      "status": "planned",
+      "required_kinds": [
+        "interaction",
+        "accessibility"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R15",
+      "description": "Reduced motion: keep blink, small moves in place, glow, shorter dissolve, text fade; remove walking (spot dims and Clawd is at the next prop when it comes back), mouse-following light, text rise",
+      "status": "planned",
+      "required_kinds": [
+        "motion",
+        "interaction"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R16",
+      "description": "Plain HTML/CSS/JS, no build step, small readable files with tokens as CSS variables at the top and short comments; text and links work without JS",
+      "status": "planned",
+      "required_kinds": [
+        "code",
+        "test"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R17",
+      "description": "Screenshots at 390 and 1440 px in light and dark, normal and reduced motion; no horizontal scroll and no console errors",
+      "status": "planned",
+      "required_kinds": [
+        "static",
+        "test"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R18",
+      "description": "Recordings (MP4 or GIF) of the full scene loop and of the theme switch",
+      "status": "planned",
+      "required_kinds": [
+        "motion"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R19",
+      "description": "Text contrast meets WCAG AA in both themes and Clawd orange reads well on both backgrounds",
+      "status": "planned",
+      "required_kinds": [
+        "accessibility"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R20",
+      "description": "Main decisions noted in .web-craft, public-safe",
+      "status": "planned",
+      "required_kinds": [
+        "review"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R21",
+      "description": "Design-system board page built from the real tokens and components",
+      "status": "planned",
+      "required_kinds": [
+        "static",
+        "interaction"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R22",
+      "description": "After Yann writes publish: site on main and https://yannworks.github.io checked",
+      "status": "planned",
+      "required_kinds": [
+        "test"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R23",
+      "description": "Poses missing from the clawd library use the closest documented move and keep the body shape; any truly new pose is reported, not drawn",
+      "status": "planned",
+      "required_kinds": [
+        "static",
+        "review"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "R24",
+      "description": "Optional: Geist Serif square dots (ELSH axis) on the keywords if they look good next to the scene",
+      "status": "planned",
+      "required_kinds": [
+        "static"
+      ],
+      "evidence": []
+    }
+  ],
+  "evidence": [],
+  "blockers": [],
+  "reviews": [],
+  "procedures_next": [
+    "references/direction.md",
+    "references/build.md",
+    "references/motion.md",
+    "references/system-board.md"
+  ],
+  "plan": [
+    "sprites and favicon from the clawd library",
+    "WebGL dither stage and timeline",
+    "page, themes, dissolve, entrance",
+    "board page",
+    "checks, screenshots, recordings",
+    "send to Yann; publish only on his word"
+  ],
+  "runtime": {}
+}

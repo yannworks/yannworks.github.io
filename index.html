@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>yannworks</title>
+  <meta name="description" content="Yann, a student in France. Building apps with AI, learning how things work, writing and music.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
+
+  <!-- Choose the theme before anything is drawn, so the wrong one never flashes. -->
+  <script>
+    (function () {
+      var theme = null;
+      try { theme = localStorage.getItem("theme"); } catch (e) {}
+      if (theme !== "light" && theme !== "dark") {
+        theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      }
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
+
+  <link rel="preload" href="fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/GeistSerifVF.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon.png" type="image/png" sizes="96x96">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yannworks.github.io/">
+  <meta property="og:title" content="yannworks">
+  <meta property="og:description" content="Building apps with AI, learning how things work, writing and music.">
+  <meta property="og:image" content="https://yannworks.github.io/img/share.png">
+  <meta property="og:image:alt" content="Clawd on a small dithered theatre stage, under a spotlight.">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- The scene: Clawd's poses, the show, the props, the shader, the loop. Then the page. -->
+  <script src="js/clawd-sprites.js" defer></script>
+  <script src="js/show.js" defer></script>
+  <script src="js/stage-art.js" defer></script>
+  <script src="js/stage.js" defer></script>
+  <script src="js/scene.js" defer></script>
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <header class="top">
+    <h1 class="name enter" style="--i: 0">yannworks</h1>
+    <button class="icon-button theme-toggle" type="button" aria-label="Switch to dark theme" hidden>
+      <svg viewBox="0 0 11 11" shape-rendering="crispEdges" aria-hidden="true"><path d="M3 0h5v1h-5zM2 1h4v1h-4zM7 1h2v1h-2zM1 2h6v1h-6zM8 2h2v1h-2zM0 3h6v1h-6zM7 3h1v1h-1zM9 3h2v1h-2zM0 4h7v1h-7zM8 4h1v1h-1zM10 4h1v1h-1zM0 5h6v1h-6zM7 5h1v1h-1zM9 5h2v1h-2zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM0 7h6v1h-6zM7 7h1v1h-1zM9 7h2v1h-2zM1 8h6v1h-6zM8 8h2v1h-2zM2 9h4v1h-4zM7 9h2v1h-2zM3 10h5v1h-5z" fill="currentColor"/></svg>
+    </button>
+  </header>
+
+  <main class="page">
+    <div class="about">
+      <p class="intro enter" style="--i: 1">
+        Hi, I'm Yann, a student living in France. Online I go by yannworks.
+        I&nbsp;like <b class="kw">building apps</b> with AI and learning <b class="kw">how things work</b>.
+        I&nbsp;also enjoy <b class="kw">writing</b> and <b class="kw">music</b>.
+      </p>
+
+      <!-- Each link holds its text twice: the second copy is the inverted
+           version that slides over on hover (hidden from screen readers). -->
+      <ul class="links" aria-label="Links">
+        <li class="enter" style="--i: 2">
+          <a class="link" href="https://x.com/yannworks"><span class="link__text">X</span><span class="link__text link__fill" aria-hidden="true">X</span></a>
+        </li>
+        <li class="enter" style="--i: 3">
+          <a class="link" href="https://github.com/yannworks"><span class="link__text">GitHub</span><span class="link__text link__fill" aria-hidden="true">GitHub</span></a>
+        </li>
+        <li class="enter" style="--i: 4">
+          <a class="link" href="https://yannworks.github.io/experiments/"><span class="link__text">Experiments</span><span class="link__text link__fill" aria-hidden="true">Experiments</span></a>
+          <span class="link__note">my lab of UI components</span>
+        </li>
+      </ul>
+    </div>
+
+    <figure class="scene enter" style="--i: 5">
+      <div class="scene__frame">
+        <!-- Shown until the animation starts, and instead of it without WebGL or JavaScript. -->
+        <picture class="scene__still">
+          <source srcset="img/stage-dark.png" media="(prefers-color-scheme: dark)">
+          <img src="img/stage-light.png" width="212" height="118" alt="Pixel art in black and white dots: Clawd, the orange Claude Code mascot, on a small theatre stage under a spotlight, with an upright piano, a typewriter and a little robot.">
+        </picture>
+      </div>
+      <figcaption class="scene__caption">
+        <span>Clawd's little theatre.<span class="hint hint--pointer"> Point at the stage to move the spotlight.</span><span class="hint hint--touch"> Tap the stage to move the spotlight.</span></span>
+        <button class="icon-button scene__pause" type="button" aria-label="Pause the scene" hidden>
+          <svg class="icon-pause" viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 0h2v7h-2zM5 0h2v7h-2z" fill="currentColor"/></svg>
+          <svg class="icon-play" viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 0h1v1h-1zM1 1h2v1h-2zM1 2h3v1h-3zM1 3h4v1h-4zM1 4h3v1h-3zM1 5h2v1h-2zM1 6h1v1h-1z" fill="currentColor"/></svg>
+        </button>
+      </figcaption>
+    </figure>
+  </main>
+</body>
+</html>

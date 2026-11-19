@@ -1,0 +1,403 @@
+/* ==========================================================================
+   yannworks: styles
+   Everything you may want to change is in :root just below: colours,
+   fonts, sizes and timings. The dark theme only swaps the two colours.
+   ========================================================================== */
+
+:root {
+  /* Colours: ink (text) and paper (background). Clawd's orange lives in the scene. */
+  --paper: #ffffff;
+  --ink: #111111;
+
+  /* Fonts: files in /fonts, licence in fonts/OFL.txt */
+  --sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: "Geist Serif", ui-serif, Georgia, serif;
+
+  /* Type sizes */
+  --size-intro: clamp(1.3125rem, 1.1rem + 0.9vw, 1.625rem);  /* 21px on phones, 26px wide */
+  --size-keyword: 1.24em;                                  /* keywords, relative to the intro */
+  --size-links: 1.0625rem;
+  --size-small: 0.9375rem;
+
+  /* Space */
+  --gutter: 16px;
+  --scene-max: 848px;        /* widest the scene gets: 212 dots x 4 */
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --enter-duration: 640ms;   /* text entrance on load */
+  --enter-stagger: 65ms;     /* delay between items */
+  --enter-rise: 10px;        /* how far items rise (0 with reduced motion) */
+  --hover-duration: 200ms;
+  --press-duration: 140ms;
+  --dissolve: 500ms;         /* theme dissolve (main.js sets it again) */
+
+  /* Size of one scene dot on screen. scene.js sets the real value. */
+  --cell: 2px;
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --paper: #0d0d0d;
+  --ink: #ededed;
+  color-scheme: dark;
+}
+
+/* Without JavaScript there is no data-theme: follow the device. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --paper: #0d0d0d;
+    --ink: #ededed;
+    color-scheme: dark;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --enter-rise: 0px; }
+}
+
+/* ---- Fonts ---------------------------------------------------------------- */
+
+@font-face {
+  font-family: "Geist";
+  src: url("fonts/Geist-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Serif";
+  src: url("fonts/GeistSerifVF.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---- Base ----------------------------------------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  font-synthesis: none;            /* never fake a bold or an italic */
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--ink); color: var(--paper); }
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* ---- Layout: one column, two side by side on wide screens --------------- */
+
+.top,
+.page {
+  width: 100%;
+  max-width: calc(var(--scene-max) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: 18px;
+}
+
+.page {
+  display: grid;
+  gap: clamp(2.75rem, 2rem + 3vw, 4.5rem);
+  padding-block: clamp(1.75rem, 1rem + 4vw, 4rem) 3rem;
+}
+
+@media (min-width: 1280px) {
+  :root { --gutter: 48px; }
+
+  .top,
+  .page { max-width: 1440px; }
+
+  .page {
+    grid-template-columns: minmax(0, 27rem) minmax(0, var(--scene-max));
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 64px;
+    min-height: calc(100svh - 76px);
+    padding-block: 0 76px;          /* same as the header: the content sits in the optical middle */
+  }
+}
+
+/* ---- Name and intro ------------------------------------------------------- */
+
+.name {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.about { max-width: 36rem; }
+
+.intro {
+  margin: 0;
+  font-size: var(--size-intro);
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.012em;
+  text-wrap: pretty;
+}
+
+/* Highlighted keywords: Geist Serif, upright, bigger than the text around.
+   Its ELSH axis at 25 gives square dots, like the scene's pixels. */
+.kw {
+  font-family: var(--serif);
+  font-size: var(--size-keyword);
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: "ELSH" 25;
+  line-height: 1;
+  letter-spacing: -0.008em;
+}
+
+/* While main.js prints them in dots. */
+.kw.is-printing {
+  -webkit-mask-size: calc(var(--cell) * 8) calc(var(--cell) * 8);
+  mask-size: calc(var(--cell) * 8) calc(var(--cell) * 8);
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+}
+
+/* ---- Links ---------------------------------------------------------------- */
+
+.links {
+  display: grid;
+  justify-items: start;
+  gap: 0.85rem;
+  margin: 2.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--size-links);
+  font-weight: 500;
+}
+
+.links li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.link {
+  position: relative;
+  display: inline-block;
+  padding: 0.35em 0.5em;
+  margin: -0.35em -0.5em;          /* a bigger target without moving the text */
+  color: inherit;
+  text-decoration: none;
+  transition: transform var(--press-duration) var(--ease-out);
+}
+
+.link__text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  text-decoration: underline 1px;
+  text-underline-offset: 0.24em;
+}
+
+/* Pixel arrow after each link, drawn on a 5 x 5 grid. */
+.link__text::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 5' shape-rendering='crispEdges'%3E%3Cpath d='M1 0h4v1H1zM3 1h2v1H3zM2 2h1v1H2zM4 2h1v1H4zM1 3h1v1H1zM4 3h1v1H4zM0 4h1v1H0z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 5' shape-rendering='crispEdges'%3E%3Cpath d='M1 0h4v1H1zM3 1h2v1H3zM2 2h1v1H2zM4 2h1v1H4zM1 3h1v1H1zM4 3h1v1H4zM0 4h1v1H0z'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform var(--hover-duration) var(--ease-out);
+}
+
+/* The inverted copy: ink background, paper text, revealed from the left. */
+.link__fill {
+  position: absolute;
+  inset: 0;
+  padding: inherit;
+  background: var(--ink);
+  color: var(--paper);
+  text-decoration: none;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path var(--hover-duration) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link:hover .link__fill { clip-path: inset(0); }
+  .link:hover .link__text::after { transform: translate(1px, -1px); }
+}
+
+.link:focus-visible .link__fill { clip-path: inset(0); }
+.link:active { transform: scale(0.97); }
+.link:active .link__fill { clip-path: inset(0); transition-duration: 60ms; }
+
+.link__note {
+  font-size: var(--size-small);
+  font-weight: 400;
+}
+
+/* ---- Square icon buttons (theme, pause) --------------------------------- */
+
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -10px;                   /* the target is bigger than it looks */
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform var(--press-duration) var(--ease-out);
+}
+
+.icon-button[hidden] { display: none; }
+.icon-button svg { display: block; }
+
+@media (hover: hover) and (pointer: fine) {
+  .icon-button:hover { background: var(--ink); color: var(--paper); }
+}
+
+.icon-button:active { transform: scale(0.92); }
+
+/* Theme toggle: half solid, half dithered; it turns over with the theme. */
+.theme-toggle svg {
+  width: 22px;
+  height: 22px;
+  transition: transform 360ms var(--ease-out);
+}
+
+:root[data-theme="dark"] .theme-toggle svg { transform: rotate(180deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle svg { transition: none; }
+}
+
+/* ---- The scene ------------------------------------------------------------ */
+
+.scene {
+  min-width: 0;
+  margin: 0;
+}
+
+.scene__frame,
+.scene__caption {
+  width: var(--scene-w, 100%);
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+@media (min-width: 1280px) {
+  .scene__frame,
+  .scene__caption { margin-inline: auto 0; }
+}
+
+.scene__frame { touch-action: manipulation; }
+
+/* The dots are enlarged by a whole number without smoothing: sharp squares. */
+.scene__frame img,
+.scene__canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.scene.is-live .scene__still { display: none; }
+
+.scene__caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.875rem;
+  font-size: var(--size-small);
+  line-height: 1.4;
+}
+
+.icon-button.scene__pause svg { width: 14px; height: 14px; }
+.scene__pause[data-state="playing"] .icon-play,
+.scene__pause[data-state="paused"] .icon-pause { display: none; }
+
+/* The hint about the spotlight shows only where it is true. */
+.hint { display: none; }
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .scene.is-live .hint--pointer { display: inline; }
+}
+
+@media (hover: none) and (prefers-reduced-motion: no-preference) {
+  .scene.is-live .hint--touch { display: inline; }
+}
+
+/* ---- Entrance: fade in and rise a little, one after the other ------------ */
+
+.enter {
+  animation: enter var(--enter-duration) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * var(--enter-stagger));
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--enter-rise));
+  }
+}
+
+/* ---- Theme change ----------------------------------------------------------
+   The dissolve: the browser shows the old page, and the new one appears on
+   top through a dot mask that main.js changes on every frame. */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  animation: dissolve-hold var(--dissolve) linear both;   /* keeps the transition alive */
+  -webkit-mask-image: var(--dither-mask);
+  mask-image: var(--dither-mask);
+  -webkit-mask-size: calc(var(--cell) * 8) calc(var(--cell) * 8);
+  mask-size: calc(var(--cell) * 8) calc(var(--cell) * 8);
+  -webkit-mask-position: var(--dither-x, 0) var(--dither-y, 0);
+  mask-position: var(--dither-x, 0) var(--dither-y, 0);
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+}
+
+@keyframes dissolve-hold {
+  from { opacity: 1; }
+  to { opacity: 1; }
+}
+
+/* Browsers without view transitions: a plain cross-fade of the colours. */
+.theme-fading,
+.theme-fading * {
+  transition-property: background-color, color, fill;
+  transition-duration: var(--dissolve);
+  transition-timing-function: ease;
+}

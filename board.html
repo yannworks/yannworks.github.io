@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>yannworks: design board</title>
+  <meta name="robots" content="noindex">
+  <script>
+    (function () {
+      var theme = null;
+      try { theme = localStorage.getItem("theme"); } catch (e) {}
+      if (theme !== "light" && theme !== "dark") theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
+  <!-- The board uses the site's real stylesheet, scripts and data: change a
+       token in style.css or a drawing in js/, and it changes here too. -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <script src="js/clawd-sprites.js" defer></script>
+  <script src="js/show.js" defer></script>
+  <script src="js/stage-art.js" defer></script>
+  <script src="js/stage.js" defer></script>
+  <script src="js/scene.js" defer></script>
+  <script src="js/main.js" defer></script>
+  <script src="js/board.js" defer></script>
+  <style>
+    /* Layout of this board only. */
+    .board { max-width: 960px; margin: 0 auto; padding: 0 16px 6rem; }
+    .board h2 { margin: 4rem 0 0.25rem; font-size: 1.0625rem; font-weight: 600; }
+    .board h2 + p { margin: 0 0 1.5rem; max-width: 40rem; font-size: var(--size-small); }
+    .row { display: flex; flex-wrap: wrap; gap: 1.5rem 2.5rem; align-items: center; }
+    .swatch { display: grid; gap: 0.4rem; font-size: var(--size-small); }
+    .swatch i { display: block; width: 120px; height: 72px; outline: 1px solid var(--ink); }
+    .pairs { margin: 1.25rem 0 0; padding: 0; list-style: none; font-size: var(--size-small); }
+    .type > * { margin: 0 0 1.25rem; }
+    .label { display: block; font-size: 0.8125rem; opacity: 1; margin-bottom: 0.35rem; }
+    .force-hover .link__fill { clip-path: inset(0); }
+    .force-focus { outline: 2px solid var(--ink); outline-offset: 3px; }
+    .levels { display: grid; grid-template-columns: repeat(auto-fill, minmax(calc(var(--cell) * 8), 1fr)); gap: 6px; }
+    .levels span { aspect-ratio: 1; background: var(--ink); -webkit-mask-size: 100% 100%; mask-size: 100% 100%; outline: 1px solid var(--ink); outline-offset: 1px; }
+    .grid-art { display: flex; flex-wrap: wrap; gap: 14px; }
+    .grid-art figure { margin: 0; display: grid; gap: 4px; font-size: 0.75rem; }
+    .grid-art canvas { image-rendering: pixelated; background: var(--paper); outline: 1px solid var(--ink); }
+    .timeline { width: 100%; border-collapse: collapse; font-size: var(--size-small); }
+    .timeline td, .timeline th { padding: 0.35rem 0.5rem 0.35rem 0; border-bottom: 1px solid var(--ink); text-align: left; vertical-align: top; }
+    .button { font: inherit; font-size: var(--size-small); color: var(--ink); background: var(--paper); border: 1px solid var(--ink); border-radius: 0; padding: 0.5rem 0.8rem; cursor: pointer; transition: transform var(--press-duration) var(--ease-out); }
+    .button:active { transform: scale(0.97); }
+    @media (hover: hover) and (pointer: fine) { .button:hover { background: var(--ink); color: var(--paper); } }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1 class="name">yannworks · design board</h1>
+    <button class="icon-button theme-toggle" type="button" aria-label="Switch to dark theme" hidden>
+      <svg viewBox="0 0 11 11" shape-rendering="crispEdges" aria-hidden="true"><path d="M3 0h5v1h-5zM2 1h4v1h-4zM7 1h2v1h-2zM1 2h6v1h-6zM8 2h2v1h-2zM0 3h6v1h-6zM7 3h1v1h-1zM9 3h2v1h-2zM0 4h7v1h-7zM8 4h1v1h-1zM10 4h1v1h-1zM0 5h6v1h-6zM7 5h1v1h-1zM9 5h2v1h-2zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM0 7h6v1h-6zM7 7h1v1h-1zM9 7h2v1h-2zM1 8h6v1h-6zM8 8h2v1h-2zM2 9h4v1h-4zM7 9h2v1h-2zM3 10h5v1h-5z" fill="currentColor"/></svg>
+    </button>
+  </header>
+
+  <main class="board">
+    <p>The parts of yannworks.github.io, drawn from the same files as the page. The theme button above plays the real dissolve.</p>
+
+    <h2>Colours</h2>
+    <p>Two theme colours and Clawd's orange, which only appears in the scene. The ratios are computed from the live values.</p>
+    <div class="row">
+      <div class="swatch"><i style="background: var(--paper)"></i>paper <span data-var="--paper"></span></div>
+      <div class="swatch"><i style="background: var(--ink)"></i>ink <span data-var="--ink"></span></div>
+      <div class="swatch"><i style="background: #d97757"></i>Clawd #d97757</div>
+    </div>
+    <ul class="pairs" id="contrast"></ul>
+
+    <h2>Type</h2>
+    <p>Geist for everything, Geist Serif (square dots, ELSH 25) for the highlighted keywords only.</p>
+    <div class="type">
+      <div><span class="label">name: Geist 17 / 600</span><span class="name">yannworks</span></div>
+      <div><span class="label">intro: Geist 21 to 26 / 400, keywords 1.24 em Geist Serif</span>
+        <p class="intro">I like <b class="kw">building apps</b> with AI and learning <b class="kw">how things work</b>.</p></div>
+      <div><span class="label">links: Geist 17 / 500</span><a class="link" href="#"><span class="link__text">GitHub</span><span class="link__text link__fill" aria-hidden="true">GitHub</span></a></div>
+      <div><span class="label">small: Geist 15 / 400</span><span style="font-size: var(--size-small)">Clawd's little theatre.</span></div>
+    </div>
+    <button class="button" type="button" id="replay-print">Replay the keyword print</button>
+
+    <h2>Links</h2>
+    <p>Rest, hover (an inverted copy slides in from the left, 200 ms), keyboard focus, press (scale 0.97).</p>
+    <ul class="links" style="margin: 0">
+      <li><a class="link" href="#"><span class="link__text">Rest</span><span class="link__text link__fill" aria-hidden="true">Rest</span></a></li>
+      <li class="force-hover"><a class="link" href="#" tabindex="-1"><span class="link__text">Hover</span><span class="link__text link__fill" aria-hidden="true">Hover</span></a></li>
+      <li><a class="link force-focus force-hover" href="#" tabindex="-1"><span class="link__text">Focus</span><span class="link__text link__fill" aria-hidden="true">Focus</span></a><span class="link__note">with its note</span></li>
+    </ul>
+
+    <h2>Buttons</h2>
+    <p>Square, 44 px targets, pixel icons. Hover inverts, press scales to 0.92.</p>
+    <div class="row">
+      <button class="icon-button" type="button" aria-label="Theme icon"><svg viewBox="0 0 11 11" width="22" height="22" shape-rendering="crispEdges" aria-hidden="true"><path d="M3 0h5v1h-5zM2 1h4v1h-4zM7 1h2v1h-2zM1 2h6v1h-6zM8 2h2v1h-2zM0 3h6v1h-6zM7 3h1v1h-1zM9 3h2v1h-2zM0 4h7v1h-7zM8 4h1v1h-1zM10 4h1v1h-1zM0 5h6v1h-6zM7 5h1v1h-1zM9 5h2v1h-2zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM0 7h6v1h-6zM7 7h1v1h-1zM9 7h2v1h-2zM1 8h6v1h-6zM8 8h2v1h-2zM2 9h4v1h-4zM7 9h2v1h-2zM3 10h5v1h-5z" fill="currentColor"/></svg></button>
+      <button class="icon-button" type="button" aria-label="Pause icon"><svg viewBox="0 0 7 7" width="14" height="14" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 0h2v7h-2zM5 0h2v7h-2z" fill="currentColor"/></svg></button>
+      <button class="icon-button" type="button" aria-label="Play icon"><svg viewBox="0 0 7 7" width="14" height="14" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 0h1v1h-1zM1 1h2v1h-2zM1 2h3v1h-3zM1 3h4v1h-4zM1 4h3v1h-3zM1 5h2v1h-2zM1 6h1v1h-1z" fill="currentColor"/></svg></button>
+    </div>
+
+    <h2>Dither levels</h2>
+    <p>The 65 masks of the 8 x 8 Bayer grid, at the scene's dot size. The scene's shades, the theme dissolve and the keyword print all step through these.</p>
+    <div class="levels" id="levels"></div>
+
+    <h2>Motion</h2>
+    <p>Entrance: fade and a 10 px rise, 640 ms, 65 ms apart (no rise with reduced motion). Dissolve: 500 ms (250 ms reduced). Spot: a critically damped spring.</p>
+    <div class="row">
+      <button class="button" type="button" id="replay-enter">Replay the entrance</button>
+    </div>
+    <div id="enter-demo" style="margin-top: 1.5rem">
+      <p class="intro enter" style="--i: 0">An intro line enters first,</p>
+      <p class="enter" style="--i: 1; margin: 0.5rem 0 0">then a link,</p>
+      <p class="enter" style="--i: 2; margin: 0.5rem 0 0">then the next one.</p>
+    </div>
+
+    <h2>The scene</h2>
+    <p>The live component, with its pause button.</p>
+    <figure class="scene">
+      <div class="scene__frame">
+        <picture class="scene__still">
+          <source srcset="img/stage-dark.png" media="(prefers-color-scheme: dark)">
+          <img src="img/stage-light.png" width="212" height="118" alt="The theatre scene, still frame.">
+        </picture>
+      </div>
+      <figcaption class="scene__caption">
+        <span>Clawd's little theatre.</span>
+        <button class="icon-button scene__pause" type="button" aria-label="Pause the scene" hidden>
+          <svg class="icon-pause" viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 0h2v7h-2zM5 0h2v7h-2z" fill="currentColor"/></svg>
+          <svg class="icon-play" viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 0h1v1h-1zM1 1h2v1h-2zM1 2h3v1h-3zM1 3h4v1h-4zM1 4h3v1h-3zM1 5h2v1h-2zM1 6h1v1h-1z" fill="currentColor"/></svg>
+        </button>
+      </figcaption>
+    </figure>
+
+    <h2>The show, moment by moment</h2>
+    <p>From js/show.js. With reduced motion every walk becomes a 1.6 s cut in the dark.</p>
+    <table class="timeline" id="timeline"><thead><tr><th>Starts at</th><th>Reduced</th><th>Moment</th></tr></thead><tbody></tbody></table>
+
+    <h2>Clawd's poses</h2>
+    <p>All 42 grids from js/clawd-sprites.js (generated from the clawd skill), at 3 x.</p>
+    <div class="grid-art" id="poses"></div>
+
+    <h2>Props, before light and dither</h2>
+    <p>The shades painted by js/stage-art.js, shown as grey, at 2 x. The shader lights them and turns them into dots.</p>
+    <div class="grid-art" id="props"></div>
+  </main>
+</body>
+</html>
