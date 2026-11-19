@@ -3,9 +3,9 @@
   "id": "yannworks-site",
   "project_root": "/home/user/yannworks.github.io",
   "mode": "new",
-  "status": "active",
-  "phase": "awaiting-publish",
-  "updated_at": "2026-11-19T17:47:02.041332+00:00",
+  "status": "completed",
+  "phase": "delivered",
+  "updated_at": "2026-11-19T18:02:29.148689+00:00",
   "brief": "brief.md",
   "direction": "direction.md",
   "decisions": "decisions.md",
@@ -31,7 +31,7 @@
   },
   "requirement_changes": [],
   "frontend_owner": "principal",
-  "next_action": "Wait for Yann's word 'publish'; then put the branch on main of yannworks/yannworks.github.io and check that https://yannworks.github.io loads (GitHub Pages is already on, deploying from main).",
+  "next_action": "None. Published on 2026-11-19. A later change starts a new targeted mission (or a resume) on this folder.",
   "requirements": [
     {
       "id": "R1",
@@ -300,11 +300,13 @@
     {
       "id": "R22",
       "description": "After Yann writes publish: site on main and https://yannworks.github.io checked",
-      "status": "planned",
+      "status": "verified",
       "required_kinds": [
         "test"
       ],
-      "evidence": []
+      "evidence": [
+        "ev-published"
+      ]
     },
     {
       "id": "R23",
@@ -1419,6 +1421,40 @@
         "tools/make-clawd.py": "2653a7e33f9b5cb1681cd63e08c57700fdfa863228cb8df004c86ec60b2d97bc"
       },
       "limitations": "Self-review by the building agent, not independent"
+    },
+    {
+      "id": "ev-published",
+      "kind": "test",
+      "method": "Fast-forwarded main, waited for the Pages deployment, then curl on every file and Playwright on https://yannworks.github.io at phone and desktop size",
+      "result": "pass",
+      "date": "2026-11-19T18:02:28.158412+00:00",
+      "artifact": "evidence/published.txt",
+      "artifact_sha256": "944c5100e4615d963f85829fc8113bd42ea8d7ec9bc3bb61c67f671e460ea7e7",
+      "snapshot": {
+        ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "README.md": "e04d79bdd070ae1db35e92efc7cb4bd3ca895960b594dcc08cad824865a14988",
+        "apple-touch-icon.png": "4aaef0867fe25302417dc773dc8914d1c4eb9b87beb1262479c362e0790f93c5",
+        "board.html": "cb4256953b4d57fcfc0d49cfac8cbdade2307f3d2c3712b7f90e295cfb0976a2",
+        "favicon.png": "f1c631d31430dd0c0599bb71718f2f8318d313de2b900e2a4d268ec515c0c760",
+        "favicon.svg": "415fa3d51d986e10bc2b3781edc0f47eebe3c15e2c79f3dc72402e1f5d2e4cca",
+        "index.html": "1dbf47d617f68521b617b76d763f132bf24587be8c6a76a0a164ef63936f05e5",
+        "style.css": "20e6167f6eeead4ab69bf027d33cfdce155906cb92ad795aa5d44dc93490b630",
+        "fonts/Geist-Variable.woff2": "3626eba547294501c8a4d662c7d9ea3b49734409a4c5a1ccf12fa86429b1687e",
+        "fonts/GeistSerifVF.woff2": "022e59b139ab2ce6962d91fe08539ea9e5f4a734d1bdffbf6fbbb9bc46921e96",
+        "fonts/OFL.txt": "930853ee1daa68554d9e35c8a9175affb74f699fad9a5da6ee5ebe76379d9137",
+        "img/share.png": "7fc455b05a6d6a81f542a76bbc8b8f0dbbed55f1b488fdda9098695e6ab9db97",
+        "img/stage-dark.png": "a5c788a33c739843f6210dcaeaafa1ed1fdcb4de276f8e4faaf4b580bec47ad1",
+        "img/stage-light.png": "24a13f7fa13b40d75ada883d443d3e88efea9bbc382e676f31d112ed41f9f3db",
+        "js/board.js": "7a412ac1c6d6188840e2faef29ed1d5ae7013561975cce57bfd9fe4ed1b844a6",
+        "js/clawd-sprites.js": "f3ab070b050cb820e4e5d29a4b8e89aa8a5a6da211269cecc4fbce65b89dcb47",
+        "js/main.js": "4ee90dd1a3ca902b94ed708c0ef5c07055ac189bd2c0ab63337e54ef1d1d0f81",
+        "js/scene.js": "f1aa94b15fc31a8584cbb16d71ef5f43e945f75f145eb1f3e876c077f382c031",
+        "js/show.js": "63081bed6aee066d0766b7310922bd1cd0d5aef2ebb4cd8b3f4ea4d90584dba2",
+        "js/stage-art.js": "5af5ac64296565b1d6c4833abe9c24410761805ba0e4e60d2e4583b98a11c25b",
+        "js/stage.js": "97e6e4aa0f672ba25311b5457faf58be57d72e517e1396873edb12c351717aef",
+        "tools/make-clawd.py": "2653a7e33f9b5cb1681cd63e08c57700fdfa863228cb8df004c86ec60b2d97bc"
+      },
+      "limitations": "Headless Chromium only; no real iPhone, Safari or Firefox"
     }
   ],
   "blockers": [],
@@ -1440,8 +1476,7 @@
     }
   ],
   "procedures_next": [
-    "references/continuity.md",
-    "references/review.md"
+    "references/continuity.md"
   ],
   "plan": [
     "sprites and favicon from the clawd library",

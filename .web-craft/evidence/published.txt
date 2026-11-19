@@ -1,0 +1,5 @@
+Published 2026-11-19: main fast-forwarded from 679e4f9 (initial README) to e14f89a (this site).
+GitHub Pages ("pages build and deployment", run 2) served the new page about 30 s after the push.
+Live checks (curl): / and every asset (favicons, share image, still frames, fonts, OFL, scripts, style, board) answer 200; /experiments/ still answers 200 (no collision).
+Live checks (Playwright Chromium, https://yannworks.github.io): phone 390 px @3x and desktop 1440 px @2x both load with status 200, title "yannworks", Geist and Geist Serif loaded, scene live and drawing, links X / GitHub / Experiments in order, no horizontal scroll, no console errors, no failed requests (screens/live-phone.png, screens/live-desktop.png).
+Not checked: a real iPhone, Safari, Firefox.
