@@ -48,6 +48,8 @@ Three pieces, each with one job:
 
 **If it fails:** the Actions tab shows the run in red with a message (GitHub normally emails you about failed scheduled runs too). If the message says the token cannot read the calendar, create a fine-grained personal access token (GitHub settings, Developer settings), then add it in the repository under Settings, Secrets and variables, Actions, as a secret named `CONTRIBUTIONS_TOKEN`. The workflow uses that secret first when it exists. Never put a token in the code.
 
+**If the total is lower than on your profile:** the Action sees your calendar as a visitor does. Your private contributions count only when "Private contributions" is ticked under **Contribution settings**, above the graph on your GitHub profile. Tick it, then run the workflow by hand.
+
 **If the graph stops updating:** GitHub turns off scheduled workflows in a repository with no activity for 60 days. The daily commits should keep it active; if the Actions tab says the workflow is disabled, press **Enable workflow**. The page says "updated <date>" when its data is more than three days old.
 
 **Until the first run** `contributions.json` holds no days and the section stays hidden. To see the graph on your computer, write made-up data with `node tools/sample-contributions.mjs contributions.json` and serve the folder; that file is marked as a sample and never shows on the real site. Do not commit it.
