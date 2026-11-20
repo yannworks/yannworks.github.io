@@ -1,0 +1,13 @@
+Workflow test run on the branch (before publishing), 2026-11-20.
+Run: https://github.com/yannworks/yannworks.github.io/actions/runs/44688458959 (event push, branch claude/contribution-graph, conclusion success)
+Steps: checkout@v5 success; "Fetch the contribution calendar" success; "Commit the file if the data changed" skipped (not main, by design).
+Token: the workflow's built-in GITHUB_TOKEN (no CONTRIBUTIONS_TOKEN secret exists).
+Log of the fetch step:
+  yannworks: 42 contributions from 2025-11-16 to 2026-11-20
+  days: 370, with contributions: 9, sum of days: 42
+  busiest day: 2026-10-30 (10), private contributions counted: 0
+  Saved contributions.json.   (in the runner only; nothing committed)
+Public profile (https://github.com/users/yannworks/contributions, read the same morning): "42 contributions in the last year".
+Conclusion: the built-in token reads the calendar; the total matches the public profile exactly.
+The pushed workflow file was accepted (no missing permission for workflow files).
+The temporary push trigger used for this test was removed in the next commit.

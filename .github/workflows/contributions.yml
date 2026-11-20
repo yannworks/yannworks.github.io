@@ -8,8 +8,6 @@ on:
   schedule:
     - cron: "47 22 * * *"    # every day at 22:47 UTC (23:47 in Paris in winter)
   workflow_dispatch:          # the "Run workflow" button
-  push:                       # TEMPORARY: test run on the work branch, removed before publishing
-    branches: [claude/contribution-graph]
 
 permissions:
   contents: write             # lets the workflow commit contributions.json
