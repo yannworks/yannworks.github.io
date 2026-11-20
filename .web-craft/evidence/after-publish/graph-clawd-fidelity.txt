@@ -1,0 +1,4 @@
+Clawd in the graph canvas against clawd.py pose(), cell by cell (after publishing).
+walk: 248 cells; closest pose side_right {'legs': 'B', 'crouch_by': 0}: 0 differ
+walk2: 252 cells; closest pose side_right {'legs': None, 'crouch_by': 0}: 0 differ
+front: 264 cells; closest pose front : 0 differ

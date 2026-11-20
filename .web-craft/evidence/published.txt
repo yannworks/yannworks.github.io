@@ -1,0 +1,14 @@
+Published 2026-11-20 on Yann's word "publish".
+1. main fast-forwarded from a37778d to d8b372d (the graph branch). GitHub Pages deployed it (run 4).
+2. Contributions workflow run by hand (workflow_dispatch) on main: run 44691518612, success.
+   It committed contributions.json as github-actions[bot] (a2dd427 "Update contributions"):
+   370 days from 2025-11-16 to 2026-11-20, total 42, 9 active days, fetchedAt 2026-11-20T06:58:14Z, no sample flag.
+   No repository setting needed changing: the workflow file push was accepted and the built-in token could commit.
+3. The bot's commit started a GitHub Pages deployment by itself (run 5, actor github-pages[bot]):
+   commits made with the workflow token do publish the site.
+4. https://yannworks.github.io/contributions.json served the real file about 20 s later.
+5. Live page (Playwright Chromium, no interception, cache-busting query):
+   desktop 1440 @2x: section shown, "42 contributions in the last year", 53 weeks, Clawd settled, scene live, no horizontal scroll, status 200, no console errors or failed requests;
+   phone 390 @3x: "42 contributions in the last 6 months", 26 weeks, same results.
+   Screens: screens/live-desktop-graph.png, screens/live-phone-graph.png.
+Not checked: the first scheduled (22:47 UTC) run; Safari, Firefox, a real iPhone.

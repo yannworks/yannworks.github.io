@@ -17,4 +17,6 @@ Date | decision | source or reason | scope | to check
 - 2026-11-20 | The scene's pause button also settles the graph's Clawd | one "stop the motion" control for the page | motion | tested
 - 2026-11-20 | `role="application"` on the graph so screen readers in browse mode pass the arrow keys through; the summary is its description; the selected day is a polite live region | Yann: one focusable element, arrows, summary and selected day for screen readers | accessibility | DOM checked, no screen reader available
 - 2026-11-20 | The `js` class is set by the head script; it hides the no-JavaScript link before the first paint | no flash of the fallback link | page | -
+- 2026-11-20 | Published on Yann's word; first run by hand: the Action committed with the built-in token and its commit started a Pages build by itself (no extra build step needed) | observed on main (published.txt) | data | -
+- 2026-11-20 | Proofs re-run after publishing into evidence/after-publish/, because contributions.json (part of the snapshot) changes with every Action commit; they will go stale daily by design | the mission checker hashes every file | notes | -
 - 2026-11-20 | No independent reviewer (sub-agents only on Yann's request) | environment rule | review | self-review instead

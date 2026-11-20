@@ -1,0 +1,61 @@
+{
+ "hover": "No contributions · Dec 3, 2025",
+ "afterLeave": "\" \"",
+ "focused": "activity__graph",
+ "onFocus": "1 contribution · Nov 20",
+ "left": "10 contributions · Nov 13",
+ "up": "7 contributions · Nov 12",
+ "home": "No contributions · Nov 16, 2025",
+ "end": "1 contribution · Nov 20",
+ "scrollYAfterArrows": 0,
+ "aria": {
+  "role": "application",
+  "label": "Contribution graph, one square per day. Arrow keys move between days.",
+  "describedby": "941 contributions in the last year",
+  "live": "polite"
+ },
+ "clawdRunningAfterHover": true,
+ "clawdRunningLater": false,
+ "errors1": [],
+ "missing": {
+  "hidden": true,
+  "body": false,
+  "fallback": "none",
+  "summary": "",
+  "day": " ",
+  "errors": [
+   "Failed to load resource: the server responded with a status of 404 (Not Found)"
+  ]
+ },
+ "broken": {
+  "hidden": true,
+  "body": false,
+  "fallback": "none",
+  "summary": "",
+  "day": " ",
+  "errors": []
+ },
+ "wrongShape": {
+  "hidden": true,
+  "body": false,
+  "fallback": "none",
+  "summary": "",
+  "day": " ",
+  "errors": []
+ },
+ "stale": "941 contributions in the last year · updated Nov 14",
+ "noJs": {
+  "fallbackVisible": true,
+  "link": "https://github.com/yannworks",
+  "bodyHidden": true
+ },
+ "sampleOnPublicHost": {
+  "hidden": true,
+  "body": false,
+  "fallback": "none",
+  "summary": "",
+  "day": " "
+ },
+ "realOnPublicHost": "941 contributions in the last year",
+ "reducedSettle": 10000
+}
