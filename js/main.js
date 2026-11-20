@@ -7,6 +7,7 @@
   const darkQuery = matchMedia("(prefers-color-scheme: dark)");
   const toggle = document.querySelector(".theme-toggle");
   const scene = startScene();
+  startActivity();                     // the GitHub graph (js/activity.js)
 
   // ---- Dither masks.
   // The same 8 x 8 Bayer thresholds as the shader in stage.js. Mask number

@@ -40,7 +40,7 @@ function startScene() {
       el.style.width = w + "px";
       el.style.height = h + "px";
     }
-    figure.style.setProperty("--scene-w", w + "px");
+    root.style.setProperty("--scene-w", w + "px");      // the graph below uses the same width
     root.style.setProperty("--cell", k / dpr + "px");    // dot size, used by the dissolve
   }
   fit();
@@ -180,6 +180,7 @@ function startScene() {
   pauseButton.addEventListener("click", () => {
     playing = !playing;
     updateButton();
+    document.dispatchEvent(new CustomEvent("scenepause", { detail: { playing } }));   // the graph's Clawd stops too
     wake();
   });
   updateButton();

@@ -353,6 +353,69 @@ body {
   .scene.is-live .hint--touch { display: inline; }
 }
 
+/* ---- GitHub activity: the graph under the scene --------------------------- */
+
+/* The scene and the graph share one column. */
+.stage {
+  display: grid;
+  align-content: start;
+  gap: clamp(2.5rem, 2rem + 2vw, 3.25rem);
+  min-width: 0;
+}
+
+.activity {
+  width: var(--scene-w, 100%);
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+@media (min-width: 1280px) {
+  .activity { margin-inline: auto 0; }
+}
+
+.activity[hidden] { display: none; }
+
+/* Without JavaScript: a plain link instead of the graph. */
+.activity__fallback {
+  margin: 0;
+  font-size: var(--size-links);
+  font-weight: 500;
+}
+
+.js .activity__fallback { display: none; }
+
+.activity__summary {
+  margin: 0 0 0.875rem;
+  font-size: var(--size-links);
+  line-height: 1.4;
+}
+
+.activity__updated { font-size: var(--size-small); }
+
+/* One focusable element; the arrow keys move between days. */
+.activity__graph {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  touch-action: manipulation;
+}
+
+.activity__graph:focus-visible { outline-offset: 4px; }
+
+/* Dots enlarged by a whole number of screen pixels, like the scene. */
+.activity__canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+
+.activity__day {
+  min-height: 1.4em;
+  margin: 0.625rem 0 0;
+  font-size: var(--size-small);
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---- Entrance: fade in and rise a little, one after the other ------------ */
 
 .enter {

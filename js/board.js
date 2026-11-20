@@ -115,4 +115,46 @@
     f.append(c, cap);
     props.append(f);
   }
+
+  // ---- The contribution graph: the five levels, then the live component.
+  const legend = document.getElementById("levels-legend");
+  const ink = getComputedStyle(root).getPropertyValue("--ink").trim();
+  ACTIVITY.DOTS.forEach((n, level) => {
+    const k = 8, c = document.createElement("canvas");
+    c.width = c.height = 4 * k;
+    const g = c.getContext("2d");
+    g.fillStyle = ink;
+    for (let i = 0; i < n; i++) g.fillRect(DOT_ORDER[i].x * k, DOT_ORDER[i].y * k, k, k);
+    const f = document.createElement("figure");
+    const cap = document.createElement("figcaption");
+    cap.textContent = `level ${level}: ${n} dot${n > 1 ? "s" : ""}`;
+    f.className = "swatch";
+    f.style.margin = "0";
+    f.append(c, cap);
+    legend.append(f);
+  });
+
+  // Made-up data for the board only, clearly labelled, when the real file is not there yet.
+  function sampleData() {
+    let seed = 7;
+    const random = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 2 ** 32);
+    const last = Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate());
+    const first = last - (52 * 7 + new Date(last).getUTCDay()) * 864e5;
+    const days = [];
+    for (let t = first; t <= last; t += 864e5) {
+      const count = random() < 0.4 ? 1 + Math.floor(random() ** 2 * 12) : 0;
+      days.push({ date: new Date(t).toISOString().slice(0, 10), count, level: count === 0 ? 0 : count <= 2 ? 1 : count <= 5 ? 2 : count <= 9 ? 3 : 4 });
+    }
+    return { login: "sample", fetchedAt: new Date().toISOString(), total: days.reduce((n, d) => n + d.count, 0), days };
+  }
+  loadContributions().then((real) => {
+    const data = real && !real.sample ? real : sampleData();
+    document.getElementById("graph-source").textContent = data === real
+      ? "Data: contributions.json (real)."
+      : "Data: sample data, not real activity (contributions.json is not there yet).";
+    const section = document.getElementById("board-activity");
+    section.querySelector(".activity__fallback").hidden = true;
+    const graph = mountActivity(section, data);
+    document.getElementById("replay-graph").addEventListener("click", () => graph.replay());
+  });
 })();

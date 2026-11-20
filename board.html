@@ -11,6 +11,7 @@
       try { theme = localStorage.getItem("theme"); } catch (e) {}
       if (theme !== "light" && theme !== "dark") theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
       document.documentElement.dataset.theme = theme;
+      document.documentElement.classList.add("js");
     })();
   </script>
   <!-- The board uses the site's real stylesheet, scripts and data: change a
@@ -22,6 +23,7 @@
   <script src="js/stage-art.js" defer></script>
   <script src="js/stage.js" defer></script>
   <script src="js/scene.js" defer></script>
+  <script src="js/activity.js" defer></script>
   <script src="js/main.js" defer></script>
   <script src="js/board.js" defer></script>
   <style>
@@ -128,6 +130,21 @@
         </button>
       </figcaption>
     </figure>
+
+    <h2>Contribution graph</h2>
+    <p>Each day is 4 x 4 dots. GitHub's levels 0 to 4 show 1, 2, 4, 8 and 16 dots, in Bayer order. The live graph below uses contributions.json when the GitHub Action has written it; until then it shows generated sample data, marked as such.</p>
+    <div class="row" id="levels-legend"></div>
+    <p id="graph-source" style="margin: 1.5rem 0 0.5rem; font-size: var(--size-small)"></p>
+    <section class="activity" id="board-activity" aria-label="Contribution graph (board)">
+      <p class="activity__fallback">No JavaScript: the page shows a link to GitHub here.</p>
+      <div class="activity__body" hidden>
+        <p class="activity__summary" id="board-activity-summary"></p>
+        <div class="activity__graph" tabindex="0" role="application" aria-describedby="board-activity-summary"
+             aria-label="Contribution graph, one square per day. Arrow keys move between days."></div>
+        <p class="activity__day" aria-live="polite">&nbsp;</p>
+      </div>
+    </section>
+    <div class="row" style="margin-top: 1rem"><button class="button" type="button" id="replay-graph">Replay the fill and Clawd's walk</button></div>
 
     <h2>The show, moment by moment</h2>
     <p>From js/show.js. With reduced motion every walk becomes a 1.6 s cut in the dark.</p>

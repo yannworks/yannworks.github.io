@@ -15,6 +15,7 @@ const ACTIVITY = {
   PITCH: 5,                // a square plus one dot of gap
   DOTS: [1, 2, 4, 8, 16],  // dots shown for GitHub levels 0 to 4
   BAND: 17,                // dot rows above the graph: Clawd (16) and one of air
+  PAD: 1,                  // one dot of margin, so the frame around a chosen day is never cut
   MIN_DOT: 2.4,            // smallest dot (CSS px) for a full year; below that, 26 weeks
   FILL_MS: 1000,           // fill-in the first time the graph is seen
   FILL_REDUCED_MS: 400,
@@ -118,8 +119,8 @@ function mountActivity(section, data, options = {}) {
     if (wanted !== weeks) {
       weeks = wanted;
       ({ cells, cols } = layoutDays(data.days, weeks));
-      W = cols * ACTIVITY.PITCH - 1;
-      H = ACTIVITY.BAND + 7 * ACTIVITY.PITCH - 1;
+      W = cols * ACTIVITY.PITCH - 1 + 2 * ACTIVITY.PAD;
+      H = ACTIVITY.BAND + 7 * ACTIVITY.PITCH - 1 + ACTIVITY.PAD;
       canvas.width = W;
       canvas.height = H;
       if (selected) selected = cells.find((c) => c.date === selected.date) || null;
@@ -128,6 +129,7 @@ function mountActivity(section, data, options = {}) {
     const k = Math.max(1, Math.floor((avail * dpr) / W));
     canvas.style.width = (W * k) / dpr + "px";
     canvas.style.height = (H * k) / dpr + "px";
+    canvas.style.marginLeft = (-ACTIVITY.PAD * k) / dpr + "px";      // the squares line up with the text
     draw();
   }
 
@@ -150,10 +152,13 @@ function mountActivity(section, data, options = {}) {
     }
   }
 
+  const dayX = (cell) => ACTIVITY.PAD + cell.col * ACTIVITY.PITCH;
+  const dayY = (cell) => ACTIVITY.BAND + cell.row * ACTIVITY.PITCH;
+
   // ---- timing of the fill-in and of Clawd
   const fillMs = () => (reduced ? ACTIVITY.FILL_REDUCED_MS : ACTIVITY.FILL_MS);
   const today = () => cells[cells.length - 1];
-  const targetX = () => Math.max(0, Math.min(W - 22, today().col * ACTIVITY.PITCH + 2 - 11));
+  const targetX = () => Math.max(0, Math.min(W - 22, dayX(today()) + 2 - 11));
   const walkStart = -23;
   const walkSteps = () => Math.ceil((targetX() - walkStart) / ACTIVITY.STEP_CELLS);
   const arrivalMs = () => (reduced ? 0 : fillMs() + walkSteps() * ACTIVITY.STEP_MS);
@@ -198,11 +203,11 @@ function mountActivity(section, data, options = {}) {
     g.fillStyle = ink;
     for (const c of cells) {
       const n = dotsAt(c, clock);
-      const x0 = c.col * ACTIVITY.PITCH, y0 = ACTIVITY.BAND + c.row * ACTIVITY.PITCH;
+      const x0 = dayX(c), y0 = dayY(c);
       for (let i = 0; i < n; i++) g.fillRect(x0 + DOT_ORDER[i].x, y0 + DOT_ORDER[i].y, 1, 1);
     }
     if (selected) {                                   // a one-dot frame around the chosen day
-      const x0 = selected.col * ACTIVITY.PITCH - 1, y0 = ACTIVITY.BAND + selected.row * ACTIVITY.PITCH - 1;
+      const x0 = dayX(selected) - 1, y0 = dayY(selected) - 1;
       for (let i = 0; i < 6; i++) {
         g.fillRect(x0 + i, y0, 1, 1); g.fillRect(x0 + i, y0 + 5, 1, 1);
         g.fillRect(x0, y0 + i, 1, 1); g.fillRect(x0 + 5, y0 + i, 1, 1);
@@ -254,7 +259,7 @@ function mountActivity(section, data, options = {}) {
     const x = ((e.clientX - r.left) / r.width) * W, y = ((e.clientY - r.top) / r.height) * H;
     const c = started ? clawdAt(clock) : null;
     if (c && x >= c.x && x < c.x + 23 && y < ACTIVITY.BAND) return { clawd: true };
-    const col = Math.floor(x / ACTIVITY.PITCH), row = Math.floor((y - ACTIVITY.BAND) / ACTIVITY.PITCH);
+    const col = Math.floor((x - ACTIVITY.PAD) / ACTIVITY.PITCH), row = Math.floor((y - ACTIVITY.BAND) / ACTIVITY.PITCH);
     return { cell: cells.find((d) => d.col === col && d.row === row) || null };
   }
   function poke() {                                    // Clawd bounces with his happy face
@@ -304,7 +309,7 @@ function mountActivity(section, data, options = {}) {
   });
 
   readInk();
-  box.hidden = false;
+  section.querySelector(".activity__body").hidden = false;
   fit();
   line.textContent = " ";
 
@@ -324,7 +329,7 @@ function mountActivity(section, data, options = {}) {
 
 // Loads the data and shows the graph; without valid data the section stays hidden.
 async function startActivity() {
-  const section = document.querySelector(".activity");
+  const section = document.getElementById("activity");
   if (!section) return null;
   const data = await loadContributions();
   if (!data) { section.hidden = true; return null; }

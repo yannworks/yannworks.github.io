@@ -18,6 +18,7 @@
         theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
       }
       document.documentElement.dataset.theme = theme;
+      document.documentElement.classList.add("js");      // lets the CSS hide no-JavaScript fallbacks
     })();
   </script>
 
@@ -42,6 +43,7 @@
   <script src="js/stage-art.js" defer></script>
   <script src="js/stage.js" defer></script>
   <script src="js/scene.js" defer></script>
+  <script src="js/activity.js" defer></script>
   <script src="js/main.js" defer></script>
 </head>
 <body>
@@ -76,6 +78,7 @@
       </ul>
     </div>
 
+    <div class="stage">
     <figure class="scene enter" style="--i: 5">
       <div class="scene__frame">
         <!-- Shown until the animation starts, and instead of it without WebGL or JavaScript. -->
@@ -92,6 +95,21 @@
         </button>
       </figcaption>
     </figure>
+
+    <!-- GitHub activity, drawn by js/activity.js from contributions.json, which a
+         GitHub Action updates once a day. Hidden until that file exists. -->
+    <section class="activity enter" id="activity" style="--i: 6" aria-label="GitHub activity">
+      <p class="activity__fallback">
+        <a class="link" href="https://github.com/yannworks"><span class="link__text">See my activity on GitHub</span><span class="link__text link__fill" aria-hidden="true">See my activity on GitHub</span></a>
+      </p>
+      <div class="activity__body" hidden>
+        <p class="activity__summary" id="activity-summary"></p>
+        <div class="activity__graph" tabindex="0" role="application" aria-describedby="activity-summary"
+             aria-label="Contribution graph, one square per day. Arrow keys move between days."></div>
+        <p class="activity__day" aria-live="polite">&nbsp;</p>
+      </div>
+    </section>
+    </div>
   </main>
 </body>
 </html>
