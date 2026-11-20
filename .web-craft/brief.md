@@ -1,44 +1,40 @@
-# Brief: yannworks.github.io
+# Brief: GitHub contribution graph
 
 ## Mandate and authorisation
 
-- Source: Yann's request in a Claude Code session, 2026-11-19 (step 1), then his answer the same day choosing the theatre scene (step 2).
-- Goal: a personal website, the start of a portfolio. One minimal, carefully made page: a short intro, links, a special font for highlighted words, smooth text animation, light and dark themes, and an animated pixel-art scene of Clawd seen through a black-and-white dithering shader. It is a showcase: details matter.
-- Audience: people who find yannworks on X or GitHub. Main action: read who Yann is, then follow a link.
-- Yann is a beginner and wants to understand the main ideas and edit the code later.
-- Mode: new site. Local build and checks are authorised. Publishing to `main` waits for Yann's word "publish".
+- Source: Yann's request in the Claude Code session, 2026-11-20. Targeted mission on the published site (previous mission: `.web-craft-history/2026-11-19-site/`).
+- Goal: add Yann's GitHub contribution graph to the page, in the same black-and-white dither style as the scene, with a tiny animated Clawd on today's column.
+- Work on a new branch from the current `main`. Nothing goes live until Yann writes "publish". Local build, checks and a test run of the workflow on the branch (no commit) are within the mandate.
 
 ## Scope
 
-- Content (English, plain and friendly). Name: Yann. Public name: yannworks, always lowercase. Approved intro: "Hi, I'm Yann, a student living in France. Online I go by yannworks. I like building apps with AI and learning how things work. I also enjoy writing and music." Highlighted: building apps, how things work, writing, music. (R1)
-- No other personal information anywhere in the public repo (site, README, commits, these notes): no age, school, class level, city, last name, email or photo. (R1)
-- Links, in this order: X https://x.com/yannworks, GitHub https://github.com/yannworks, Experiments https://yannworks.github.io/experiments/ (a separate Pages site; this repo must never contain an /experiments path). (R2)
-- Fonts: Geist Serif (variable, `GeistSerifVF.woff2`, npm geist 1.9.2) for highlighted keywords, upright, at a size that makes them stand out; Geist Sans for the rest. woff2 files hosted in the repo with the OFL licence next to them. (R3)
-- Look: minimal and precise, generous space, one column on phones, few finished elements, the scene is the only big visual. Two theme colours (ink, paper) plus Clawd's orange. Avoid: cream or beige background, italic words in headings, numbered sections, monospace labels, pill buttons, gradient blobs, glassy cards. (R4)
-- Text entrance: intro and links appear with a short staggered fade plus slight rise, done within about 1 s; keywords may get one extra subtle touch. (R5) Links and buttons react clearly on hover and press. (R6)
-- Themes: light and dark, default from the device, a toggle that remembers the choice, no flash of the wrong theme. (R7) Theme switch plays a dither dissolve across the whole page in the scene's dot pattern, about 0.5 s; cross-fade where unsupported. (R8)
-- Favicon: a small Clawd from the clawd skill's icon preset. (R9)
-- Scene style: Clawd in his usual orange from the clawd skill's approved grids and motions, never redrawn from memory, never dithered. Everything else goes through a 1-bit ordered (Bayer) dither: ink and paper only. Light theme black dots on white; dark theme white dots on black. Not the warm brown night-desk palette; keep whole-number scaling, crisp pixels, no anti-aliasing. (R10)
-- Scene content: a little theatre (idea 1). Clawd walks in, plays an upright piano, types at a typewriter, peeks into a little robot which wakes up and waves, bows, walks off. Scripted loop of about 30 to 60 s with no visible jump. Must not resemble the X banner (desk at night, laptop, notepad, gears, hanging lamp, string lights, city window, moon, mug, headphones, music notes, books, plants). (R11)
-- Light: one follow-spot that glows and flickers through the dither; follows the mouse on a computer, drifts on its own on a phone. (R12)
-- Battery and robustness: pause when off screen or tab hidden, keep it light on phones, still dithered frame without WebGL. (R13) A small pause/play button; canvas `aria-label` describing the scene. (R14)
-- Reduced motion: keep Clawd blinking and small moves in place, the glow, a shorter dissolve, the text fade. Remove walking, mouse-following light and text rise. Replaces the clawd skill's freeze-on-first-frame default. (R15)
-- Code: plain HTML, CSS, JS; no framework, no build step; small readable files; colours, fonts, timings as CSS variables at the top; short comments; text and links in plain HTML so the page works without JS. (R16)
-- Web-craft board: a browser page built from the real tokens and components. (R21)
+- Data (R1): a GitHub Action in the site repo runs once a day and has a manual "Run workflow" button. It fetches the contribution calendar of the account `yannworks` through GitHub's GraphQL API (account renamed from `ultrararebinary` on 2026-11-19; history kept) and saves a small JSON file next to the page: each day's date, count and GitHub level, the total, and when it was fetched. It commits only when the data changed. The page reads that file.
+- Token (R2): the workflow's built-in `GITHUB_TOKEN`. If it cannot read the calendar, stop and tell Yann; the fallback is a fine-grained token he stores as a repository secret, never in the code.
+- Totals (R3): the profile includes private contributions (counts only); totals should roughly match the GitHub profile. If clearly lower, tell Yann.
+- Sample data (R4): test the page with a sample file, never publish sample data as if it were real. Until the real file exists, the graph section stays hidden.
+- After publishing (R5): run the workflow once (or tell Yann where to tap "Run workflow"), then check that the live graph shows real data.
+- Repo settings (R6): if pushing the workflow file is refused, or the Action cannot commit because of a setting, tell Yann exactly what to change, or give him the file to add on the GitHub website.
+- Look (R7): each day is a small square drawn with the scene's Bayer threshold grid; dot density shows activity. No contributions: one faint dot. GitHub levels 1 to 4: 2, 4, 8 and 16 dots out of 16. Ink on paper, following the theme. Squares a whole multiple of the dot size so dots stay crisp.
+- Summary line (R8): above the graph, in the page's style, e.g. "312 contributions in the last year", the number in Geist Serif like the other keywords.
+- Range (R9): desktop shows the full year (53 weeks); the phone shows the last 26 weeks, the line saying "in the last 6 months" with that period's own total.
+- Placement (R10): where it fits best in the page's order, with the reason given to Yann.
+- Fill-in (R11): the first time the graph scrolls into view, it fills in dot by dot, each square adding its dots in Bayer order up to its level (busy days take longest), about 1 s, once.
+- Day details (R12): hovering or tapping a day shows one line under the graph, like "5 contributions · Nov 12". Keyboard: the graph takes focus as one element; arrow keys move between days. Screen readers get the summary line and the selected day.
+- Clawd (R13): a tiny animated Clawd on top of today's column, in its orange (the only colour in the graph), built from the clawd library's approved grids and loops. As large as needed to read at phone width without hiding the graph; ideally its cells match the graph's dots.
+- Clawd motion (R14): after the fill-in, Clawd walks along the top edge from the left to today's column, turns to face front and settles; then idles with a blink now and then and an occasional small bounce. Tap or hover: a bounce with the happy "> <" face.
+- Stopping (R15): motion longer than 5 s needs a way to stop: Clawd settles after about 10 s and only moves again when tapped. Pauses off screen and when the tab is hidden.
+- Reduced motion (R16): no walk; Clawd is already on today's column and still blinks and bounces in place; the graph appears with a shorter dissolve.
+- Edge cases (R17): data file missing or broken: page still works, section hidden. Data more than three days old: shown with "updated <date>". Without JavaScript: a plain link "See my activity on GitHub" instead of the graph. No contributions today: Clawd still stands on today's column.
+- Board, README, notes (R18): add the graph to `board.html`, explain in the README how the Action works and how to run it by hand, record decisions in `.web-craft/`.
+- Regression (R19): the rest of the page keeps working: no console errors, no horizontal scroll, contrast still passing, scene, themes and dissolve unchanged.
 
 ## Observable success (done_when)
 
-- Screenshots at 390 px and 1440 px, light and dark, normal and reduced motion; no horizontal scroll, no console errors. (R17)
-- A recording of the full scene loop and one of the theme switch, as MP4 or GIF for an iPhone. (R18)
-- All links work, keyboard focus visible, text contrast WCAG AA in both themes, Clawd's orange reads well on both backgrounds. (R19, R2, R6)
-- The scene pauses off screen and the pause button works. (R13, R14)
-- Final message: what was built, main decisions and why, what was checked, what could not be checked (for example a real iPhone).
-- Notes of the main decisions in this folder. (R20)
-- After "publish": site on `main`, https://yannworks.github.io checked. (R22)
+- Screenshots with the sample data at 390 and 1440 px, light and dark, normal and reduced motion. (R20)
+- An MP4 of the graph filling in and Clawd walking to today. (R21)
+- No console errors, no horizontal scroll, contrast still passing. (R19)
+- Everything sent to Yann; wait for "publish". Final message explains simply how the Action, the JSON file and the page fit together.
 
 ## Additions
 
-- 2026-11-19, Yann's step-2 answer: poses the clawd library lacks (bow, peeking into the robot) use the closest documented move (one-cell crouch, raised arm) and keep Clawd's body shape; if a moment really needs a new pose, name it in the final message instead of drawing it from memory. (R23)
-- 2026-11-19, same answer: with reduced motion Clawd does not walk between props; the spot dims, and when it comes back up Clawd is already at the next prop. (part of R15)
-- 2026-11-19, same answer, optional: Geist Serif's square dots (ELSH axis) on the keywords, if they look good next to the scene. (R24)
-- 2026-11-19, same answer: intro approved as written; dark-mode solution (dim the scene's own lights so the spot still reads as light) approved. (R1, R10)
+None yet.

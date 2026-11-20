@@ -1,0 +1,45 @@
+# Fetches the GitHub contribution calendar of yannworks once a day and saves it
+# as contributions.json next to the page, which draws the graph from it.
+# Run it by hand: Actions tab > "Contributions" > "Run workflow".
+
+name: Contributions
+
+on:
+  schedule:
+    - cron: "47 22 * * *"    # every day at 22:47 UTC (23:47 in Paris in winter)
+  workflow_dispatch:          # the "Run workflow" button
+  push:                       # TEMPORARY: test run on the work branch, removed before publishing
+    branches: [claude/contribution-graph]
+
+permissions:
+  contents: write             # lets the workflow commit contributions.json
+
+concurrency:
+  group: contributions        # never two runs at the same time
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Fetch the contribution calendar
+        run: node tools/fetch-contributions.mjs yannworks contributions.json
+        env:
+          # The workflow's own token. If it ever cannot read the calendar, add a
+          # fine-grained token as the repository secret CONTRIBUTIONS_TOKEN: it is used first.
+          GITHUB_TOKEN: ${{ secrets.CONTRIBUTIONS_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Commit the file if the data changed
+        if: github.ref == 'refs/heads/main'     # only the live branch gets the data
+        run: |
+          if [ -z "$(git status --porcelain -- contributions.json)" ]; then
+            echo "No change in the data: nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add contributions.json
+          git commit -m "Update contributions"
+          git push
