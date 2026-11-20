@@ -1,0 +1,21 @@
+fetch-contributions.mjs with a fake GitHub (mock-fetch.mjs replaces fetch), 2026-11-20
+--- run 1: placeholder -> data
+yannworks: 27 contributions from 2025-11-16 to 2026-11-20
+days: 370, with contributions: 9, sum of days: 27
+busiest day: 2025-11-16 (3), private contributions counted: 0
+Saved contributions.json.
+--- run 2: same data
+yannworks: 27 contributions from 2025-11-16 to 2026-11-20
+days: 370, with contributions: 9, sum of days: 27
+busiest day: 2025-11-16 (3), private contributions counted: 0
+No change since the last run.
+sha256 before 9db23049cea4dbc3 after 9db23049cea4dbc3 -> unchanged: yes
+--- run 3: one new contribution today
+yannworks: 29 contributions from 2025-11-16 to 2026-11-20
+days: 370, with contributions: 10, sum of days: 29
+busiest day: 2025-11-16 (3), private contributions counted: 0
+Saved contributions.json.
+sha256 now 88873e38453580af -> changed: yes
+--- run 4: no token
+::error::No token: set GITHUB_TOKEN.
+exit 1

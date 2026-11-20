@@ -1,0 +1,4 @@
+Clawd in the graph canvas (Chromium) against clawd.py pose(), cell by cell (one cell = one graph dot).
+walk: 248 Clawd cells; closest library pose side_right {'legs': 'B', 'crouch_by': 0}: 0 cells differ
+walk2: 252 Clawd cells; closest library pose side_right {'legs': None, 'crouch_by': 0}: 0 cells differ
+front: 264 Clawd cells; closest library pose front : 0 cells differ

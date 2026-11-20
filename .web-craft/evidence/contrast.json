@@ -1,0 +1,15 @@
+{
+ "note": "Tokens unchanged by this feature. Graph dots and its text use ink on paper; Clawd is the only colour.",
+ "light": {
+  "text_and_dots_ink_on_paper": 18.88,
+  "clawd_on_paper": 3.12
+ },
+ "dark": {
+  "text_and_dots_ink_on_paper": 16.6,
+  "clawd_on_paper": 6.23
+ },
+ "thresholds": {
+  "text_AA": 4.5,
+  "graphics": 3
+ }
+}
