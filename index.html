@@ -48,6 +48,7 @@
   <script src="js/scene.js" defer></script>
   <script src="js/activity.js" defer></script>
   <script src="js/main.js" defer></script>
+  <script src="js/showcase.js" defer></script>
 </head>
 <body>
   <header class="top">
@@ -57,7 +58,8 @@
     </button>
   </header>
 
-  <main class="page">
+  <main>
+  <div class="page">
     <div class="about">
       <p class="intro enter" style="--i: 1">
         Hi, I'm Yann, a student living in France<span class="clock"></span>. Online I go by yannworks.
@@ -115,6 +117,34 @@
       </div>
     </section>
     </div>
+  </div>
+
+  <!-- Three components from Experiments, the real ones, to try here. The text and
+       links are plain HTML; js/showcase.js loads the components (showcase/, built
+       by tools/showcase/build.mjs) when the visitor gets near this section. -->
+  <section class="showcase" aria-labelledby="showcase-title">
+    <h2 class="showcase__title" id="showcase-title"><b class="kw">Three</b> components from my lab</h2>
+    <ul class="showcase__list">
+      <li class="showcase__item showcase__item--shoji">
+        <h3 class="showcase__name">Shoji Bento</h3>
+        <p class="showcase__line">A grid drawn with thin lines, like a paper screen.<span class="showcase__hint"> Drag a line and the boxes on each side make room.</span></p>
+        <div class="showcase__stage" data-demo="shoji-bento"></div>
+        <a class="link showcase__link" href="https://yannworks.github.io/experiments/#/shoji-bento" aria-label="Open in Experiments: Shoji Bento"><span class="link__text">Open in Experiments</span><span class="link__text link__fill" aria-hidden="true">Open in Experiments</span></a>
+      </li>
+      <li class="showcase__item showcase__item--clip">
+        <h3 class="showcase__name">Gem Clip</h3>
+        <p class="showcase__line">A paper clip that copies the text it holds. Here it holds the command that downloads my whole lab.<span class="showcase__hint showcase__hint--pointer"> Click the clip to copy it.</span><span class="showcase__hint showcase__hint--touch"> Tap the clip to copy it.</span></p>
+        <div class="showcase__stage" data-demo="gem-clip"></div>
+        <a class="link showcase__link" href="https://yannworks.github.io/experiments/#/gem-clip" aria-label="Open in Experiments: Gem Clip"><span class="link__text">Open in Experiments</span><span class="link__text link__fill" aria-hidden="true">Open in Experiments</span></a>
+      </li>
+      <li class="showcase__item showcase__item--snooze">
+        <h3 class="showcase__name">Snooze Button</h3>
+        <p class="showcase__line">A button with sleepy eyes.<span class="showcase__hint showcase__hint--pointer"> Bring your pointer close to wake them, then press it: the pupils go round while it pretends to work.</span><span class="showcase__hint showcase__hint--touch"> Tap it: the eyes wake up, and the pupils go round while it pretends to work.</span></p>
+        <div class="showcase__stage" data-demo="snooze-button"></div>
+        <a class="link showcase__link" href="https://yannworks.github.io/experiments/#/snooze-button" aria-label="Open in Experiments: Snooze Button"><span class="link__text">Open in Experiments</span><span class="link__text link__fill" aria-hidden="true">Open in Experiments</span></a>
+      </li>
+    </ul>
+  </section>
   </main>
 </body>
 </html>
