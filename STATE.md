@@ -1,13 +1,11 @@
 # yannworks.github.io : état
 
-Skill : site-studio (missions ciblées sur un site existant). Mis à jour : 2026-11-21. Mission en cours : vitrine de composants, phase 7 (livraison), sur la branche `showcase`, **pas publiée**.
+Skill : site-studio (missions ciblées sur un site existant). Mis à jour : 2026-11-21. Dernière mission : vitrine de composants, publiée le 2026-11-21.
 
 Les missions précédentes (page et théâtre, puis graphe de contributions) sont décrites dans `.web-craft-history/2026-11-19-site/` et `.web-craft/`, deux archives à laisser telles quelles. Ce fichier suit les missions à partir de l'heure locale, la plus récente en haut.
 
 ## Prochaine action
-Attendre le mot « publish » de Yann. Ordre de publication, parce que la vitrine est construite depuis un commit d'Experiments pas encore poussé (`6342f05`, branche `fix/contrast`) :
-1. Experiments : pousser `fix/contrast` et la fusionner dans `main` sans changer le commit (avance rapide ou commit de fusion, pas de squash), vérifier le déploiement de https://yannworks.github.io/experiments/.
-2. Site : récupérer les commits de l'Action sur `main`, fusionner `showcase`, pousser, vérifier https://yannworks.github.io/?v=2 (vitrine chargée au défilement, aucune erreur), noter la publication ici.
+Aucune pour la vitrine : mission terminée et publiée. Reste à essayer les composants sur un vrai téléphone (voir « Manques et limites »).
 
 # Mission « vitrine de composants » (2026-11-21)
 
@@ -22,7 +20,7 @@ Attendre le mot « publish » de Yann. Ordre de publication, parce que la vitrin
 - `tools/showcase/build.mjs` télécharge les `.tsx` et `.css` des trois composants sur GitHub au commit voulu dans `tools/showcase/vendor/` (copies identiques, empreintes SHA-256 dans `SOURCE.json`), puis esbuild assemble `entry.tsx` (code du site), les composants et React 19.3.1 en `showcase/showcase.js` (237 Ko, 74,6 Ko gzip) et `showcase/showcase.css` (10,6 Ko, 2,7 Ko gzip). Ces deux fichiers sont commités : GitHub Pages les sert tels quels.
 - `index.html` : la section en HTML simple (titre, nom, ligne, scène vide `data-demo`, lien). `js/showcase.js` (script classique, différé) attend l'événement `load`, puis que la section reste 250 ms à l'écran, ajoute la feuille et le script, appelle `showcase.mount()` qui crée une racine React par scène (`flushSync`, donc présents quand la classe `is-live` arrive). Échec ou 15 s sans réponse : classe `is-failed`, scènes masquées.
 - `style.css` : section, scènes à hauteur fixe, marques de coupe, consignes par appareil, `touch-action: pan-y` sur les lignes de Shoji au toucher. `js/main.js` : l'impression des mots-clés se limite à `.intro .kw`.
-- Commit d'Experiments utilisé : `6342f05fe81102c4d4e073e10c0c4f7d638dfd64` (2026-11-21, branche `fix/contrast`, pas encore poussé), 8 expériences. Avant : `045eb20` (2026-11-09). Mise à jour : `cd tools/showcase && npm ci && node build.mjs latest` ; avant un push d'Experiments : `node build.mjs --from <clone local> <commit>`.
+- Commit d'Experiments utilisé : `6342f05fe81102c4d4e073e10c0c4f7d638dfd64` (2026-11-21, sur `main` d'Experiments depuis la publication), 8 expériences. Avant : `045eb20` (2026-11-09). Mise à jour : `cd tools/showcase && npm ci && node build.mjs latest` ; avant un push d'Experiments : `node build.mjs --from <clone local> <commit>`.
 
 ## Décisions
 | Date | Décision | Raison |
@@ -93,6 +91,10 @@ Clavier sans animation (Shoji saute, Gem Clip et Snooze passent en `instant`) : 
 - [x] Critique de Codex traitée (deux tours, rien de bloquant)
 - [x] Textes passés au humanizer
 - [x] Vitrine dans `board.html` (section vivante, état sans JavaScript, contraste mesuré des composants)
+
+## Publication
+- 2026-11-21, sur le mot « publish » de Yann. Experiments d'abord : `fix/contrast` poussée et `main` avancée jusqu'à `6342f05` (même commit), déploiement réussi, couleurs vérifiées en ligne (lignes 52 %, note 65 %, aucune erreur). Site ensuite : aucun commit de l'Action sur `main` depuis `616d8ec` ; `showcase` fusionnée (`ab2f363`), poussée vers 10:12 UTC, build GitHub Pages réussi.
+- Vérifié en ligne (https://yannworks.github.io/?v=2) dans Chrome avec Playwright à 11:13 heure de Paris, à 390 px (tactile) et 1440 px : paquet non chargé avant le défilement, composants montés après (commit `6342f05`), copie de la commande `git clone` dans le presse-papiers, Snooze lancé d'un tap, scène, horloge et graphe actifs, aucune erreur dans la console, pas de défilement horizontal. Capture : `captures/showcase/live-390.png`.
 
 ## Captures et vidéos
 `captures/showcase/` (2026-11-21, branche `showcase`) :
