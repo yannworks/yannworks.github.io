@@ -5,7 +5,9 @@ Skill : site-studio (missions ciblées sur un site existant). Mis à jour : 2026
 Les missions précédentes (page et théâtre, puis graphe de contributions) sont décrites dans `.web-craft-history/2026-11-19-site/` et `.web-craft/`, deux archives à laisser telles quelles. Ce fichier suit les missions à partir de l'heure locale, la plus récente en haut.
 
 ## Prochaine action
-Attendre le mot « publish » de Yann. Ensuite : récupérer les commits de l'Action sur `main`, fusionner `showcase`, pousser, vérifier https://yannworks.github.io/?v=2 (vitrine chargée au défilement, aucune erreur), noter la publication ici. Décisions de Yann en attente : les trois défauts de contraste des composants eux-mêmes (voir « Manques et limites »), à corriger dans Experiments puis `node build.mjs latest`.
+Attendre le mot « publish » de Yann. Ordre de publication, parce que la vitrine est construite depuis un commit d'Experiments pas encore poussé (`6342f05`, branche `fix/contrast`) :
+1. Experiments : pousser `fix/contrast` et la fusionner dans `main` sans changer le commit (avance rapide ou commit de fusion, pas de squash), vérifier le déploiement de https://yannworks.github.io/experiments/.
+2. Site : récupérer les commits de l'Action sur `main`, fusionner `showcase`, pousser, vérifier https://yannworks.github.io/?v=2 (vitrine chargée au défilement, aucune erreur), noter la publication ici.
 
 # Mission « vitrine de composants » (2026-11-21)
 
@@ -20,7 +22,7 @@ Attendre le mot « publish » de Yann. Ensuite : récupérer les commits de l'Ac
 - `tools/showcase/build.mjs` télécharge les `.tsx` et `.css` des trois composants sur GitHub au commit voulu dans `tools/showcase/vendor/` (copies identiques, empreintes SHA-256 dans `SOURCE.json`), puis esbuild assemble `entry.tsx` (code du site), les composants et React 19.3.1 en `showcase/showcase.js` (237 Ko, 74,6 Ko gzip) et `showcase/showcase.css` (10,6 Ko, 2,7 Ko gzip). Ces deux fichiers sont commités : GitHub Pages les sert tels quels.
 - `index.html` : la section en HTML simple (titre, nom, ligne, scène vide `data-demo`, lien). `js/showcase.js` (script classique, différé) attend l'événement `load`, puis que la section reste 250 ms à l'écran, ajoute la feuille et le script, appelle `showcase.mount()` qui crée une racine React par scène (`flushSync`, donc présents quand la classe `is-live` arrive). Échec ou 15 s sans réponse : classe `is-failed`, scènes masquées.
 - `style.css` : section, scènes à hauteur fixe, marques de coupe, consignes par appareil, `touch-action: pan-y` sur les lignes de Shoji au toucher. `js/main.js` : l'impression des mots-clés se limite à `.intro .kw`.
-- Commit d'Experiments utilisé : `045eb20664d87b15de64b6bbd5e2b4d0e685e3bf` (2026-11-09), 8 expériences. Mise à jour : `cd tools/showcase && npm ci && node build.mjs latest`.
+- Commit d'Experiments utilisé : `6342f05fe81102c4d4e073e10c0c4f7d638dfd64` (2026-11-21, branche `fix/contrast`, pas encore poussé), 8 expériences. Avant : `045eb20` (2026-11-09). Mise à jour : `cd tools/showcase && npm ci && node build.mjs latest` ; avant un push d'Experiments : `node build.mjs --from <clone local> <commit>`.
 
 ## Décisions
 | Date | Décision | Raison |
@@ -39,6 +41,8 @@ Attendre le mot « publish » de Yann. Ensuite : récupérer les commits de l'Ac
 | 2026-11-21 | Scènes à hauteur fixe : 256 / 184 / 120 px au téléphone, 296 px sur grand écran ; marques de coupe de 1 px, bras de 8 px | Rien ne bouge quand les composants arrivent (mesuré) ; tailles ajustées au contenu le plus haut (commande sur quatre lignes à 320 px) après la critique de Codex ; marques de coupe : le vocabulaire de l'impression, déjà celui de l'encre et des mots-clés « imprimés » |
 | 2026-11-21 | Au toucher, `touch-action: pan-y` sur les lignes de Shoji (adaptation côté site) | Le composant met `none` : un pouce posé sur une ligne bloquait le défilement. Conséquence : au doigt, la ligne horizontale ne se tire plus (la page défile) ; la verticale se tire de côté ; toucher une case réorganise tout |
 | 2026-11-21 | Pas d'apparition animée de la section ni des composants | Motif banni « fondu à l'apparition au défilement » et consigne de Yann : rien ne bouge tout seul |
+| 2026-11-21 | Contraste des composants corrigé dans Experiments, à la demande de Yann (« Yes, fix them ») : `--gem-clip-muted` 55 → 65 %, `--shoji-line` 18 → 52 %, survol 55 → 80 % ; vitrine reconstruite depuis ce commit | Note « Copied » 3,70 → 5,11:1, lignes de Shoji 1,44 → 3,41:1 (clair) et 1,58 → 5,05:1 (sombre), mesurés dans le board. La pilule de Snooze en sombre reste à 1,39:1 : son libellé (12,8:1) l'identifie |
+| 2026-11-21 | Option `--from <clone>` dans `build.mjs` | Construire depuis un commit d'Experiments avant son push ; les fichiers et le numéro de commit sont les mêmes une fois poussé |
 | 2026-11-21 | Tests dans `tools/test-showcase.mjs`, mesures dans `tools/measure-load.mjs` | Yann peut les relancer ; même méthode que `test-clock.mjs` |
 
 ## Mesures (téléphone 390 px, 150 ms d'aller-retour, 1,6 Mbit/s, cache vide, gzip, médiane de 9)
@@ -103,7 +107,7 @@ Clavier sans animation (Shoji saute, Gem Clip et Snooze passent en `instant`) : 
 - Preact à la place de React : 55 Ko de moins, mais un autre moteur que celui des composants.
 
 ## Manques et limites
-- **Contraste des composants eux-mêmes** (mesuré dans le board, non corrigé, puisque leur code ne se modifie pas ici) : la note « Copied » de Gem Clip en thème clair, 3,70:1 au lieu de 4,5:1 (texte de 12 px) ; les lignes de Shoji Bento, 1,44:1 (clair) et 1,58:1 (sombre) au lieu de 3:1 pour un contrôle ; la pilule de Snooze sur fond sombre, 1,39:1, acceptable car son libellé (12,8:1) l'identifie. Correction proposée dans Experiments : `--gem-clip-muted` vers 65 %, ligne de Shoji vers 45 %.
+- Contraste des composants : corrigé dans Experiments (voir Décisions), tout passe dans le board sauf la pilule de Snooze sur fond sombre (1,39:1), gardée car son libellé l'identifie. La correction n'est en ligne qu'après le push d'Experiments.
 - Au doigt, la ligne horizontale de Shoji ne se tire plus (la page défile) : conséquence voulue de `pan-y`.
 - Captures Playwright : en pleine page ou par élément, Chrome oublie l'émulation tactile (consignes souris affichées) ; les captures de téléphone sont donc prises avec une fenêtre aussi haute que la page.
 - Vidéos en pixels CSS (L13) : nettes mais petites.

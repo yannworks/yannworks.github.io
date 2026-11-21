@@ -1,7 +1,8 @@
 .shoji {
   --shoji-fg: light-dark(#21201c, #eeeeec);
   --shoji-bg: light-dark(#fdfdfc, #111110);
-  --shoji-line: color-mix(in oklab, var(--shoji-fg) 18%, transparent);
+  /* The lines are the controls: 52% gives them 3:1 against light and dark pages (WCAG 1.4.11). */
+  --shoji-line: color-mix(in oklab, var(--shoji-fg) 52%, transparent);
   --shoji-width: 480px;
 
   position: relative;
@@ -180,7 +181,7 @@
 
 @media (hover: hover) and (pointer: fine) {
   .shoji__line:hover::before {
-    background: color-mix(in oklab, var(--shoji-fg) 55%, transparent);
+    background: color-mix(in oklab, var(--shoji-fg) 80%, transparent);
   }
 
   .shoji__line[data-axis='x']:hover::before {

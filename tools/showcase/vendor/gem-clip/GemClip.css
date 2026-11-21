@@ -1,7 +1,8 @@
 .gem-clip {
   --gem-clip-fg: light-dark(#21201c, #eeeeec);
   --gem-clip-bg: light-dark(#fdfdfc, #111110);
-  --gem-clip-muted: color-mix(in oklab, var(--gem-clip-fg) 55%, transparent);
+  /* 65% keeps the "Copied" note at 4.5:1 or more on light and dark pages (WCAG AA for text). */
+  --gem-clip-muted: color-mix(in oklab, var(--gem-clip-fg) 65%, transparent);
   --gem-clip-line: color-mix(in oklab, var(--gem-clip-fg) 14%, transparent);
   --gem-clip-ease: cubic-bezier(0.23, 1, 0.32, 1);
   --clip-height: 2.5em;

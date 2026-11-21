@@ -6,6 +6,9 @@
 //   node build.mjs               (the commit already in vendor/SOURCE.json)
 //   node build.mjs latest        (the newest commit on Experiments' main branch)
 //   node build.mjs <commit>      (a given commit)
+//   node build.mjs --from ../../../experiments <commit>
+//                                (a commit of a local clone, before it is pushed;
+//                                 push it before publishing the site)
 //
 // 1. Downloads each component's .tsx and .css from GitHub at that exact commit
 //    into vendor/, unchanged, and notes the commit in vendor/SOURCE.json.
@@ -14,6 +17,7 @@
 // Commit the vendor/ folder and the two built files together.
 
 import { build } from "esbuild";
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
@@ -48,11 +52,32 @@ async function currentSource() {
 
 const sha256 = (text) => createHash("sha256").update(text).digest("hex");
 
-async function vendor(wanted) {
+// Reads the same files from a local clone of Experiments instead of GitHub.
+function localSource(dir, wanted) {
+  const git = (...args) => execFileSync("git", ["-C", dir, ...args], { encoding: "utf8", maxBuffer: 1 << 26 });
+  const sha = git("rev-parse", `${wanted === "latest" ? "HEAD" : wanted}^{commit}`).trim();
+  return {
+    sha,
+    date: git("show", "-s", "--format=%cI", sha).trim(),
+    raw: async (path) => git("show", `${sha}:${path}`),
+    paths: async () => git("ls-tree", "-r", "--name-only", sha).split("\n"),
+  };
+}
+
+async function githubSource(wanted) {
   // Resolve "latest" or a short hash to the full commit.
-  const commit = await get(`https://api.github.com/repos/${REPO}/commits/${wanted}`, "json");
+  const commit = await get(`https://api.github.com/repos/${REPO}/commits/${wanted === "latest" ? "main" : wanted}`, "json");
   const sha = commit.sha;
-  const raw = (path) => get(`https://raw.githubusercontent.com/${REPO}/${sha}/${path}`);
+  return {
+    sha,
+    date: commit.commit.committer.date,
+    raw: (path) => get(`https://raw.githubusercontent.com/${REPO}/${sha}/${path}`),
+    paths: async () => (await get(`https://api.github.com/repos/${REPO}/git/trees/${sha}?recursive=1`, "json")).tree.map((t) => t.path),
+  };
+}
+
+async function vendor(wanted, from) {
+  const { sha, date, raw, paths } = from ? localSource(from, wanted) : await githubSource(wanted);
 
   const files = {};
   for (const [slug, names] of Object.entries(COMPONENTS)) {
@@ -66,13 +91,12 @@ async function vendor(wanted) {
   await writeFile(join(VENDOR, "LICENSE"), await raw("LICENSE"));
 
   // How many experiments the lab holds at that commit (one folder each, with a README).
-  const tree = await get(`https://api.github.com/repos/${REPO}/git/trees/${sha}?recursive=1`, "json");
-  const experiments = tree.tree.filter((t) => /^experiments\/[^/]+\/README\.md$/.test(t.path)).length;
+  const experiments = (await paths()).filter((p) => /^experiments\/[^/]+\/README\.md$/.test(p)).length;
 
   const source = {
     repo: `https://github.com/${REPO}`,
     commit: sha,
-    committed: commit.commit.committer.date,
+    committed: date,
     vendored: new Date().toISOString().slice(0, 10),
     experiments,
     files,
@@ -89,9 +113,12 @@ async function checkVendor(source) {
   }
 }
 
-const arg = process.argv[2];
+const args = process.argv.slice(2);
+const fromAt = args.indexOf("--from");
+const from = fromAt >= 0 ? args.splice(fromAt, 2)[1] : null;
+const arg = args[0];
 let source = await currentSource();
-if (arg || !source) source = await vendor(arg || "main");
+if (arg || from || !source) source = await vendor(arg || "latest", from);
 else await checkVendor(source);
 
 await mkdir(OUT, { recursive: true });
