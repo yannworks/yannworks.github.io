@@ -16,14 +16,23 @@
   // pattern as the scene.
   const bayer2 = (x, y) => ((x % 2) * 0.5 + (y % 2) * (y % 2) * 0.75) % 1;
   const bayer8 = (x, y) => (bayer2(x >> 2, y >> 2) * 0.25 + bayer2(x >> 1, y >> 1)) * 0.25 + bayer2(x, y);
-  const MASKS = [];
-  for (let level = 0; level <= 64; level++) {
-    let path = "";
-    for (let y = 0; y < 8; y++) {
-      for (let x = 0; x < 8; x++) if (bayer8(x, y) * 64 < level) path += `M${x} ${y}h1v1h-1z`;
-    }
+  // INVERSE[level] shows exactly the other cells: the clock (js/clock.js) uses
+  // both to trade an old digit for a new one dot by dot.
+  const MASKS = [], INVERSE = [];
+  const toMask = (path) => {
     const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8' shape-rendering='crispEdges'><path d='${path}'/></svg>`;
-    MASKS.push(`url("data:image/svg+xml,${encodeURIComponent(svg)}")`);
+    return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+  };
+  for (let level = 0; level <= 64; level++) {
+    let shown = "", rest = "";
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
+        if (bayer8(x, y) * 64 < level) shown += `M${x} ${y}h1v1h-1z`;
+        else rest += `M${x} ${y}h1v1h-1z`;
+      }
+    }
+    MASKS.push(toMask(shown));
+    INVERSE.push(toMask(rest));
   }
 
   // Calls set(level) on every frame for `ms` milliseconds, level 0 -> 64.
@@ -38,7 +47,7 @@
   }
 
   // Shared with board.html (the design-system page), which replays them.
-  window.dither = { MASKS, stepMasks };
+  window.dither = { MASKS, INVERSE, stepMasks };
 
   // ---- Theme
   function storedTheme() {

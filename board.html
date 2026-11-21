@@ -20,6 +20,7 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <script src="js/clawd-sprites.js" defer></script>
   <script src="js/show.js" defer></script>
+  <script src="js/clock.js" defer></script>
   <script src="js/stage-art.js" defer></script>
   <script src="js/stage.js" defer></script>
   <script src="js/scene.js" defer></script>
@@ -81,6 +82,18 @@
       <div><span class="label">small: Geist 15 / 400</span><span style="font-size: var(--size-small)">Clawd's little theatre.</span></div>
     </div>
     <button class="button" type="button" id="replay-print">Replay the keyword print</button>
+
+    <h2>Local time</h2>
+    <p>The intro gives Yann's time in Paris, and how far it is from the visitor's own time when they differ. Digits are tabular, so the sentence keeps its width when the minute changes; the changed digits trade places through the dot masks in 240 ms (instantly with reduced motion).</p>
+    <div class="type" id="clock-states"></div>
+    <div class="row">
+      <button class="button" type="button" id="replay-clock">Play the minute change (21:59 to 22:00)</button>
+    </div>
+    <p style="margin: 1.5rem 0 0; font-size: var(--size-small)">
+      Live, on this device: <span class="intro" style="font-size: inherit">France<span class="clock" id="live-clock"></span>.</span><br>
+      Fix the time or the visitor's zone with <code>?now=</code> (an ISO time; the clock runs on from there) and <code>?tz=</code>, on this board or on the page, for example
+      <a style="color: inherit" href="index.html?now=2026-03-15T20:40:55Z&amp;tz=America/New_York">index.html?now=2026-03-15T20:40:55Z&amp;tz=America/New_York</a>.
+    </p>
 
     <h2>Links</h2>
     <p>Rest, hover (an inverted copy slides in from the left, 200 ms), keyboard focus, press (scale 0.97).</p>

@@ -183,6 +183,22 @@ body {
   mask-repeat: repeat;
 }
 
+/* Yann's local time (js/clock.js). Geist's digits have different widths;
+   tabular figures give them all the same, so nothing moves when the minute changes. */
+.clock__time { font-variant-numeric: tabular-nums; }
+
+/* A changed digit: the new one and the old one stacked in one box, each seen
+   through complementary dot masks while they trade places. */
+.clock__swap { display: inline-grid; }
+
+.clock__swap > span {
+  grid-area: 1 / 1;
+  -webkit-mask-size: calc(var(--cell) * 8) calc(var(--cell) * 8);
+  mask-size: calc(var(--cell) * 8) calc(var(--cell) * 8);
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+}
+
 /* ---- Links ---------------------------------------------------------------- */
 
 .links {
