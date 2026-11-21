@@ -35,6 +35,68 @@
       list.append(li);
     }
   }
+  // ---- Showcase: the components' own colours, measured once they are mounted.
+  // Their CSS mixes colours with transparency (color-mix), so each colour is
+  // painted over its real background on a 1 x 1 canvas and read back.
+  const showcase = document.querySelector(".showcase:not(.is-failed)");
+  const pixel = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+  function painted(colour, over) {
+    pixel.fillStyle = over; pixel.fillRect(0, 0, 1, 1);
+    pixel.fillStyle = colour; pixel.fillRect(0, 0, 1, 1);
+    const [r, g, b] = pixel.getImageData(0, 0, 1, 1).data;
+    return "#" + [r, g, b].map((n) => n.toString(16).padStart(2, "0")).join("");
+  }
+  function measureShowcase() {
+    const out = document.getElementById("showcase-contrast");
+    const q = (sel) => showcase.querySelector(sel);
+    // A variable such as --shoji-fg holds light-dark() or color-mix() as text:
+    // a probe element inside the component turns it into the colour in use.
+    const css = (el, prop) => {
+      if (!prop.startsWith("--")) return getComputedStyle(el).getPropertyValue(prop).trim();
+      const probe = el.appendChild(document.createElement("i"));
+      probe.style.color = `var(${prop})`;
+      const colour = getComputedStyle(probe).color;
+      probe.remove();
+      return colour;
+    };
+    const rows = [];
+    const before = root.dataset.theme;
+    // Colour transitions would report the old theme's colour: off while measuring.
+    const still = document.head.appendChild(document.createElement("style"));
+    still.textContent = "*, *::before, *::after { transition: none !important; }";
+    for (const theme of ["light", "dark"]) {
+      root.dataset.theme = theme;                   // same task: nothing is painted in between
+      const paper = painted(css(root, "--paper"), "#000");
+      const shoji = q(".shoji"), solid = q(".shoji__cell[data-solid]");
+      const fg = painted(css(shoji, "--shoji-fg"), paper);
+      const block = painted(css(q(".gem-clip__block"), "background-color"), paper);
+      const pill = painted(css(q(".snooze-button"), "background-color"), paper);
+      const pairs = [
+        ["Shoji label on the page", painted(css(q(".shoji__cell:not([data-solid]) .shoji__label"), "color"), paper), paper, 4.5],
+        ["Shoji label in the filled box", painted(css(solid.querySelector(".shoji__label"), "color"), fg), fg, 4.5],
+        ["Shoji line (shape)", painted(css(shoji, "--shoji-line"), paper), paper, 3],
+        ["Gem Clip command", painted(css(q(".gem-clip__block"), "color"), block), block, 4.5],
+        ["Gem Clip clip at rest (shape)", painted(css(q(".gem-clip__clip--front"), "color"), paper), paper, 3],
+        ["Gem Clip note \"Copied\"", painted(css(q(".gem-clip"), "--gem-clip-muted"), paper), paper, 4.5],
+        ["Snooze label on the pill", painted(css(q(".snooze-button"), "color"), pill), pill, 4.5],
+        ["Snooze pill on the page (shape)", pill, paper, 3],
+      ];
+      for (const [label, a, b, need] of pairs) rows.push(`${theme}: ${label}: ${a} on ${b}, ${ratio(a, b).toFixed(2)}:1 (needs ${need}:1) ${ratio(a, b) >= need ? "pass" : "fail"}`);
+    }
+    root.dataset.theme = before;
+    still.remove();
+    out.replaceChildren(...rows.map((t) => Object.assign(document.createElement("li"), { textContent: t })));
+  }
+  if (showcase) {
+    new MutationObserver((_, seen) => {
+      if (!showcase.classList.contains("is-live")) return;
+      seen.disconnect();
+      requestAnimationFrame(measureShowcase);
+      document.getElementById("showcase-source").textContent =
+        `Built from Experiments at ${window.showcase.commit.slice(0, 7)}.`;
+    }).observe(showcase, { attributes: true, attributeFilter: ["class"] });
+  }
+
   document.querySelectorAll("[data-var]").forEach((el) => {
     el.textContent = getComputedStyle(root).getPropertyValue(el.dataset.var).trim();
   });

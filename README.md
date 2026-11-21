@@ -8,7 +8,7 @@ Plain HTML, CSS and JavaScript. No framework, no build step: GitHub Pages serves
 
 | File | What it does |
 | --- | --- |
-| `index.html` | The page: name, intro, links, the scene. Works without JavaScript. |
+| `index.html` | The page: name, intro, links, the scene, the graph, the showcase. Works without JavaScript. |
 | `style.css` | All the styles. Colours, fonts, sizes and timings are variables at the top. |
 | `js/show.js` | The show: what happens on stage at each second of the 50 s loop. |
 | `js/stage-art.js` | The props (piano, typewriter, robot...) drawn as text grids, and Clawd's layer. |
@@ -17,6 +17,9 @@ Plain HTML, CSS and JavaScript. No framework, no build step: GitHub Pages serves
 | `js/main.js` | Theme toggle with the dither dissolve, and the keywords printing in dots. |
 | `js/clock.js` | Yann's local time in the intro, and how far it is from the visitor's time. |
 | `js/activity.js` | The contribution graph: reads `contributions.json`, draws the dots, Clawd on today. |
+| `js/showcase.js` | Loads the showcase (three Experiments components) when the visitor scrolls to it. |
+| `showcase/` | The showcase bundle: the three components and React, built by `tools/showcase/`. Do not edit by hand. |
+| `tools/showcase/` | Builds the bundle: `build.mjs`, the site's own `entry.tsx`, and `vendor/` (the components copied unchanged from Experiments, with the commit in `SOURCE.json`). |
 | `contributions.json` | The contribution calendar, written once a day by the GitHub Action. |
 | `.github/workflows/contributions.yml` | The GitHub Action that updates `contributions.json`. |
 | `tools/fetch-contributions.mjs` | What the Action runs: asks GitHub for the calendar and writes the JSON. |
@@ -26,6 +29,8 @@ Plain HTML, CSS and JavaScript. No framework, no build step: GitHub Pages serves
 | `fonts/` | Geist and Geist Serif (woff2) with their licence, `OFL.txt`. |
 | `img/` | Still frames of the scene (used without WebGL or JavaScript) and the share image. |
 | `tools/test-clock.mjs` | Browser tests for the local time (time zones, clock changes, midnight). |
+| `tools/test-showcase.mjs` | Browser tests for the showcase and the rest of the page (loading, failure, copy, keyboard, touch). |
+| `tools/measure-load.mjs` | Weight and load time of the page on a throttled phone, and of the showcase after scrolling. |
 | `tools/make-clawd.py` | Rebuilds `js/clawd-sprites.js` and the favicons from the clawd skill. |
 | `.web-craft/` | Notes on the current piece of work: brief, decisions, checks. Earlier ones are in `.web-craft-history/`. |
 
@@ -75,6 +80,18 @@ Screen readers get a `<time>` element with the full date and offset, and no live
 
 **Tests:** `npm install --no-save playwright` once, then `node tools/test-clock.mjs`. It opens the page in Chrome as visitors in Paris, Berlin, London, New York, Kolkata, Kathmandu and Auckland, at fixed moments (summer, winter, the weeks between the European and American clock changes, the night Paris changes, midnight), and checks the sentence, the minute change, reduced motion and the page without JavaScript.
 
+## How the showcase works
+
+The last section holds three real components from [Experiments](https://github.com/yannworks/experiments): Shoji Bento, Gem Clip and Snooze Button. They are React components, and this site has no framework and no build step, so they arrive as one ready-made bundle.
+
+- `tools/showcase/build.mjs` downloads each component's `.tsx` and `.css` from GitHub at one exact commit into `tools/showcase/vendor/`, unchanged, and writes that commit in `vendor/SOURCE.json`. It then bundles them, React 19.3.1 and `entry.tsx` (which components, with which content) into `showcase/showcase.js` and `showcase/showcase.css` with esbuild.
+- The section's text and links are plain HTML in `index.html`. `js/showcase.js` waits until the page has loaded and the section has come on screen, then adds the two files and calls `showcase.mount()`, which draws each component in its `data-demo` stage. If the files fail to load, the stages are hidden and the names, lines and links stay, as without JavaScript.
+- The components keep their own look. Site-side adjustments live in `style.css`: the stage sizes, the corner marks, and `touch-action: pan-y` on Shoji Bento's lines on touch screens, so a vertical swipe that starts on a line still scrolls the page.
+
+**Update to a newer Experiments:** `cd tools/showcase`, `npm ci` once, then `node build.mjs latest` (or `node build.mjs <commit>`). Check the page, run `node tools/test-showcase.mjs`, and commit `tools/showcase/vendor/` and `showcase/` together. `node build.mjs` with no argument rebuilds from the commit already in `SOURCE.json`, and stops if a file in `vendor/` was edited by hand: changes to a component belong in Experiments.
+
+**Tests and measures:** `node tools/test-showcase.mjs` (59 checks) and `node tools/measure-load.mjs`.
+
 ## How the theme dissolve works
 
 Pressing the toggle starts a view transition: the browser keeps a picture of the page in the old theme, then shows the new theme on top through a mask cut from the same 8 × 8 Bayer grid, revealing a few more cells on every frame for 0.5 s. Browsers without view transitions get a plain colour fade. The theme is saved in `localStorage`, and a small script in `<head>` applies it before the page is drawn, so it never flashes.
@@ -87,6 +104,7 @@ Pressing the toggle starts a view transition: the browser keeps a picture of the
 - A prop's look: its text drawing in `js/stage-art.js`.
 - Light levels and the spot: `SCENE` at the top of `js/scene.js`.
 - To see one moment without waiting: open `index.html?at=40` (the scene pauses there).
+- The showcase: names and lines in `index.html`; what each component shows (the Shoji facts, the command Gem Clip copies, the Snooze labels) in `tools/showcase/entry.tsx`, then rebuild.
 - The local time: the zone and the swap duration are in `CLOCK` at the top of `js/clock.js`; the wording is in `gapText()` and `showClock()`.
 
 To try the site on your computer, serve the folder (for example `python3 -m http.server`) and open `http://localhost:8000`.
@@ -101,5 +119,6 @@ python3 tools/make-clawd.py /path/to/AIOS
 
 ## Credits
 
+- Shoji Bento, Gem Clip and Snooze Button from Experiments (MIT, `tools/showcase/vendor/LICENSE`), bundled with React 19.3.1 (MIT).
 - Geist and Geist Serif by Vercel, under the SIL Open Font License 1.1 (`fonts/OFL.txt`), from the `geist` npm package 1.9.2.
 - Clawd, the Claude Code mascot, drawn as fan art. Not an official Anthropic page.

@@ -110,7 +110,7 @@
   applyTheme(root.dataset.theme, 0);
 
   // ---- Keywords: while the intro fades in, they print in dots instead.
-  const words = document.querySelectorAll(".kw");
+  const words = document.querySelectorAll(".intro .kw");
   const intro = document.querySelector(".intro");
   const entrance = intro && intro.getAnimations ? intro.getAnimations()[0] : null;
   const elapsed = entrance ? Number(entrance.currentTime) : Infinity;

@@ -1,0 +1,15 @@
+{
+  "repo": "https://github.com/yannworks/experiments",
+  "commit": "045eb20664d87b15de64b6bbd5e2b4d0e685e3bf",
+  "committed": "2026-11-09T18:37:38Z",
+  "vendored": "2026-11-21",
+  "experiments": 8,
+  "files": {
+    "shoji-bento/ShojiBento.tsx": "143d6e4f28ddc8914e09b48389f03e578e142e42923f4e75bbc8ddf458014d65",
+    "shoji-bento/ShojiBento.css": "a71c9a0b88dfec516ad1da2738472e5aa7bd0aa6ad143e13ed33fe73bf90b821",
+    "gem-clip/GemClip.tsx": "23c5b0f5cbb98bc05d6c923bf06fed491a6613c73a2b7a694664414af1a27f64",
+    "gem-clip/GemClip.css": "4fbebaa248ac5468f6493c66f1f065d48602756267bdc798ddd40d7ea1ebf2bf",
+    "snooze-button/SnoozeButton.tsx": "bb8ced7fd6b6587e698c6e16d860850da660e4760a4545e98fce752df19e4027",
+    "snooze-button/SnoozeButton.css": "ce36846287ec888e1fce0c827b1a5bf87d06e085f20272cf0f993ce30a07dc9c"
+  }
+}

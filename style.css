@@ -432,6 +432,144 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+/* ---- Showcase: three components from Experiments --------------------------
+   The components keep their own look (their CSS comes with them in
+   showcase/showcase.css). Only the frame around them is styled here. */
+
+.showcase {
+  width: 100%;
+  max-width: calc(var(--scene-max) + 2 * var(--gutter));
+  margin-inline: auto;
+  padding: 0.5rem var(--gutter) 4rem;
+}
+
+.showcase__title {
+  margin: 0 0 2rem;
+  font-size: var(--size-links);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.showcase__list {
+  display: grid;
+  gap: 2.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.showcase__item {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  justify-items: start;
+  min-width: 0;
+}
+
+.showcase__name {
+  margin: 0;
+  font-size: var(--size-links);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.showcase__line {
+  max-width: 34rem;
+  margin: 0.25rem 0 0;
+  font-size: var(--size-small);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+/* What to do with each component: shown only once it is live, in the words of
+   the visitor's device (no hover on a phone). */
+.showcase__hint { display: none; }
+
+.showcase.is-live .showcase__hint:not(.showcase__hint--pointer, .showcase__hint--touch) { display: inline; }
+
+@media (hover: hover) and (pointer: fine) {
+  .showcase.is-live .showcase__hint--pointer { display: inline; }
+}
+
+@media (hover: none) {
+  .showcase.is-live .showcase__hint--touch { display: inline; }
+}
+
+.showcase__link {
+  margin-top: calc(1rem - 0.35em);
+  font-size: var(--size-small);
+  font-weight: 500;
+}
+
+/* The stage the component sits on. Without JavaScript, or if the components
+   fail to load, it is not there at all: the name, the line and the link stay. */
+.showcase__stage { display: none; }
+
+.js .showcase__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  justify-self: stretch;
+  height: var(--stage-h, 19rem);
+  margin-top: 1.125rem;
+  padding: 20px;
+}
+
+/* Phones: each stage just fits its component, so the section stays short.
+   The heights are fixed, so nothing below moves when the components arrive. */
+.showcase__item--shoji { --stage-h: 16rem; }
+.showcase__item--clip { --stage-h: 11.5rem; }     /* four lines of command at 320 px */
+.showcase__item--snooze { --stage-h: 7.5rem; }
+
+.showcase.is-failed .showcase__stage,
+.showcase__item.is-failed .showcase__stage { display: none; }
+
+/* Corner marks, like the crop marks on a printed sheet: four 1 px corners. */
+.js .showcase__stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--ink);
+  pointer-events: none;
+  --arm: 8px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) left top / var(--arm) var(--arm) no-repeat,
+    linear-gradient(#000 0 0) right top / var(--arm) var(--arm) no-repeat,
+    linear-gradient(#000 0 0) left bottom / var(--arm) var(--arm) no-repeat,
+    linear-gradient(#000 0 0) right bottom / var(--arm) var(--arm) no-repeat;
+  mask:
+    linear-gradient(#000 0 0) left top / var(--arm) var(--arm) no-repeat,
+    linear-gradient(#000 0 0) right top / var(--arm) var(--arm) no-repeat,
+    linear-gradient(#000 0 0) left bottom / var(--arm) var(--arm) no-repeat,
+    linear-gradient(#000 0 0) right bottom / var(--arm) var(--arm) no-repeat;
+}
+
+/* On a touch screen the page must keep scrolling when a finger lands on a
+   Shoji Bento line: vertical swipes scroll, sideways drags move the line. */
+@media (pointer: coarse) {
+  .showcase .shoji__line { touch-action: pan-y; }
+}
+
+/* Wide screens: three columns under the two-column page, rows lined up. */
+@media (min-width: 1280px) {
+  .showcase {
+    max-width: 1440px;
+    padding-block: 1rem 6rem;
+  }
+
+  .showcase__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 48px;
+  }
+
+  .showcase__item { --stage-h: 18.5rem; }
+
+  .showcase__item {
+    grid-row: span 4;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+  }
+}
+
 /* ---- Entrance: fade in and rise a little, one after the other ------------ */
 
 .enter {
