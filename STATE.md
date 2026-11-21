@@ -1,11 +1,11 @@
 # yannworks.github.io : état
 
-Skill : site-studio (mission ciblée sur un site existant). Mis à jour : 2026-11-21. Phase : 7 (livraison), en attente du mot « publish ».
+Skill : site-studio (mission ciblée sur un site existant). Mis à jour : 2026-11-21. Phase : 7 (livraison), publié le 2026-11-21.
 
 Les missions précédentes (page et théâtre, puis graphe de contributions) sont décrites dans `.web-craft-history/2026-11-19-site/` et `.web-craft/`, deux archives à laisser telles quelles. Ce fichier suit les missions à partir de l'heure locale.
 
 ## Prochaine action
-Attendre « publish » de Yann. Ensuite : `git pull` des commits de l'Action sur `main`, fusionner `clock`, pousser, vérifier https://yannworks.github.io/?v=2 en ligne (heure présente, aucune erreur), puis noter la publication ici.
+Aucune pour l'heure locale : mission terminée et publiée. Reste à regarder l'échange des chiffres sur un vrai téléphone (voir « Manques et limites »).
 
 ## Brief (mission « heure locale », 2026-11-21)
 - But : afficher l'heure locale de Yann dans la phrase d'intro, pour qu'un visiteur sache tout de suite s'il est tard en France avant d'écrire.
@@ -71,6 +71,10 @@ Carte de fréquence : changement de minute rare (la plupart des visiteurs ne voi
 - [x] Textes passés au humanizer
 - [x] Critique de Codex sur les captures traitée point par point (deux tours, rien de bloquant)
 - [x] Captures et décisions dans ce fichier
+
+## Publication
+- 2026-11-21, sur le mot « publish » de Yann : aucun nouveau commit de l'Action sur `main` depuis le clonage (`ab89e30`) ; `clock` fusionnée (`cf9da69`), poussée à 09:15 UTC, build GitHub Pages terminé quelques secondes plus tard.
+- Vérifié en ligne (https://yannworks.github.io/?v=2) dans Chrome avec Playwright à 10:16 heure de Paris : Paris « where it's 10:16 », New York « (6 hours ahead of you) », Kolkata « (4½ hours behind you) », `datetime` 2026-11-21T10:16+01:00 ; aucune erreur dans la console, pas de défilement horizontal, scène et graphe actifs ; sans JavaScript « …living in France. ». Capture : `captures/clock/live-390-new-york.png`.
 
 ## Captures
 `captures/clock/` (2026-11-21, branche `clock`, visiteur à New York, 2026-11-21 20:41 UTC) :
