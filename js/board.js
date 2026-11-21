@@ -61,6 +61,33 @@
     });
   });
 
+  // ---- Local time: one line per case, each at a fixed moment and visitor zone.
+  const STATES = [
+    ["Same time zone (Paris, Berlin)", "2026-11-21T20:41:00Z", "Europe/Paris"],
+    ["Paris ahead (New York)", "2026-11-21T20:41:00Z", "America/New_York"],
+    ["The weeks when only one side has changed the clocks (New York, 15 March)", "2026-03-15T20:41:00Z", "America/New_York"],
+    ["Paris behind (Auckland)", "2026-11-21T20:41:00Z", "Pacific/Auckland"],
+    ["Half-hour zone (Kolkata)", "2026-11-21T20:41:00Z", "Asia/Kolkata"],
+    ["Quarter-hour zone (Kathmandu)", "2026-11-21T20:41:00Z", "Asia/Kathmandu"],
+    ["Midnight in Paris (New York)", "2026-11-21T23:00:00Z", "America/New_York"],
+  ];
+  const states = document.getElementById("clock-states");
+  const clocks = STATES.map(([label, at, zone]) => {
+    const row = document.createElement("div");
+    row.innerHTML = '<span class="label"></span><p class="intro">Hi, I\'m Yann, a student living in France<span class="clock"></span>.</p>';
+    row.querySelector(".label").textContent = `${label}: ${at}, visitor in ${zone}`;
+    const clock = row.querySelector(".clock");
+    showClock(clock, clockAt(new Date(at), zone), false);
+    states.append(row);
+    return clock;
+  });
+  startClock(document.getElementById("live-clock"));
+  document.getElementById("replay-clock").addEventListener("click", () => {
+    const zone = STATES[0][2];
+    showClock(clocks[0], clockAt(new Date("2026-11-21T20:59:00Z"), zone), false);
+    setTimeout(() => showClock(clocks[0], clockAt(new Date("2026-11-21T21:00:00Z"), zone), true), 600);
+  });
+
   // ---- The show's timeline.
   const normal = buildTimeline(false), reduced = buildTimeline(true);
   const body = document.querySelector("#timeline tbody");
