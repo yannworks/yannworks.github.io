@@ -1,5 +1,7 @@
-// Loads the showcase (three React components from Experiments) only when the
-// visitor gets near it, so the page opens exactly as fast as without it.
+// Loads the showcase (three React components from Experiments) once the page
+// has loaded and the section is on screen, so it never competes with the
+// page's own files. The section sits right under the intro, so for most
+// visitors that is a quarter of a second after the page has loaded.
 //
 // The components and React are bundled in showcase/showcase.js and
 // showcase.css by tools/showcase/build.mjs. This file only fetches them and
@@ -9,9 +11,9 @@
 const SHOWCASE = {
   SCRIPT: "showcase/showcase.js",
   STYLES: "showcase/showcase.css",
-  // Start loading as soon as the section's top edge comes on screen. It sits just
-  // under the first screen on phones and desktops alike (881 px down on a
-  // 390 x 844 phone), so any margin here would load it for visitors who never scroll.
+  // Start loading as soon as the section's top edge comes on screen. It is on
+  // the first screen on phones and desktops alike (about 480 px down on a
+  // 390 x 844 phone, 380 px at 1440 x 900).
   AHEAD: "0px",
   SETTLE_MS: 250,             // the section must stay on screen this long (see watch())
   TIMEOUT_MS: 15000,          // a load that never ends counts as failed
@@ -46,9 +48,8 @@ const SHOWCASE = {
       .catch(() => section.classList.add("is-failed"));
   }
 
-  // Just after the page loads, the GitHub graph is not drawn yet (it waits for
-  // its data), so the page is shorter and this section can be on screen for a
-  // moment. Loading starts only once the section has stayed in view a little.
+  // Loading starts only once the section has stayed in view a little, so a
+  // visitor who lands lower on the page and scrolls past it does not pay for it.
   function watch() {
     if (!("IntersectionObserver" in window)) return load();
     let timer = 0;

@@ -46,7 +46,10 @@ async function open(zone, iso, options = {}) {
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
-  await page.clock.install({ time: new Date(iso) });
+  // Installed one second early, then paused at `iso`: installing at `iso` itself
+  // failed now and then ("Cannot fast-forward to the past") when a few
+  // milliseconds passed between the two calls.
+  await page.clock.install({ time: new Date(Date.parse(iso) - 1000) });
   await page.clock.pauseAt(new Date(iso));
   await page.goto(URL_ + (options.query || ""));
   return { page, context, errors };
@@ -54,7 +57,7 @@ async function open(zone, iso, options = {}) {
 // No-break spaces are shown as plain spaces, to keep the expected sentences readable.
 const plain = (text) => text.replace(/\u00a0/g, " ");
 const clause = async (page) => plain(await page.locator(".intro .clock").textContent());
-const intro = async (page) => plain(await page.locator(".intro").textContent()).replace(/\s+/g, " ").trim().split(". Online")[0];
+const intro = async (page) => plain(await page.locator(".intro").textContent()).replace(/\s+/g, " ").trim().split(". I like")[0];
 
 // ---- One sentence per case: zones, daylight saving, half and quarter hours.
 const CASES = [
@@ -173,7 +176,7 @@ for (const [zone, iso, want] of CASES) {
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto(URL_);
-  check("no JavaScript", (await page.locator(".intro").textContent()).replace(/\s+/g, " ").trim().startsWith("Hi, I'm Yann, a student living in France. Online I go"), true);
+  check("no JavaScript", (await page.locator(".intro").textContent()).replace(/\s+/g, " ").trim().startsWith("Hi, I'm Yann, a student living in France. I like"), true);
   await context.close();
 }
 

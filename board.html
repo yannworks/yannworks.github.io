@@ -19,12 +19,11 @@
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <script src="js/clawd-sprites.js" defer></script>
-  <script src="js/show.js" defer></script>
   <script src="js/clock.js" defer></script>
-  <script src="js/stage-art.js" defer></script>
-  <script src="js/stage.js" defer></script>
-  <script src="js/scene.js" defer></script>
   <script src="js/activity.js" defer></script>
+  <script src="js/dots.js" defer></script>
+  <script src="js/dots-lab.js" defer></script>
+  <script src="js/accent.js" defer></script>
   <script src="js/main.js" defer></script>
   <script src="js/showcase.js" defer></script>
   <script src="js/board.js" defer></script>
@@ -46,8 +45,32 @@
     .grid-art { display: flex; flex-wrap: wrap; gap: 14px; }
     .grid-art figure { margin: 0; display: grid; gap: 4px; font-size: 0.75rem; }
     .grid-art canvas { image-rendering: pixelated; background: var(--paper); outline: 1px solid var(--ink); }
-    .timeline { width: 100%; border-collapse: collapse; font-size: var(--size-small); }
-    .timeline td, .timeline th { padding: 0.35rem 0.5rem 0.35rem 0; border-bottom: 1px solid var(--ink); text-align: left; vertical-align: top; }
+    .dots { display: grid; gap: 1.25rem; }
+    .dots figure { margin: 0; display: grid; gap: 0.4rem; font-size: var(--size-small); }
+    .dots canvas { display: block; width: 100%; outline: 1px dashed var(--line); }
+    .board .showcase__list { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    /* Living dots: the variants to choose from. */
+    .live-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; margin-top: 1.25rem; }
+    .live { display: grid; align-content: start; gap: 0.5rem; font-size: var(--size-small); }
+    .live h3 { margin: 0; font-size: var(--size-links); font-weight: 500; }
+    .live p { margin: 0; color: var(--muted); }
+    .live .live-intro { margin: 0.75rem 0 0; font-size: var(--size-intro); line-height: 1.65; color: var(--ink); }
+    .live-intro .kw { position: relative; white-space: nowrap; cursor: default; }
+    .live-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 0.5rem; }
+    .live-card { position: relative; display: grid; gap: 0.25rem; padding: 14px 14px var(--fringe-h); background: var(--surface); border: 1px solid var(--line); overflow: hidden; }
+    .live-card b { font-weight: 500; }
+    .live-card span { font-size: 0.875rem; text-decoration: underline 1px; text-underline-offset: 0.24em; }
+    .live-strip { position: absolute; inset: auto 0 0; height: var(--fringe-h); pointer-events: none; }
+    .live-strip::before { content: ""; position: absolute; inset: -100% 0 0; background: linear-gradient(to bottom, transparent, var(--glow)); opacity: 0; transition: opacity 220ms ease; }
+    .live-card.is-on .live-strip::before { opacity: 1; }
+    .live-strip canvas, .live-end canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .live-scroll { height: 220px; overflow-y: auto; border: 1px solid var(--line); margin-top: 0.5rem; overscroll-behavior: contain; }
+    .live-scroll .filler { padding: 12px 14px; color: var(--muted); }
+    .live-scroll .filler p { margin: 0 0 0.6rem; }
+    .live-end { position: relative; height: 72px; margin-top: 24px; }
+    .live-end::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 20%, var(--glow)); }
+    .live-controls { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
+    .button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
     .button { font: inherit; font-size: var(--size-small); color: var(--ink); background: var(--paper); border: 1px solid var(--ink); border-radius: 0; padding: 0.5rem 0.8rem; cursor: pointer; transition: transform var(--press-duration) var(--ease-out); }
     .button:active { transform: scale(0.97); }
     @media (hover: hover) and (pointer: fine) { .button:hover { background: var(--ink); color: var(--paper); } }
@@ -65,11 +88,20 @@
     <p>The parts of yannworks.github.io, drawn from the same files as the page. The theme button above plays the real dissolve.</p>
 
     <h2>Colours</h2>
-    <p>Two theme colours and Clawd's orange, which only appears in the scene. The ratios are computed from the live values.</p>
+    <p>Ink on paper, two greys for the cards and secondary text, and Clawd's orange as the only accent: in dots, in the graph's squares and in Clawd himself, never in small text. The ratios are computed from the live values of both themes.</p>
     <div class="row">
       <div class="swatch"><i style="background: var(--paper)"></i>paper <span data-var="--paper"></span></div>
       <div class="swatch"><i style="background: var(--ink)"></i>ink <span data-var="--ink"></span></div>
-      <div class="swatch"><i style="background: #d97757"></i>Clawd #d97757</div>
+      <div class="swatch"><i style="background: var(--muted)"></i>muted <span data-var="--muted"></span></div>
+      <div class="swatch"><i style="background: var(--surface)"></i>surface <span data-var="--surface"></span></div>
+      <div class="swatch"><i style="background: var(--line)"></i>line <span data-var="--line"></span></div>
+      <div class="swatch"><i style="background: var(--clawd)"></i>Clawd <span data-var="--clawd"></span></div>
+    </div>
+    <div class="row" style="margin-top: 1.25rem">
+      <div class="swatch"><i style="background: var(--level-1)"></i>level 1 <span data-var="--level-1"></span></div>
+      <div class="swatch"><i style="background: var(--level-2)"></i>level 2 <span data-var="--level-2"></span></div>
+      <div class="swatch"><i style="background: var(--level-3)"></i>level 3 <span data-var="--level-3"></span></div>
+      <div class="swatch"><i style="background: var(--level-4)"></i>level 4 <span data-var="--level-4"></span></div>
     </div>
     <ul class="pairs" id="contrast"></ul>
 
@@ -80,7 +112,7 @@
       <div><span class="label">intro: Geist 21 to 26 / 400, keywords 1.24 em Geist Serif</span>
         <p class="intro">I like <b class="kw">building apps</b> with AI and learning <b class="kw">how things work</b>.</p></div>
       <div><span class="label">links: Geist 17 / 500</span><a class="link" href="#"><span class="link__text">GitHub</span><span class="link__text link__fill" aria-hidden="true">GitHub</span></a></div>
-      <div><span class="label">small: Geist 15 / 400</span><span style="font-size: var(--size-small)">Clawd's little theatre.</span></div>
+      <div><span class="label">small: Geist 15 / 400</span><span style="font-size: var(--size-small)">A button with sleepy eyes.</span></div>
     </div>
     <button class="button" type="button" id="replay-print">Replay the keyword print</button>
 
@@ -104,20 +136,40 @@
       <li><a class="link force-focus force-hover" href="#" tabindex="-1"><span class="link__text">Focus</span><span class="link__text link__fill" aria-hidden="true">Focus</span></a><span class="link__note">with its note</span></li>
     </ul>
 
-    <h2>Buttons</h2>
-    <p>Square, 44 px targets, pixel icons. Hover inverts, press scales to 0.92.</p>
+    <h2>Button</h2>
+    <p>The theme button: a square 44 px target with a pixel icon. Hover inverts, press scales to 0.92.</p>
     <div class="row">
       <button class="icon-button" type="button" aria-label="Theme icon"><svg viewBox="0 0 11 11" width="22" height="22" shape-rendering="crispEdges" aria-hidden="true"><path d="M3 0h5v1h-5zM2 1h4v1h-4zM7 1h2v1h-2zM1 2h6v1h-6zM8 2h2v1h-2zM0 3h6v1h-6zM7 3h1v1h-1zM9 3h2v1h-2zM0 4h7v1h-7zM8 4h1v1h-1zM10 4h1v1h-1zM0 5h6v1h-6zM7 5h1v1h-1zM9 5h2v1h-2zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM0 7h6v1h-6zM7 7h1v1h-1zM9 7h2v1h-2zM1 8h6v1h-6zM8 8h2v1h-2zM2 9h4v1h-4zM7 9h2v1h-2zM3 10h5v1h-5z" fill="currentColor"/></svg></button>
-      <button class="icon-button" type="button" aria-label="Pause icon"><svg viewBox="0 0 7 7" width="14" height="14" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 0h2v7h-2zM5 0h2v7h-2z" fill="currentColor"/></svg></button>
-      <button class="icon-button" type="button" aria-label="Play icon"><svg viewBox="0 0 7 7" width="14" height="14" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 0h1v1h-1zM1 1h2v1h-2zM1 2h3v1h-3zM1 3h4v1h-4zM1 4h3v1h-3zM1 5h2v1h-2zM1 6h1v1h-1z" fill="currentColor"/></svg></button>
     </div>
 
     <h2>Dither levels</h2>
-    <p>The 65 masks of the 8 x 8 Bayer grid, at the scene's dot size. The scene's shades, the theme dissolve and the keyword print all step through these.</p>
+    <p>The 65 masks of the 8 x 8 Bayer grid, at 2 px a dot. The theme dissolve, the keyword print and the clock's digits step through these; the orange dots use the same thresholds.</p>
     <div class="levels" id="levels"></div>
 
+    <h2>Living dots</h2>
+    <p>Clawd's orange in dots, only in empty space: under the intro's keywords (2 px dots), at the foot of the active card and at the end of the page (3 px). Each zone is a grid; a cell is on when the zone's density there (a curve broken into patches by a soft noise) is above the cell's threshold in the 8 x 8 Bayer grid. The cells never move: what changes is which ones are on, at 12 steps a second, from one loop (js/dots.js) that sleeps when nothing is busy, off screen or in a hidden tab. A new seed on every visit. With reduced motion every zone shows one still image. Chosen by Yann on 22 November 2026: Sparkle, Flow, Drift. The other six are kept below for comparison (js/dots-lab.js, board only).</p>
+    <div class="live-controls">
+      <button class="button" type="button" id="live-seed">New seed (a new visit)</button>
+      <button class="button" type="button" id="live-reduced" aria-pressed="false">Simulate reduced motion</button>
+      <button class="button" type="button" id="live-replay">Replay the keyword bands</button>
+    </div>
+
+    <h3 style="margin: 2rem 0 0; font-size: var(--size-links); font-weight: 600">1. Under the keywords (chosen: Sparkle): one-off, never while you read</h3>
+    <div class="live-row" id="live-kw"></div>
+
+    <h3 style="margin: 2rem 0 0; font-size: var(--size-links); font-weight: 600">2. The active card (chosen: Flow): alive while it is active and on screen</h3>
+    <div class="live-row" id="live-fringe"></div>
+
+    <h3 style="margin: 2rem 0 0; font-size: var(--size-links); font-weight: 600">3. The end of the page (chosen: Drift): alive while on screen</h3>
+    <div class="live-row" id="live-end"></div>
+
+    <h3 style="margin: 3rem 0 0; font-size: var(--size-links); font-weight: 600">Not chosen, for comparison</h3>
+    <div class="live-row" id="live-other-kw"></div>
+    <div class="live-row" id="live-other-fringe"></div>
+    <div class="live-row" id="live-other-end"></div>
+
     <h2>Motion</h2>
-    <p>Entrance: fade and a 10 px rise, 640 ms, 65 ms apart (no rise with reduced motion). Dissolve: 500 ms (250 ms reduced). Spot: a critically damped spring.</p>
+    <p>Entrance: fade and a 10 px rise, 640 ms, 65 ms apart (no rise with reduced motion). Dissolve: 500 ms (250 ms reduced). Card dots: rise from the bottom in 220 ms on the card you reach for and go down in 160 ms on the one you left (strong ease-out), with the light behind them; reached with the keyboard they are simply there; with reduced motion they fade in place in 160 ms.</p>
     <div class="row">
       <button class="button" type="button" id="replay-enter">Replay the entrance</button>
     </div>
@@ -127,27 +179,8 @@
       <p class="enter" style="--i: 2; margin: 0.5rem 0 0">then the next one.</p>
     </div>
 
-    <h2>The scene</h2>
-    <p>The live component, with its pause button.</p>
-    <figure class="scene">
-      <div class="scene__frame">
-        <picture class="scene__still">
-          <source srcset="img/stage-dark.png" media="(prefers-color-scheme: dark)">
-          <img src="img/stage-light.png" width="212" height="118" alt="The theatre scene, still frame.">
-        </picture>
-      </div>
-      <figcaption class="scene__caption">
-        <span>Clawd's little theatre.</span>
-        <button class="icon-button scene__pause" type="button" aria-label="Pause the scene" hidden>
-          <svg class="icon-pause" viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 0h2v7h-2zM5 0h2v7h-2z" fill="currentColor"/></svg>
-          <svg class="icon-play" viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 0h1v1h-1zM1 1h2v1h-2zM1 2h3v1h-3zM1 3h4v1h-4zM1 4h3v1h-3zM1 5h2v1h-2zM1 6h1v1h-1z" fill="currentColor"/></svg>
-        </button>
-      </figcaption>
-    </figure>
-
     <h2>Contribution graph</h2>
-    <p>Each day is 4 x 4 dots. GitHub's levels 0 to 4 show 1, 2, 4, 8 and 16 dots, in Bayer order. The live graph below uses contributions.json when the GitHub Action has written it; until then it shows generated sample data, marked as such.</p>
-    <div class="row" id="levels-legend"></div>
+    <p>One square per day for the last 26 weeks, as wide as the column allows (6 to 16 px). GitHub's levels 1 to 4 are the four orange levels above, each at least 3:1 on paper. Clawd (2 px a cell, 44 x 32 px) walks in from the left the first time the graph is seen, blinks and bounces a little, then stands still; pointing at him or tapping him makes him wave with his happy face. The live graph below uses contributions.json when the GitHub Action has written it; until then it shows generated sample data, marked as such.</p>
     <p id="graph-source" style="margin: 1.5rem 0 0.5rem; font-size: var(--size-small)"></p>
     <section class="activity" id="board-activity" aria-label="Contribution graph (board)">
       <p class="activity__fallback">No JavaScript: the page shows a link to GitHub here.</p>
@@ -158,34 +191,37 @@
         <p class="activity__day" aria-live="polite">&nbsp;</p>
       </div>
     </section>
-    <div class="row" style="margin-top: 1rem"><button class="button" type="button" id="replay-graph">Replay the fill and Clawd's walk</button></div>
+    <div class="row" style="margin-top: 1rem"><button class="button" type="button" id="replay-graph">Replay Clawd's walk</button><button class="button" type="button" id="poke-graph">Make Clawd wave</button></div>
 
     <h2>Showcase</h2>
-    <p>Three real components from Experiments, bundled with React by tools/showcase/build.mjs and loaded by js/showcase.js once the section comes on screen. They keep their own look; the site only adds the frame (title, names, lines, corner marks, links). <span id="showcase-source"></span></p>
+    <p>Three real components from Experiments, bundled with React by tools/showcase/build.mjs and loaded by js/showcase.js once the page has loaded and the section is on screen. They keep their own look; the site only adds the card (name, line, link, and the orange dots of the active card: point at a card, focus inside it or touch it). <span id="showcase-source"></span></p>
     <section class="showcase" aria-labelledby="board-showcase-title" style="padding-inline: 0">
       <h2 class="showcase__title" id="board-showcase-title" style="margin-top: 0; font-weight: 400"><b class="kw">Three</b> components from my lab</h2>
       <ul class="showcase__list">
-        <li class="showcase__item showcase__item--shoji">
+        <li class="showcase__item showcase__item--shoji is-active">
           <h3 class="showcase__name">Shoji Bento</h3>
           <p class="showcase__line">A grid drawn with thin lines, like a paper screen.<span class="showcase__hint"> Drag a line and the boxes on each side make room.</span></p>
           <div class="showcase__stage" data-demo="shoji-bento"></div>
           <a class="link showcase__link" href="https://yannworks.github.io/experiments/#/shoji-bento"><span class="link__text">Open in Experiments</span><span class="link__text link__fill" aria-hidden="true">Open in Experiments</span></a>
+          <div class="fringe" aria-hidden="true"></div>
         </li>
         <li class="showcase__item showcase__item--clip">
           <h3 class="showcase__name">Gem Clip</h3>
           <p class="showcase__line">A paper clip that copies the text it holds. Here it holds the command that downloads my whole lab.<span class="showcase__hint showcase__hint--pointer"> Click the clip to copy it.</span><span class="showcase__hint showcase__hint--touch"> Tap the clip to copy it.</span></p>
           <div class="showcase__stage" data-demo="gem-clip"></div>
           <a class="link showcase__link" href="https://yannworks.github.io/experiments/#/gem-clip"><span class="link__text">Open in Experiments</span><span class="link__text link__fill" aria-hidden="true">Open in Experiments</span></a>
+          <div class="fringe" aria-hidden="true"></div>
         </li>
         <li class="showcase__item showcase__item--snooze">
           <h3 class="showcase__name">Snooze Button</h3>
           <p class="showcase__line">A button with sleepy eyes.<span class="showcase__hint showcase__hint--pointer"> Bring your pointer close to wake them, then press it: the pupils go round while it pretends to work.</span><span class="showcase__hint showcase__hint--touch"> Tap it: the eyes wake up, and the pupils go round while it pretends to work.</span></p>
           <div class="showcase__stage" data-demo="snooze-button"></div>
           <a class="link showcase__link" href="https://yannworks.github.io/experiments/#/snooze-button"><span class="link__text">Open in Experiments</span><span class="link__text link__fill" aria-hidden="true">Open in Experiments</span></a>
+          <div class="fringe" aria-hidden="true"></div>
         </li>
       </ul>
     </section>
-    <p style="margin: 2rem 0 0.75rem; font-size: var(--size-small)">Without JavaScript, or if the bundle fails to load (class <code>is-failed</code>): the stages take no room, the names, lines and links stay.</p>
+    <p style="margin: 2rem 0 0.75rem; font-size: var(--size-small)">Without JavaScript, or if the bundle fails to load (class <code>is-failed</code>): the stages take no room, the names, lines and links stay, and there are no dots.</p>
     <section class="showcase is-failed" aria-label="Showcase without its components (board)" style="padding-inline: 0; padding-bottom: 0">
       <ul class="showcase__list">
         <li class="showcase__item"><h3 class="showcase__name">Shoji Bento</h3><p class="showcase__line">A grid drawn with thin lines, like a paper screen.<span class="showcase__hint"> Drag a line and the boxes on each side make room.</span></p><div class="showcase__stage"></div><a class="link showcase__link" href="https://yannworks.github.io/experiments/#/shoji-bento"><span class="link__text">Open in Experiments</span><span class="link__text link__fill" aria-hidden="true">Open in Experiments</span></a></li>
@@ -196,17 +232,10 @@
     <p style="margin: 2rem 0 0.5rem; font-size: var(--size-small)">The components' own colours, measured in both themes once they are loaded (WCAG: 4.5:1 for text, 3:1 for shapes you need to see):</p>
     <ul class="pairs" id="showcase-contrast"><li>Measured when the components are on screen.</li></ul>
 
-    <h2>The show, moment by moment</h2>
-    <p>From js/show.js. With reduced motion every walk becomes a 1.6 s cut in the dark.</p>
-    <table class="timeline" id="timeline"><thead><tr><th>Starts at</th><th>Reduced</th><th>Moment</th></tr></thead><tbody></tbody></table>
-
     <h2>Clawd's poses</h2>
-    <p>All 42 grids from js/clawd-sprites.js (generated from the clawd skill), at 3 x.</p>
+    <p>The 18 grids the graph uses, from js/clawd-sprites.js (generated from the clawd skill by tools/make-clawd.py), at 3 x.</p>
     <div class="grid-art" id="poses"></div>
 
-    <h2>Props, before light and dither</h2>
-    <p>The shades painted by js/stage-art.js, shown as grey, at 2 x. The shader lights them and turns them into dots.</p>
-    <div class="grid-art" id="props"></div>
   </main>
 </body>
 </html>

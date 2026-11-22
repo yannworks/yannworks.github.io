@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>yannworks</title>
-  <meta name="description" content="Yann, a student in France. Building apps with AI, learning how things work, writing and music.">
+  <meta name="description" content="Yann, a student in France. Building apps with AI, learning how things work, writing and music. Three components from my lab to try.">
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0d0d0d" media="(prefers-color-scheme: dark)">
@@ -37,16 +37,14 @@
   <meta property="og:title" content="yannworks">
   <meta property="og:description" content="Building apps with AI, learning how things work, writing and music.">
   <meta property="og:image" content="https://yannworks.github.io/img/share.png">
-  <meta property="og:image:alt" content="Clawd on a small dithered theatre stage, under a spotlight.">
+  <meta property="og:image:alt" content="Clawd, the orange Claude Code mascot in pixel art, waving over a field of orange dots.">
   <meta name="twitter:card" content="summary_large_image">
 
-  <!-- The scene: Clawd's poses, the show, the props, the shader, the loop. Then the page. -->
+  <!-- Clawd's poses and the graph, the orange dots, then the page. -->
   <script src="js/clawd-sprites.js" defer></script>
-  <script src="js/show.js" defer></script>
-  <script src="js/stage-art.js" defer></script>
-  <script src="js/stage.js" defer></script>
-  <script src="js/scene.js" defer></script>
   <script src="js/activity.js" defer></script>
+  <script src="js/dots.js" defer></script>
+  <script src="js/accent.js" defer></script>
   <script src="js/main.js" defer></script>
   <script src="js/showcase.js" defer></script>
 </head>
@@ -60,11 +58,12 @@
 
   <main>
   <div class="page">
-    <div class="about">
+    <section class="hero" aria-label="About">
       <p class="intro enter" style="--i: 1">
-        Hi, I'm Yann, a student living in France<span class="clock"></span>. Online I go by yannworks.
+        Hi, I'm Yann, a student living in France<span class="clock"></span>.
         I&nbsp;like <b class="kw">building apps</b> with AI and learning <b class="kw">how things work</b>.
         I&nbsp;also enjoy <b class="kw">writing</b> and <b class="kw">music</b>.
+        My interface components live in Experiments, a public lab where you can copy the code, and three of them are just below.
       </p>
       <!-- Adds ", where it's 21:41" (and the gap with the visitor) before the first paint. -->
       <script>if (window.startClock) startClock(document.querySelector(".intro .clock"));</script>
@@ -83,25 +82,39 @@
           <span class="link__note">my lab of UI components</span>
         </li>
       </ul>
-    </div>
+    </section>
 
-    <div class="stage">
-    <figure class="scene enter" style="--i: 5">
-      <div class="scene__frame">
-        <!-- Shown until the animation starts, and instead of it without WebGL or JavaScript. -->
-        <picture class="scene__still">
-          <source srcset="img/stage-dark.png" media="(prefers-color-scheme: dark)">
-          <img src="img/stage-light.png" width="212" height="118" alt="Pixel art in black and white dots: Clawd, the orange Claude Code mascot, on a small theatre stage under a spotlight, with an upright piano, a typewriter and a little robot.">
-        </picture>
-      </div>
-      <figcaption class="scene__caption">
-        <span>Clawd's little theatre.<span class="hint hint--pointer"> Point at the stage to move the spotlight.</span><span class="hint hint--touch"> Tap the stage to move the spotlight.</span></span>
-        <button class="icon-button scene__pause" type="button" aria-label="Pause the scene" hidden>
-          <svg class="icon-pause" viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 0h2v7h-2zM5 0h2v7h-2z" fill="currentColor"/></svg>
-          <svg class="icon-play" viewBox="0 0 7 7" shape-rendering="crispEdges" aria-hidden="true"><path d="M1 0h1v1h-1zM1 1h2v1h-2zM1 2h3v1h-3zM1 3h4v1h-4zM1 4h3v1h-3zM1 5h2v1h-2zM1 6h1v1h-1z" fill="currentColor"/></svg>
-        </button>
-      </figcaption>
-    </figure>
+    <!-- Three components from Experiments, the real ones, to try here. The text and
+         links are plain HTML; js/showcase.js loads the components (showcase/, built
+         by tools/showcase/build.mjs) once the page has loaded. The card the visitor
+         last pointed at, focused or touched gets the orange dots at its foot
+         (js/accent.js); before that, the first one has them. -->
+    <section class="showcase enter" style="--i: 5" aria-labelledby="showcase-title">
+      <h2 class="showcase__title" id="showcase-title"><b class="kw">Three</b> components from my lab</h2>
+      <ul class="showcase__list">
+        <li class="showcase__item showcase__item--shoji is-active">
+          <h3 class="showcase__name">Shoji Bento</h3>
+          <p class="showcase__line">A grid drawn with thin lines, like a paper screen.<span class="showcase__hint"> Drag a line and the boxes on each side make room.</span></p>
+          <div class="showcase__stage" data-demo="shoji-bento"></div>
+          <a class="link showcase__link" href="https://yannworks.github.io/experiments/#/shoji-bento" aria-label="Open in Experiments: Shoji Bento"><span class="link__text">Open in Experiments</span><span class="link__text link__fill" aria-hidden="true">Open in Experiments</span></a>
+          <div class="fringe" aria-hidden="true"></div>
+        </li>
+        <li class="showcase__item showcase__item--clip">
+          <h3 class="showcase__name">Gem Clip</h3>
+          <p class="showcase__line">A paper clip that copies the text it holds. Here it holds the command that downloads my whole lab.<span class="showcase__hint showcase__hint--pointer"> Click the clip to copy it.</span><span class="showcase__hint showcase__hint--touch"> Tap the clip to copy it.</span></p>
+          <div class="showcase__stage" data-demo="gem-clip"></div>
+          <a class="link showcase__link" href="https://yannworks.github.io/experiments/#/gem-clip" aria-label="Open in Experiments: Gem Clip"><span class="link__text">Open in Experiments</span><span class="link__text link__fill" aria-hidden="true">Open in Experiments</span></a>
+          <div class="fringe" aria-hidden="true"></div>
+        </li>
+        <li class="showcase__item showcase__item--snooze">
+          <h3 class="showcase__name">Snooze Button</h3>
+          <p class="showcase__line">A button with sleepy eyes.<span class="showcase__hint showcase__hint--pointer"> Bring your pointer close to wake them, then press it: the pupils go round while it pretends to work.</span><span class="showcase__hint showcase__hint--touch"> Tap it: the eyes wake up, and the pupils go round while it pretends to work.</span></p>
+          <div class="showcase__stage" data-demo="snooze-button"></div>
+          <a class="link showcase__link" href="https://yannworks.github.io/experiments/#/snooze-button" aria-label="Open in Experiments: Snooze Button"><span class="link__text">Open in Experiments</span><span class="link__text link__fill" aria-hidden="true">Open in Experiments</span></a>
+          <div class="fringe" aria-hidden="true"></div>
+        </li>
+      </ul>
+    </section>
 
     <!-- GitHub activity, drawn by js/activity.js from contributions.json, which a
          GitHub Action updates once a day. Hidden until that file exists. -->
@@ -116,35 +129,10 @@
         <p class="activity__day" aria-live="polite">&nbsp;</p>
       </div>
     </section>
-    </div>
   </div>
-
-  <!-- Three components from Experiments, the real ones, to try here. The text and
-       links are plain HTML; js/showcase.js loads the components (showcase/, built
-       by tools/showcase/build.mjs) when the visitor gets near this section. -->
-  <section class="showcase" aria-labelledby="showcase-title">
-    <h2 class="showcase__title" id="showcase-title"><b class="kw">Three</b> components from my lab</h2>
-    <ul class="showcase__list">
-      <li class="showcase__item showcase__item--shoji">
-        <h3 class="showcase__name">Shoji Bento</h3>
-        <p class="showcase__line">A grid drawn with thin lines, like a paper screen.<span class="showcase__hint"> Drag a line and the boxes on each side make room.</span></p>
-        <div class="showcase__stage" data-demo="shoji-bento"></div>
-        <a class="link showcase__link" href="https://yannworks.github.io/experiments/#/shoji-bento" aria-label="Open in Experiments: Shoji Bento"><span class="link__text">Open in Experiments</span><span class="link__text link__fill" aria-hidden="true">Open in Experiments</span></a>
-      </li>
-      <li class="showcase__item showcase__item--clip">
-        <h3 class="showcase__name">Gem Clip</h3>
-        <p class="showcase__line">A paper clip that copies the text it holds. Here it holds the command that downloads my whole lab.<span class="showcase__hint showcase__hint--pointer"> Click the clip to copy it.</span><span class="showcase__hint showcase__hint--touch"> Tap the clip to copy it.</span></p>
-        <div class="showcase__stage" data-demo="gem-clip"></div>
-        <a class="link showcase__link" href="https://yannworks.github.io/experiments/#/gem-clip" aria-label="Open in Experiments: Gem Clip"><span class="link__text">Open in Experiments</span><span class="link__text link__fill" aria-hidden="true">Open in Experiments</span></a>
-      </li>
-      <li class="showcase__item showcase__item--snooze">
-        <h3 class="showcase__name">Snooze Button</h3>
-        <p class="showcase__line">A button with sleepy eyes.<span class="showcase__hint showcase__hint--pointer"> Bring your pointer close to wake them, then press it: the pupils go round while it pretends to work.</span><span class="showcase__hint showcase__hint--touch"> Tap it: the eyes wake up, and the pupils go round while it pretends to work.</span></p>
-        <div class="showcase__stage" data-demo="snooze-button"></div>
-        <a class="link showcase__link" href="https://yannworks.github.io/experiments/#/snooze-button" aria-label="Open in Experiments: Snooze Button"><span class="link__text">Open in Experiments</span><span class="link__text link__fill" aria-hidden="true">Open in Experiments</span></a>
-      </li>
-    </ul>
-  </section>
   </main>
+
+  <!-- Orange dots at the end of the page, under nothing; they drift slowly while on screen (js/accent.js, js/dots.js). -->
+  <footer class="end" aria-hidden="true"></footer>
 </body>
 </html>

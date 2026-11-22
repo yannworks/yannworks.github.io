@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+(function(){var t=null;try{t=localStorage.getItem("theme")}catch(e){}var q=new URLSearchParams(location.search).get("theme");if(q)t=q;if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;})();
+</script>
+<script src="../../../js/clock.js"></script>
+<link rel="stylesheet" href="m.css">
+<link rel="stylesheet" href="../../../showcase/showcase.css">
+<script src="../../../js/clawd-sprites.js" defer></script>
+<script src="../../../showcase/showcase.js" defer></script>
+<script src="m.js" defer></script>
+<title>Maquette A · Le labo d'abord</title>
+<style>
+  .a-hero { padding-block: clamp(1.5rem, 1rem + 3vw, 3.5rem) 0; display: grid; gap: 0; }
+  @media (min-width: 1100px) {
+    .a-hero { grid-template-columns: minmax(0, 40rem) auto; justify-content: space-between; align-items: end; }
+    .a-hero .links { flex-direction: column; margin: 0; gap: 0.6rem; justify-self: end; text-align: left; }
+  }
+  .a-lab { margin-top: clamp(3rem, 2rem + 3vw, 4.5rem); }
+  @media (min-width: 900px) { .a-lab .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } .a-lab .card { --stage-h: 300px; } }
+  .a-act { margin-top: clamp(3rem, 2rem + 3vw, 4.5rem); }
+</style>
+</head>
+<body>
+<header class="top wrap">
+  <h1 class="name">yannworks</h1>
+  <button class="toggle" type="button" aria-label="Switch theme"><svg viewBox="0 0 11 11" shape-rendering="crispEdges" aria-hidden="true"><path d="M3 0h5v1h-5zM2 1h4v1h-4zM7 1h2v1h-2zM1 2h6v1h-6zM8 2h2v1h-2zM0 3h6v1h-6zM7 3h1v1h-1zM9 3h2v1h-2zM0 4h7v1h-7zM8 4h1v1h-1zM10 4h1v1h-1zM0 5h6v1h-6zM7 5h1v1h-1zM9 5h2v1h-2zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM0 7h6v1h-6zM7 7h1v1h-1zM9 7h2v1h-2zM1 8h6v1h-6zM8 8h2v1h-2zM2 9h4v1h-4zM7 9h2v1h-2zM3 10h5v1h-5z" fill="currentColor"/></svg></button>
+</header>
+<main class="wrap">
+<section class="a-hero kw--dither">
+<p class="intro">Hi, I'm Yann, a student living in France<span class="clock"></span>. Online I go by yannworks.
+I&nbsp;like <b class="kw">building apps</b> with AI and learning <b class="kw">how things work</b>.
+I&nbsp;also enjoy <b class="kw">writing</b> and <b class="kw">music</b>.</p>
+<ul class="links">
+  <li><a class="link" href="https://x.com/yannworks">X</a></li>
+  <li><a class="link" href="https://github.com/yannworks">GitHub</a></li>
+  <li><a class="link" href="https://yannworks.github.io/experiments/">Experiments</a><span class="note">my lab of UI components</span></li>
+</ul>
+</section>
+<section class="a-lab" data-showcase aria-labelledby="lab"><h2 class="h2" id="lab"><b class="kw">Three</b> components from my lab</h2><ul class="cards">
+<li class="card card--shoji is-active" data-card>
+  <div><h3 class="card__name">Shoji Bento</h3><p class="card__line">A grid drawn with thin lines, like a paper screen. Drag a line and the boxes make room.</p></div>
+  <div class="card__stage" data-demo="shoji-bento"></div>
+  <div class="card__foot"><a class="link" href="https://yannworks.github.io/experiments/#/shoji-bento">Open in Experiments</a></div>
+  <div class="fringe" aria-hidden="true"></div>
+</li>
+<li class="card card--clip" data-card>
+  <div><h3 class="card__name">Gem Clip</h3><p class="card__line">A paper clip that copies the text it holds: here, the command that downloads my whole lab.</p></div>
+  <div class="card__stage" data-demo="gem-clip"></div>
+  <div class="card__foot"><a class="link" href="https://yannworks.github.io/experiments/#/gem-clip">Open in Experiments</a></div>
+  <div class="fringe" aria-hidden="true"></div>
+</li>
+<li class="card card--snooze" data-card>
+  <div><h3 class="card__name">Snooze Button</h3><p class="card__line">A button with sleepy eyes. Bring your pointer close, then press it.</p></div>
+  <div class="card__stage" data-demo="snooze-button"></div>
+  <div class="card__foot"><a class="link" href="https://yannworks.github.io/experiments/#/snooze-button">Open in Experiments</a></div>
+  <div class="fringe" aria-hidden="true"></div>
+</li>
+</ul></section>
+<div class="a-act">
+<section class="activity" aria-label="GitHub activity">
+  <p class="activity__summary"><b class="kw">176</b> contributions in the last 6 months<span class="legend" aria-hidden="true">Less <i style="background:var(--line)"></i><i style="background:color-mix(in srgb,var(--clawd) 35%,var(--paper))"></i><i style="background:color-mix(in srgb,var(--clawd) 60%,var(--paper))"></i><i style="background:color-mix(in srgb,var(--clawd) 82%,var(--paper))"></i><i style="background:var(--clawd)"></i> More</span></p>
+  <div class="graph" data-weeks="26" data-sq="13" data-gap="3"><div class="graph__months"></div><div class="graph__grid"></div></div>
+</section>
+</div>
+</main>
+<footer class="end" aria-hidden="true" data-cell="4"></footer>
+<div class="mock-tag">A · Le labo d’abord</div>
+</body></html>

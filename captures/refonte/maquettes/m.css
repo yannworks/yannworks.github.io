@@ -1,0 +1,147 @@
+/* Mock-ups of the redesign: shared styles. Not the site's stylesheet.
+   Three directions (a.html, b.html, c.html) reuse these blocks in different orders. */
+
+@font-face { font-family: "Geist"; src: url("../../../fonts/Geist-Variable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Geist Serif"; src: url("../../../fonts/GeistSerifVF.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+
+:root {
+  --paper: #ffffff;
+  --ink: #111111;
+  --muted: #5b5b5b;            /* 6.7:1 on paper */
+  --surface: #f5f5f5;
+  --line: #e2e2e2;
+  --clawd: #d97757;            /* Clawd's body: shapes and dots only (3.1:1 on white) */
+  --clawd-text: #b04f2c;       /* orange for words on paper */
+  --clawd-glow: rgb(217 119 87 / 0.16);
+  --sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --serif: "Geist Serif", ui-serif, Georgia, serif;
+  --size-intro: clamp(1.3125rem, 1.1rem + 0.9vw, 1.625rem);
+  --gutter: 16px;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --paper: #0d0d0d;
+  --ink: #ededed;
+  --muted: #a3a3a3;
+  --surface: #151515;
+  --line: #262626;
+  --clawd-text: #e2876a;
+  --clawd-glow: rgb(217 119 87 / 0.22);
+  color-scheme: dark;
+}
+
+@media (min-width: 768px) { :root { --gutter: 32px; } }
+@media (min-width: 1280px) { :root { --gutter: 48px; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--sans); font-size: 1rem; line-height: 1.5;
+  -webkit-font-smoothing: antialiased; font-synthesis: none;
+}
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+.wrap { width: 100%; max-width: 1440px; margin-inline: auto; padding-inline: var(--gutter); }
+
+/* ---- Header ---- */
+.top { display: flex; align-items: center; justify-content: space-between; padding-block: 18px; }
+.name { margin: 0; font-size: 1.0625rem; font-weight: 600; line-height: 1; letter-spacing: -0.01em; }
+.toggle { width: 44px; height: 44px; margin: -10px; border: 0; background: none; color: var(--ink); display: grid; place-items: center; cursor: pointer; }
+.toggle svg { width: 22px; height: 22px; display: block; }
+
+/* ---- Intro ---- */
+.intro { margin: 0; font-size: var(--size-intro); line-height: 1.4; letter-spacing: -0.012em; text-wrap: pretty; max-width: 36rem; }
+.kw { font-family: var(--serif); font-size: 1.24em; font-weight: 400; font-variation-settings: "ELSH" 25; line-height: 1; letter-spacing: -0.008em; }
+.clock__time { font-variant-numeric: tabular-nums; }
+
+/* Keyword variant 1: orange words (large text: 3:1 is enough, these pass 4.5:1). */
+.kw--orange .kw { color: var(--clawd-text); }
+
+/* Keyword variant 2: a dithered orange band under each word, in the line gap. */
+.kw--dither .kw { position: relative; white-space: nowrap; }
+.kw--dither .kw > canvas { position: absolute; left: 0; right: 0; top: calc(100% - 0.06em); height: 7px; width: 100%; pointer-events: none; }
+
+/* ---- Links ---- */
+.links { display: flex; flex-wrap: wrap; gap: 0.75rem 1.75rem; margin: 2rem 0 0; padding: 0; list-style: none; font-weight: 500; font-size: 1.0625rem; }
+.link { color: inherit; text-decoration: underline 1px; text-underline-offset: 0.24em; display: inline-flex; align-items: center; gap: 0.4em; padding: 0.3em 0; }
+.link::after { content: ""; width: 10px; height: 10px; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 5' shape-rendering='crispEdges'%3E%3Cpath d='M1 0h4v1H1zM3 1h2v1H3zM2 2h1v1H2zM4 2h1v1H4zM1 3h1v1H1zM4 3h1v1H4zM0 4h1v1H0z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 5 5' shape-rendering='crispEdges'%3E%3Cpath d='M1 0h4v1H1zM3 1h2v1H3zM2 2h1v1H2zM4 2h1v1H4zM1 3h1v1H1zM4 3h1v1H4zM0 4h1v1H0z'/%3E%3C/svg%3E") center / contain no-repeat; }
+.link:hover { color: var(--clawd-text); }
+.links .note { color: var(--muted); font-weight: 400; font-size: 0.9375rem; margin-left: 0.5rem; }
+
+/* ---- Section titles ---- */
+.h2 { margin: 0 0 1.5rem; font-size: 1.0625rem; font-weight: 400; line-height: 1.4; }
+
+/* ---- Component cards ---- */
+.cards { display: grid; gap: 16px; margin: 0; padding: 0; list-style: none; }
+.card {
+  position: relative; display: grid; grid-template-rows: auto 1fr auto; min-width: 0;
+  background: var(--surface); border: 1px solid var(--line);
+  padding: 20px 20px var(--fringe-h); overflow: hidden; isolation: isolate;
+  --fringe-h: 40px;
+}
+.card__name { margin: 0; font-size: 1.0625rem; font-weight: 500; line-height: 1.4; }
+.card__line { margin: 0.25rem 0 0; font-size: 0.9375rem; line-height: 1.45; color: var(--muted); max-width: 34rem; text-wrap: pretty; }
+.card__stage { display: grid; place-items: center; min-height: var(--stage-h, 260px); padding: 20px 0; position: relative; z-index: 1; }
+.card__foot { position: relative; z-index: 1; padding: 4px 0 0; display: flex; justify-content: space-between; align-items: center; font-size: 0.9375rem; }
+.card__foot .link { font-weight: 500; }
+.card--shoji { --stage-h: 260px; }
+.card--clip { --stage-h: 190px; }
+.card--snooze { --stage-h: 130px; }
+
+/* The fringe: an orange dither band that lives in the card's empty bottom strip,
+   under the footer line, never under the component. Hidden at rest; it rises on
+   hover, focus or touch, and on the card marked active. */
+.fringe { position: absolute; left: 0; right: 0; bottom: 0; height: var(--fringe-h, 56px); z-index: 0; pointer-events: none; }
+.fringe canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.fringe::before { content: ""; position: absolute; inset: -60% 0 0; background: linear-gradient(to bottom, transparent, var(--clawd-glow)); opacity: 0; transition: opacity 240ms ease; }
+.fringe canvas { clip-path: inset(100% 0 0 0); transition: clip-path 280ms var(--ease-out); }
+.card.is-active .fringe canvas, .card:focus-within .fringe canvas { clip-path: inset(0); }
+.card.is-active .fringe::before, .card:focus-within .fringe::before { opacity: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .fringe canvas { clip-path: inset(0); }
+  .card:hover .fringe::before { opacity: 1; }
+}
+
+/* Frameless stage with crop marks (current site vocabulary), used by direction B. */
+.plate { position: relative; display: grid; place-items: center; min-height: var(--stage-h, 300px); padding: 24px; }
+.plate::before { content: ""; position: absolute; inset: 0; border: 1px solid var(--ink); pointer-events: none; --arm: 8px;
+  -webkit-mask: linear-gradient(#000 0 0) left top / var(--arm) var(--arm) no-repeat, linear-gradient(#000 0 0) right top / var(--arm) var(--arm) no-repeat, linear-gradient(#000 0 0) left bottom / var(--arm) var(--arm) no-repeat, linear-gradient(#000 0 0) right bottom / var(--arm) var(--arm) no-repeat;
+  mask: linear-gradient(#000 0 0) left top / var(--arm) var(--arm) no-repeat, linear-gradient(#000 0 0) right top / var(--arm) var(--arm) no-repeat, linear-gradient(#000 0 0) left bottom / var(--arm) var(--arm) no-repeat, linear-gradient(#000 0 0) right bottom / var(--arm) var(--arm) no-repeat; }
+.plate .fringe { bottom: -1px; height: 60px; }
+
+/* ---- Activity ---- */
+.activity__summary { margin: 0 0 1rem; font-size: 1.0625rem; line-height: 1.4; }
+.activity__summary .kw { font-size: 1.3em; }
+.graph { position: relative; display: inline-grid; padding-top: 36px; }
+.graph__grid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, var(--sq)); grid-auto-columns: var(--sq); gap: var(--gap); --sq: 12px; --gap: 3px; }
+.graph__grid span { background: var(--line); }
+.graph__grid span[data-l="1"] { background: color-mix(in srgb, var(--clawd) 35%, var(--paper)); }
+.graph__grid span[data-l="2"] { background: color-mix(in srgb, var(--clawd) 60%, var(--paper)); }
+.graph__grid span[data-l="3"] { background: color-mix(in srgb, var(--clawd) 82%, var(--paper)); }
+.graph__grid span[data-l="4"] { background: var(--clawd); }
+.graph__grid span.is-today { outline: 1.5px solid var(--ink); outline-offset: 1.5px; }
+.graph__months { position: absolute; top: 14px; left: 0; right: 0; height: 16px; font-size: 0.75rem; color: var(--muted); }
+.graph__months span { position: absolute; top: 0; }
+.graph__clawd { position: absolute; top: 0; width: 44px; height: 32px; image-rendering: pixelated; }
+.graph__day { margin: 0.75rem 0 0; font-size: 0.9375rem; color: var(--muted); min-height: 1.4em; font-variant-numeric: tabular-nums; }
+.legend { display: inline-flex; gap: 3px; align-items: center; margin-left: 0.75rem; font-size: 0.75rem; color: var(--muted); vertical-align: middle; }
+.legend i { width: 10px; height: 10px; display: inline-block; }
+
+/* ---- Bottom field: dither rising from the page's end, under nothing ---- */
+.end { position: relative; height: 112px; margin-top: 64px; overflow: hidden; }
+.end canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.end::before { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 20%, var(--clawd-glow)); }
+
+/* Mock-up label (not part of the design) */
+.mock-tag { position: fixed; right: 10px; bottom: 10px; z-index: 9; font: 500 11px/1 var(--sans); background: var(--ink); color: var(--paper); padding: 5px 7px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fringe canvas { clip-path: none !important; opacity: 0; transition: opacity 160ms ease; }
+  .card.is-active .fringe canvas, .card:focus-within .fringe canvas { opacity: 1; }
+  @media (hover: hover) and (pointer: fine) { .card:hover .fringe canvas { opacity: 1; } }
+}

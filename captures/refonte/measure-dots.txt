@@ -1,0 +1,5 @@
+phone 390 x 844, CPU slowed 4 x, 10 s each
+card animated         steps 120, script per step  2.72 ms (worst 8.40 ms), main thread busy 10.6 %, in scripts 3.9 %
+card reduced (still)  steps   0, script per step        - (worst 0.00 ms), main thread busy 0.3 %, in scripts 0.0 %
+end  animated         steps 121, script per step  2.80 ms (worst 5.20 ms), main thread busy 8.7 %, in scripts 3.7 %
+end  reduced (still)  steps   0, script per step        - (worst 0.00 ms), main thread busy 0.1 %, in scripts 0.0 %

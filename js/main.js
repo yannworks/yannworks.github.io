@@ -6,14 +6,12 @@
   const reducedQuery = matchMedia("(prefers-reduced-motion: reduce)");
   const darkQuery = matchMedia("(prefers-color-scheme: dark)");
   const toggle = document.querySelector(".theme-toggle");
-  const scene = startScene();
   startActivity();                     // the GitHub graph (js/activity.js)
 
   // ---- Dither masks.
-  // The same 8 x 8 Bayer thresholds as the shader in stage.js. Mask number
-  // `level` (0 to 64) shows the cells whose threshold is below level / 64:
-  // stepping through them makes something appear dot by dot, in the same
-  // pattern as the scene.
+  // The 8 x 8 Bayer thresholds (the orange dots of js/accent.js use the same
+  // grid). Mask number `level` (0 to 64) shows the cells whose threshold is
+  // below level / 64: stepping through them makes something appear dot by dot.
   const bayer2 = (x, y) => ((x % 2) * 0.5 + (y % 2) * (y % 2) * 0.75) % 1;
   const bayer8 = (x, y) => (bayer2(x >> 2, y >> 2) * 0.25 + bayer2(x >> 1, y >> 1)) * 0.25 + bayer2(x, y);
   // INVERSE[level] shows exactly the other cells: the clock (js/clock.js) uses
@@ -54,24 +52,13 @@
     try { return localStorage.getItem("theme"); } catch (e) { return null; }
   }
 
-  function applyTheme(theme, ms) {
+  function applyTheme(theme) {
     root.dataset.theme = theme;
     const dark = theme === "dark";
     toggle.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
     document.querySelectorAll('meta[name="theme-color"]').forEach((m) => {
       m.content = getComputedStyle(root).getPropertyValue("--paper").trim();
     });
-    if (scene) scene.setTheme(dark, ms);
-  }
-
-  // Lines the page's dots up with the scene's dots, so both use one grid.
-  function alignDots() {
-    const canvas = document.querySelector(".scene__canvas");
-    const cell = parseFloat(getComputedStyle(root).getPropertyValue("--cell")) || 2;
-    const tile = cell * 8;
-    const r = canvas ? canvas.getBoundingClientRect() : { left: 0, top: 0 };
-    root.style.setProperty("--dither-x", (((r.left % tile) + tile) % tile) + "px");
-    root.style.setProperty("--dither-y", (((r.top % tile) + tile) % tile) + "px");
   }
 
   function switchTheme(theme, remember = true) {
@@ -85,9 +72,8 @@
     // The dissolve: the browser keeps a picture of the old page, draws the
     // new theme, and we reveal the new one through the dither masks.
     if (document.startViewTransition && CSS.supports("mask-image", "none")) {
-      alignDots();
       root.style.setProperty("--dither-mask", MASKS[0]);
-      const transition = document.startViewTransition(() => applyTheme(theme, ms));
+      const transition = document.startViewTransition(() => applyTheme(theme));
       transition.ready
         .then(() => stepMasks(ms, (level) => root.style.setProperty("--dither-mask", MASKS[level])))
         .catch(() => {});
@@ -97,7 +83,7 @@
 
     // Older browsers: a plain cross-fade of the colours.
     root.classList.add("theme-fading");
-    applyTheme(theme, ms);
+    applyTheme(theme);
     setTimeout(() => root.classList.remove("theme-fading"), ms + 50);
   }
 
@@ -107,7 +93,7 @@
   darkQuery.addEventListener("change", (e) => {
     if (!storedTheme()) switchTheme(e.matches ? "dark" : "light", false);
   });
-  applyTheme(root.dataset.theme, 0);
+  applyTheme(root.dataset.theme);
 
   // ---- Keywords: while the intro fades in, they print in dots instead.
   const words = document.querySelectorAll(".intro .kw");
