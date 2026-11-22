@@ -1,11 +1,197 @@
 # yannworks.github.io : état
 
-Skill : site-studio (missions ciblées sur un site existant). Mis à jour : 2026-11-21. Dernière mission : vitrine de composants, publiée le 2026-11-21.
+Skill : site-studio (missions ciblées sur un site existant). Mis à jour : 2026-11-22. Dernières missions : refonte, puis points vivants, sur la branche `refonte`, pas encore publiées.
 
 Les missions précédentes (page et théâtre, puis graphe de contributions) sont décrites dans `.web-craft-history/2026-11-19-site/` et `.web-craft/`, deux archives à laisser telles quelles. Ce fichier suit les missions à partir de l'heure locale, la plus récente en haut.
 
 ## Prochaine action
-Aucune pour la vitrine : mission terminée et publiée. Reste à essayer les composants sur un vrai téléphone (voir « Manques et limites »).
+Intro : Yann garde la version 1 (2026-11-22). Publication demandée (« publish ») : voir « Publication » de la mission « points vivants ». Après publication : vérifier en ligne avec `?v=2` et mettre à jour la ligne « Objectif » de l'entrée du site dans `projects/README.md` d'AIOS.
+
+# Mission « points vivants » (2026-11-22)
+
+## Brief
+- Faire vivre les points orange pour de vrai : les cases restent sur leur grille, seul le motif change (cases qui s'allument et s'éteignent), avec du hasard. Plus de translation, de découpe ni de fondu du bloc ; plus de `clip-path` sur la bande de la carte.
+- Trois zones, trois mouvements, chacun lié à son rôle. Nouvelle graine à chaque visite. Cadence de pixel (8 à 15 images par seconde), une seule boucle `requestAnimationFrame`, en pause hors de l'écran et onglet caché. Mouvement réduit : une image fixe. Sans JavaScript : rien. Rien sous un contenu, couleur unique `#d97757`, pas de bibliothèque.
+- Bande des mots-clés : pas de mouvement continu pendant la lecture. Carte active : peut vivre en continu, lentement, seulement active et à l'écran. Skill animate pour la qualité ; exploration par variantes à la demande explicite de Yann.
+
+## Choix de Yann
+Neuf variantes construites dans `board.html` (trois par zone, bouton « nouvelle graine », bouton « mouvement réduit simulé »), vidéo `captures/refonte/video-variants-board.mp4`. **Yann a choisi B, B, C** : Scintillement sous les mots-clés, Flux sur la carte active, Dérive en bas de page. Les six autres restent au board, section « Not chosen » (`js/dots-lab.js`, jamais chargé par la page).
+
+## Fonctionnement
+- `js/dots.js` : le moteur. Une `Field` par zone (canvas, grille de cases, densité par case = forme × bruit doux, seuil Bayer 8 × 8, ordre aléatoire des cases) ; une case est allumée quand sa densité dépasse son seuil. Une seule boucle `requestAnimationFrame`, qui ne fait un pas que tous les 83 ms (12 par seconde) ; chaque zone a sa propre horloge, qui n'avance que si la zone est à l'écran (IntersectionObserver), l'onglet visible et son mouvement occupé ; la boucle s'arrête quand plus rien ne l'est. Seules les cases qui changent sont repeintes. Graine tirée par `crypto` à chaque visite. Mouvement réduit : image fixe, suivie en direct si le réglage change. `DOTS.stats` compte le temps de script par pas.
+- Les trois mouvements (dans `js/dots.js`) : `kwSparkle`, `fringeFlow` (avec `activity`, l'allumage et l'extinction en ordre aléatoire), `endDrift`.
+- `js/accent.js` : pose les canvas et choisit la carte active (dernière pointée, touchée ou atteinte au clavier ; la première au repos). Expose `window.accent.items` pour les tests et les mesures.
+- `style.css` : plus de `clip-path` ni de transition sur les points ; seule la lueur derrière la bande garde un fondu (300 ms à l'allumage, 200 ms à l'extinction, aucun en mouvement réduit) ; la bande d'un mot-clé reste cachée pendant son impression.
+
+## Décisions
+| Date | Décision | Raison |
+| --- | --- | --- |
+| 2026-11-22 | Mots-clés : Scintillement. Apparition une fois, cases en ordre aléatoire, après l'impression du mot ; au survol du mot, des cases au hasard s'inversent pendant 600 ms, de moins en moins, puis la bande revient exactement à l'identique | Choix de Yann. Le mot qu'on pointe répond, et rien ne bouge pendant qu'on lit (test : aucune case change en 2 s sans pointeur) |
+| 2026-11-22 | Carte active : Flux. Le bruit sous la bande dérive de 1,5 case par seconde (avec un léger balancement vertical) tant que la carte est active et à l'écran ; allumage en ordre aléatoire en 300 ms, extinction en 200 ms | Choix de Yann. C'est la carte qu'on regarde : sa bande coule doucement, les autres sont éteintes |
+| 2026-11-22 | Bas de page : Dérive. Le champ roule lentement (1,1 case par seconde de côté, 0,6 vers le haut) dès qu'il est à l'écran | Choix de Yann. La page finit sur quelque chose de calme et vivant |
+| 2026-11-22 | **Exception voulue à la règle « rien ne bouge tout seul »** : la bande de la carte active et le champ du bas bougent sans action du visiteur | Demande de Yann pour ce travail ; limitée à deux zones décoratives, lentes, sans texte dessus, en pause hors de l'écran et onglet caché, absente en mouvement réduit. Les mots-clés, le graphe et les composants restent soumis à la règle |
+| 2026-11-22 | 12 pas par seconde, une seule boucle pour toutes les zones | Cadence de pixel demandée (8 à 15) : les points changent par petits sauts au lieu de glisser à 60 Hz ; une boucle, une seule horloge à mettre en pause |
+| 2026-11-22 | Graine nouvelle à chaque visite (`crypto.getRandomValues`), plus le hasard dans le temps (scintillement, ordre des cases) | Demande de Yann : jamais deux fois le même motif |
+| 2026-11-22 | Au clavier, la carte change d'un coup (pas d'allumage progressif) | Emil M1 : pas de mouvement sur une action au clavier ; un focus qui suit un clic ou un toucher garde l'allumage |
+| 2026-11-22 | Changement d'avis en cours d'allumage : on repart de la part de cases déjà allumée | Emil M11 : pas de saut ni de redémarrage à zéro (test) |
+| 2026-11-22 | La lueur derrière la bande garde un fondu de 300 / 200 ms | C'est la lumière, pas les points ; sans fondu, le dégradé apparaissait d'un coup avant les premières cases |
+| 2026-11-22 | Cache du bruit borné (4 096 valeurs, recalculables) | Le bruit qui dérive rencontre sans cesse de nouveaux points de grille : sans limite, la mémoire grandirait pendant une longue visite |
+| 2026-11-22 | Variantes non retenues gardées au board seulement (`js/dots-lab.js`) | Comparaison possible plus tard, sans poids pour la page |
+
+## Relecture du mouvement d'après Emil (2026-11-22)
+Fichiers lus : `animate/SKILL.md` (le skill installé), `review-animations/SKILL.md` et `STANDARDS.md`, règles M2, M5, M11 et P5 du wiki. Méthode : code, comptage des cases changées par le moteur (tests), vidéos en temps réel, mouvement réduit simulé et réel. Carte de fréquence : scintillement des mots-clés, rare ; changement de carte active, quelques dizaines de fois par visite ; flux et dérive, continus quand visibles.
+
+| Avant | Après | Pourquoi | Règle | Preuve |
+| --- | --- | --- | --- | --- |
+| 1. `js/dots.js` `activity.set` : un changement de carte repartait de zéro, même au milieu d'un allumage | Repart de la part de cases déjà allumée | Une interaction qu'on inverse ne doit pas sauter | M11 | Observé (test « a quick change of mind ») |
+| 2. Scintillement de 750 ms au survol d'un mot | 600 ms, l'essentiel des inversions dans les 250 premières | Survol : rester court ; au-delà de 300 ms, la décroissance le justifie | M5 | Déduit |
+| 3. Cache du bruit sans limite | Borné à 4 096 valeurs | Mémoire stable pendant une longue visite | P (performance) | Déduit |
+| 4. Allumage de la carte au clavier | Immédiat | Pas de mouvement sur une action au clavier | M1 | Observé (test) |
+
+Tient : rien ne glisse ni ne se découpe (test : ni `clip-path` ni `transform` sur les canvas) ; le flux et la dérive sont des mouvements constants, donc linéaires (STANDARDS : constant motion → linear) ; la carte active est un état à indiquer (M2) ; mouvement réduit : image fixe, aucune case ne change (test) ; boucle en pause hors de l'écran (test) et onglet caché. Point d'attention : le moteur tourne sur le fil principal (canvas), et non sur le compositeur ; mesuré ci-dessous, son coût reste bas. **Décision : Approuver.** À vérifier sur un vrai téléphone : la sensation du flux à 12 pas par seconde, et l'autonomie si la page reste ouverte longtemps en bas.
+
+## Mesures (`node tools/measure-dots.mjs`, `captures/refonte/measure-dots.txt`)
+Téléphone 390 × 844, processeur ralenti 4 fois, 10 s par cas.
+
+| Zone à l'écran | Script par pas (moyen / pire) | Fil principal occupé | Dont scripts |
+| --- | --- | --- | --- |
+| Bande de la carte active, animée | 2,72 / 8,40 ms | 10,6 % | 3,9 % |
+| Même chose, mouvement réduit | aucun pas | 0,3 % | 0,0 % |
+| Bas de page, animé | 2,80 / 5,20 ms | 8,7 % | 3,7 % |
+| Même chose, mouvement réduit | aucun pas | 0,1 % | 0,0 % |
+
+120 pas en 10 s : la cadence de 12 par seconde tient même ralentie. Le reste du temps occupé (au-delà des scripts) est la peinture des canvas et l'appel de la boucle à chaque image de l'écran.
+
+## Vidéos (temps réel)
+`captures/refonte/video-dots-kw.mp4` (survol des quatre mots-clés, 1280 px), `video-dots-card.mp4` (passage d'une carte à l'autre puis repos, 1280 px), `video-dots-end.mp4` (bas de page au téléphone, 390 px), `video-variants-board.mp4` (les neuf variantes). Captures : `captures/refonte/live-final/` (320, 390, 1440 px ; clair, sombre, mouvement réduit, sans JavaScript). Le board se recapture avec `node tools/capture.mjs <dossier> board.html`.
+
+## Critères de fin
+- [x] Chaque zone a le mouvement choisi par Yann (B, B, C)
+- [x] Plus de `clip-path` sur la bande (test)
+- [x] Vidéos en temps réel de chaque zone dans `captures/refonte/`
+- [x] Mouvement réduit vérifié : image fixe, aucune case ne change, survol sans effet (tests)
+- [x] Tests : `node tools/test-showcase.mjs` (98 vérifications, dont le test de pixels sous les mots-clés) et `node tools/test-clock.mjs` passent
+- [x] Aucune erreur dans la console, aucun défilement horizontal à 320, 390 et 1440 px (captures)
+- [x] Relecture d'Emil : Approuver ; coût mesuré
+- [ ] Publication : sur le mot « publish » de Yann seulement
+
+# Mission « refonte » (2026-11-22)
+
+## Brief
+- Retirer le théâtre et son code ; mettre les projets en avant, surtout les trois composants (inchangés, copies vérifiées dans `tools/showcase/vendor/`) ; Clawd du graphe plus petit et plus mignon, sur les grilles approuvées du skill clawd ; revoir la présentation du graphe et des composants ; tramage en accent seulement (jamais sous un contenu), orange de Clawd comme seule couleur d'accent, glows légers ; un peu plus de texte de présentation (deux versions au plus, aucun fait inventé).
+- Contraintes : anglais, humanizer, rien ne bouge tout seul, mouvement réduit, AA au minimum ; site-studio, emil-craft, emil-design-eng, clawd, animate ; tests existants adaptés ; publication seulement sur « publish ».
+- Motifs à éviter (Yann) : dégradés violet et bleu, verre dépoli, ombres floues partout, néon partout, pilules, numéros « 01/02/03 », étiquettes monospace décoratives.
+- Références : `captures/references/pixel-shader-ui-{1,2}.webp` (tramage orange au bas de la carte active et en bas de l’écran, contenu net). Captures d’une autre app fournies par Yann : gardées sur le Mac, hors du dépôt public (`.gitignore`).
+- Budget d'images : 0 (aucune image générée ; Clawd et l'image de partage viennent des grilles du skill clawd).
+- Skill animate d'Emil installé dans AIOS avant le travail du mouvement (`.agents/skills/animate`, commit `64eb3de`, MIT), noté dans `skills-lock.json` et `.agents/skills/README.md` (branche AIOS `skills/animate`, pas encore envoyée).
+
+## Diagnostic (captures `captures/refonte/before/`)
+- Le théâtre occupait 848 × 472 px du premier écran à 1440 px et environ 240 px au téléphone ; en sombre il était presque vide. Les composants commençaient sous la ligne de flottaison : vers 950 px à 1440 px, vers 965 px au téléphone.
+- Le graphe montrait 53 semaines à 1440 px alors que l'activité commence le 12 septembre 2026 : 40 colonnes de points vides. Clawd y faisait environ 88 px de large.
+- Le tramage noir et blanc couvrait toute la scène et le graphe : rien n'attirait l'œil plus qu'autre chose.
+
+## Directions proposées, choix de Yann
+Trois maquettes réelles (vrais composants, vraies données, vrai Clawd) : `captures/refonte/maquettes/{a,b,c}.html` et planches `sheet-*.png` (pages entières retirées avant publication, régénérables avec `tools/capture.mjs`). A « Le labo d'abord » (cartes sous l'intro, tramage au bas de la carte active), B « Colonne fixe » (intro et graphe fixes à gauche, composants qui défilent), C « Vedette » (Shoji Bento en grand dès le premier écran). **Yann a choisi A.** Intro : version 1 mise en place en attendant son choix.
+
+## Fonctionnement
+- `index.html` : en-tête ; `.hero` (intro avec l'heure, liens) ; `.showcase` (trois cartes `.showcase__item`, chacune avec une bande `.fringe` vide) ; `.activity` ; `footer.end`. Plus de scène.
+- `js/accent.js` (nouveau) : dessine les points orange sur des canvas, une fois par largeur (seuils Bayer 8 × 8, bruit doux à graine fixe, formes `kw`, `fringe`, `end`) ; gère la carte active (dernière pointée à la souris, touchée ou focalisée ; la première au repos ; au clavier, sans transition). Exposé dans `window.accent` pour le board.
+- `js/activity.js` (réécrit) : 26 semaines partout, carrés en éléments `<i data-level>` colorés par le CSS (le thème suit tout seul), mois sous la grille, légende, ligne du jour (aujourd'hui par défaut), clavier inchangé ; Clawd sur un petit canvas en pixels d'écran entiers (2 px par case à côté de carrés de 12 px et plus, environ 1,5 px sinon), marche depuis 120 px à gauche à la première apparition, clignements et rebonds pendant 8 s puis immobile, salut (visage `> <`, bras levé) au survol ou au toucher.
+- `js/main.js` : ne dépend plus de la scène ; `--cell` fixé à 2 px dans le CSS (masques du fondu, impression des mots-clés, chiffres de l'heure).
+- `js/showcase.js` : inchangé dans sa logique ; la section étant au premier écran, le paquet se charge 250 ms après `load` sans défilement.
+- `tools/make-clawd.py` : n'exporte plus que les 18 poses du graphe (42 avant) et dessine `img/share.png` (Clawd qui salue sur un champ de points orange). Favicons identiques au pixel près (non modifiés).
+- Supprimés : `js/show.js`, `js/stage-art.js`, `js/stage.js`, `js/scene.js`, `img/stage-light.png`, `img/stage-dark.png`, le CSS et les balises de la scène, ses sections du board (scène, déroulé du spectacle, accessoires), ses passages du README.
+- `tools/capture.mjs` (nouveau) : captures pleine page par largeur, thème, mouvement réduit, sans JavaScript ; erreurs de console et débordement affichés.
+
+## Décisions
+| Date | Décision | Raison |
+| --- | --- | --- |
+| 2026-11-22 | Direction A, choisie par Yann | Les composants juste sous l'intro, le tramage en accent sur la carte active, comme les références |
+| 2026-11-22 | Intro : version 1 en place (« …My interface components live in Experiments, a public lab where you can copy the code, and three of them are just below. »), « Online I go by yannworks » retiré | Faits déjà publics seulement (profil, `projects/README.md`) ; la phrase retirée répétait le nom du haut de page ; humanizer passé ; Yann choisit entre les versions 1 et 2 |
+| 2026-11-22 | Une seule couleur d'accent, `#d97757`, pour les formes et les points, jamais pour du petit texte | 3,1:1 sur blanc : assez pour une forme, pas pour un texte ; une seule couleur garde le caractère du site |
+| 2026-11-22 | Deux gris ajoutés : `--muted` (texte secondaire, 6,7:1 clair, 7,7:1 sombre) et `--surface`/`--line` (cartes) | Les cartes et leurs lignes ont besoin d'un second niveau ; tout reste AA (board) |
+| 2026-11-22 | Graphe : quatre niveaux d'orange, chacun au moins 3:1 sur le fond (plus foncé pour « plus » en clair, plus clair en sombre) | Un jour actif se voit toujours (WCAG 1.4.11) ; mesuré dans le board |
+| 2026-11-22 | Points orange seulement dans des espaces laissés vides : bande de 4 px sous chaque mot-clé (2 px sous le mot), bande de 40 px au pied des cartes, champ de 56 px (72 px dès 768 px) en bas de page | Consigne « le tramage ne recouvre plus aucun contenu » ; vérifié par un test qui cache les points et cherche des pixels de texte à leur place (320, 390, 1440 px) |
+| 2026-11-22 | Interligne de l'intro 1,4 → 1,65 | Deux lignes de mots-clés à la suite ne laissaient pas la place à la bande (elle touchait le haut de « things » à 1440 px) ; 0,41 em libres entre deux mots-clés, 8,6 px à 21 px |
+| 2026-11-22 | Carte active : la dernière pointée, focalisée ou touchée ; la première au repos ; elle le reste quand le pointeur s'en va | Les points ne clignotent pas en traversant l'espace entre deux cartes (Emil I4) ; au téléphone, un toucher suffit |
+| 2026-11-22 | À partir de 900 px, Shoji Bento mène (deux rangées de haut, 480 px de large par `--shoji-width`), Gem Clip et Snooze Button empilés à côté | Critique de Codex n° 2 : trois cartes égales faisaient « modèle de portfolio » et laissaient Snooze dans une grande scène vide. Variable documentée par le composant ; le composant lui-même est inchangé |
+| 2026-11-22 | Hauteurs de scène fixes, réglées sur la largeur de la carte (requêtes de conteneur) : Gem Clip 184 / 160 / 136 / 112 px selon que la commande tient sur 4, 3, 2 ou 1 ligne ; Shoji 256 puis 296 px dès 336 px de carte | Rien ne bouge quand les composants arrivent ; mesuré de 320 à 1440 px (test « chaque composant tient dans sa scène ») ; Codex n° 2 au second tour |
+| 2026-11-22 | Liens : en ligne sous l'intro au téléphone ; en colonne de 280 px juste à droite du texte (680 px, 80 px d'écart), alignés sur la première ligne, dès 1100 px | Codex n° 5 : collés au bord droit, ils paraissaient sans lien avec l'intro |
+| 2026-11-22 | Graphe : 26 semaines partout, carrés de 6 à 16 px ; sur grand écran, le texte sous la carte de Shoji et la grille sous les deux autres | 53 semaines montraient surtout du vide (activité depuis septembre) ; Codex n° 6 : bloc aligné sur la grille des cartes plutôt que perdu à gauche |
+| 2026-11-22 | Clawd : grille `front` approuvée (22 × 16), 2 px par case (44 × 32) à côté de carrés de 12 px et plus, environ 1,5 px par case en pixels d'écran entiers au téléphone ; pas de cœur | Moitié de l'ancienne taille ; `front_small` est réservé aux tailles sous 24 px et ne cligne pas ; le cœur de l'autocollant est rouge `#ea4646`, une seconde couleur |
+| 2026-11-22 | Plus mignon : salut au survol ou au toucher (visage `> <`, bras levé, petit rebond), marche réduite à 120 px | Mouvements documentés du skill clawd ; rares, donc dans le budget de plaisir d'Emil |
+| 2026-11-22 | Les carrés du graphe ne s'animent plus (l'ancien remplissage point par point est supprimé) | Emil M2 : pas de mouvement décoratif sur des données qu'on lit |
+| 2026-11-22 | Image de partage refaite depuis les grilles (`tools/make-clawd.py`) | L'ancienne montrait le théâtre |
+| 2026-11-22 | `tools/test-clock.mjs` : horloge simulée installée une seconde avant l'instant voulu, puis arrêtée sur lui | Le test échouait 2 fois sur 3 en fin de mission (« Cannot fast-forward to the past ») quand quelques millisecondes passaient entre l'installation et l'arrêt ; 4 passages sur 4 ensuite |
+| 2026-11-22 | `tools/measure-load.mjs` compte la page sans le paquet et le paquet à part, sans défilement ; les URL `data:` ne comptent plus | La vitrine se charge maintenant sans défilement ; les masques de l'impression des mots-clés ne sont pas des téléchargements |
+
+## Mesures (téléphone 390 px, 150 ms d'aller-retour, 1,6 Mbit/s, cache vide, gzip, médiane de 7)
+| | `main` | `refonte` |
+| --- | --- | --- |
+| Page (sans le paquet de la vitrine) | 157,6 Ko, 16 requêtes | 144,2 Ko, 12 requêtes |
+| Premier affichage | 632 ms | 728 ms |
+| Plus grand affichage | 1 048 ms | 968 ms |
+| DOM prêt / `load` | 958 / 1 131 ms | 738 / 1 050 ms |
+| Paquet de la vitrine | après défilement seulement | 77,8 Ko en 2 requêtes, composants à l'écran à 1 941 ms, sans défilement |
+
+Le premier affichage recule de 96 ms ; la cause n'est pas isolée (CSS plus long de 6 Ko, impression des mots-clés). Position des cartes : la première carte commence à 567 px sur un téléphone 390 × 844 (avant : la vitrine à 965 px), 485 px à 1440 × 900 (avant : 950 px). Fichiers : `captures/refonte/measure-before.txt`, `measure-after.txt`.
+
+## Assets
+Budget : 0 génération. `img/share.png` redessinée en code depuis les grilles du skill clawd. `js/clawd-sprites.js` régénéré (18 poses).
+
+## Critiques de Codex
+Demandes, critiques et réponses dans `critiques/refonte-*.md`. Deux allers-retours, rien de bloquant.
+
+| # | Gravité | Critique (résumé) | Réponse de Claude | Second tour |
+| --- | --- | --- | --- | --- |
+| 1 | majeure | L'intro passe encore avant les projets ; carte à 580 px au téléphone | Partiel : espacements resserrés (567 px) ; le texte de l'intro est le choix de Yann (la phrase ajoutée coûte environ 140 px, voir « Manques et limites ») ; titre de section gardé (convention du site : un mot-clé serif, une seule grande taille) | refus sur le texte : « reason holds » ; reste ouvert, décision de Yann |
+| 2 | majeure | Trois cartes égales, petits composants perdus dans de grandes scènes | Partiel : Shoji mène sur grand écran ; au second tour, scènes de Gem Clip réglées sur la largeur (136 px à 390 px) au lieu d'une hauteur unique | bureau : fixed ; téléphone corrigé après le second tour |
+| 3 | majeure | Bandes sous les mots-clés comme des soulignements de correcteur | Accepté : 4 px, éparses, 2 px sous le mot ; interligne 1,65 ; test de recouvrement | fixed |
+| 4 | majeure | Points trop denses au pied des cartes et en bas de page | Accepté : densité plafonnée vers la moitié, champ de 56/72 px plus léger | fixed |
+| 5 | majeure | Liens isolés au bord droit à 1440 px | Accepté : grille 680 / 80 / 280 px, alignés sur la première ligne, note sous Experiments | fixed |
+| 6 | majeure | Graphe perdu à gauche avec un grand vide | Partiel : pas centré (page alignée à gauche) ; posé sur les deux colonnes des cartes | reason holds, fixed |
+| 7 | mineure | Clawd trop grand au téléphone, légende détachée | Partiel : environ 1,5 px par case au téléphone, jour affiché par défaut, pastilles de la taille des carrés | fixed (visuellement) |
+
+## Relecture du mouvement et du toucher d'après Emil (2026-11-22)
+Fichiers lus : `review-animations/SKILL.md`, `review-animations/STANDARDS.md`, `animate/SKILL.md` (le skill installé), la checklist d'emil-craft et `wiki/hot.md`. Méthode : code, captures image par image au ralenti (×10, `captures/refonte/frames-fringe.png`), images de Clawd tirées de son horloge (`frames-clawd.png`), tests au clavier, au toucher simulé et en mouvement réduit. Carte de fréquence : points des cartes, quelques dizaines de fois par visite (survol) ; marche et salut de Clawd, rares ; impression des mots-clés et entrée, une fois.
+
+| Avant | Après | Pourquoi | Règle | Preuve |
+| --- | --- | --- | --- | --- |
+| 1. `js/accent.js` : le focus clavier faisait monter les points en 280 ms | Au clavier, les points sont là tout de suite (`data-instant`, `transition: none`) ; après un clic ou un toucher, la transition reste | Pas de mouvement sur une action au clavier | M1, R2 | Observé (test : durée 0 s au focus clavier) |
+| 2. `style.css` : montée et descente symétriques en 280 ms | Montée 220 ms sur la carte qu'on vise, descente 160 ms sur celle qu'on quitte, `--ease-out` fort | Survol fréquent : réduire ; la réponse du système est plus rapide | M5, M13, R3 | Observé (images au ralenti) |
+| 3. `style.css` : la bande sous un mot-clé apparaissait d'un coup à la fin de son impression | Fondu de 240 ms quand l'impression finit | Éviter un changement brusque | M2 | Déduit |
+| 4. Remplissage animé des carrés du graphe | Supprimé | Données qu'on lit | M2, R3 | Observé |
+
+Tient : transitions (pas d'images clés), donc interruptibles (M11) ; `clip-path` et `opacity` seulement sur les points, Clawd déplacé par `transform` (P1) ; survol limité à la souris (`pointerType`, I1) ; mouvement réduit : les points se fondent sans monter, Clawd ne marche ni ne rebondit (A1, testé). **Décision : Approuver.** À vérifier sur un vrai téléphone : le toucher d'une carte pendant un glisser de Shoji, et la sensation de la montée des points.
+
+## Critères de fin
+- [x] Théâtre et code retirés (4 scripts, 2 images, CSS, balises, board, README, tests ; test « aucun script de scène chargé »)
+- [x] Composants mis en avant (première carte à 567 px au téléphone, 485 px à 1440 px), essayés à la souris, au doigt et au clavier (tests)
+- [x] Nouveau Clawd en place, grilles du skill clawd, plus petit, salut au survol ou au toucher
+- [x] Le tramage ne recouvre aucun contenu (test de pixels sous les mots-clés ; bandes des cartes sous le lien et la scène ; champ du bas sous tout)
+- [x] Captures 320, 390, 1440 px, clair, sombre, mouvement réduit, sans JavaScript : `captures/refonte/final/` (remplacées avant publication par `live-final/`, prises après les points vivants)
+- [x] Aucune erreur dans la console, aucun défilement horizontal (captures et tests)
+- [x] Tests : `node tools/test-showcase.mjs` (85 vérifications) et `node tools/test-clock.mjs` (39, rendu fiable) passent
+- [x] `board.html` à jour (couleurs et contrastes mesurés, points orange, graphe, cartes, 18 poses)
+- [x] Critique de Codex (deux tours) et relecture d'Emil (Approuver)
+- [x] README et STATE.md à jour
+- [ ] Publication : sur le mot « publish » de Yann seulement
+
+## Captures
+`captures/refonte/` : `before/` (état de départ, 390 et 1440 px), `maquettes/` (les trois directions), `review/` (envoyées à Codex), `live-final/` (`page-{320,390,1440}-{light,dark}[-reduced].png`, `page-*-nojs.png`, état final avec les points vivants), `frames-fringe.png`, `frames-clawd.png`, `sheet-final-phones.png`.
+
+## Idées non retenues
+- Le cœur de l'autocollant au salut de Clawd : rouge, une seconde couleur.
+- Un champ de points fixé en bas de l'écran, comme dans la référence : il passerait sur le contenu en défilant.
+- Le graphe centré sur grand écran (Codex) : la page est alignée à gauche partout.
+- Titre de section plus grand (Codex) : le site garde une seule grande taille, l'intro.
+
+## Manques et limites
+- Intro au téléphone : la phrase ajoutée (version 1) coûte environ 140 px ; sans elle, la première carte serait à 428 px au lieu de 567 px sur un téléphone 390 × 844 (480 contre 654 px à 320). La version 2 est plus longue encore. Décision de Yann.
+- Le paquet de la vitrine (77,8 Ko gzip) se charge maintenant à chaque visite, puisque la section est au premier écran.
+- Premier affichage 96 ms plus tard que sur `main` (cause non isolée).
+- Pas testé sur un vrai téléphone, dans Safari ou Firefox, ni avec un vrai lecteur d'écran.
+- Le contraste de la pilule de Snooze sur fond sombre (1,39:1) reste celui du composant, comme avant.
 
 # Mission « vitrine de composants » (2026-11-21)
 

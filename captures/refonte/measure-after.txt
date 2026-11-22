@@ -1,0 +1,4 @@
+7 runs, phone 390 px, 150 ms RTT, 1.6 Mbit/s, empty cache, gzip; medians
+page:     144.2 KB in 12 requests
+          first paint 728 ms, largest paint 968 ms, DOM ready 738 ms, load 1050 ms
+showcase: 77.8 KB in 2 more requests, components on screen 1941 ms after the start of the visit

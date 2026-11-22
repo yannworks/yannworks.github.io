@@ -7,9 +7,10 @@
 // It serves this folder itself, gzipped like GitHub Pages, and prints the
 // median of each number.
 //
-// "Opening" counts what the browser fetches before the visitor scrolls.
-// "Showcase" scrolls to the bottom and counts what arrives on top of that,
-// and when the three components are on screen.
+// "Page" counts everything the browser fetches without the visitor doing
+// anything, except the showcase bundle, which is counted on its own line with
+// the moment the three components are on screen (they load after the page,
+// without scrolling: the section is on the first screen).
 
 import { chromium } from "playwright";
 import { createServer } from "node:http";
@@ -67,6 +68,10 @@ async function once() {
   });
 
   await page.goto(URL_, { waitUntil: "load" });
+  const mounted = await page
+    .waitForFunction(() => document.querySelector(".showcase.is-live"), null, { timeout: 15000 })
+    .then(() => page.evaluate(() => performance.now()))
+    .catch(() => null);
   await page.waitForTimeout(1500);
   const timing = await page.evaluate(() => {
     const nav = performance.getEntriesByType("navigation")[0];
@@ -78,22 +83,12 @@ async function once() {
     for (const [id, n] of bytes) if (filter(urls.get(id) || "")) { total += n; count++; }
     return { total, count };
   };
-  const opening = sum(() => true);
-  const before = new Set(bytes.keys());
-
-  // Scroll to the bottom, the way a visitor would, and wait for the components.
-  const t0 = await page.evaluate(() => performance.now());
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-  const mounted = await page
-    .waitForFunction(() => document.querySelector(".showcase.is-live"), null, { timeout: 15000 })
-    .then(() => page.evaluate(() => performance.now()))
-    .catch(() => null);
-  await page.waitForTimeout(500);
-  let extra = 0, extraCount = 0;
-  for (const [id, n] of bytes) if (!before.has(id)) { extra += n; extraCount++; }
+  // data: URLs (the dither masks of the keyword print) are not downloads: left out.
+  const opening = sum((u) => !u.includes("/showcase/") && !u.startsWith("data:"));
+  const bundle = sum((u) => u.includes("/showcase/"));
 
   await context.close();
-  return { ...timing, opening: opening.total, requests: opening.count, extra, extraCount, mount: mounted === null ? null : mounted - t0 };
+  return { ...timing, opening: opening.total, requests: opening.count, extra: bundle.total, extraCount: bundle.count, mount: mounted };
 }
 
 const runs = [];
@@ -106,9 +101,9 @@ const kb = (n) => `${(n / 1024).toFixed(1)} KB`;
 const ms = (n) => (n === null ? "n/a" : `${Math.round(n)} ms`);
 
 console.log(`${RUNS} runs, phone 390 px, 150 ms RTT, 1.6 Mbit/s, empty cache, gzip; medians`);
-console.log(`opening:  ${kb(median("opening"))} in ${median("requests")} requests`);
+console.log(`page:     ${kb(median("opening"))} in ${median("requests")} requests`);
 console.log(`          first paint ${ms(median("fcp"))}, largest paint ${ms(median("lcp"))}, DOM ready ${ms(median("dcl"))}, load ${ms(median("load"))}`);
-console.log(`showcase: ${kb(median("extra"))} in ${median("extraCount")} more requests, components on screen ${ms(median("mount"))} after the scroll`);
+console.log(`showcase: ${kb(median("extra"))} in ${median("extraCount")} more requests, components on screen ${ms(median("mount"))} after the start of the visit`);
 
 await browser.close();
 server.close();

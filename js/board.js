@@ -14,11 +14,13 @@
     const [x, y] = [luminance(a), luminance(b)].sort((m, n) => n - m);
     return (x + 0.05) / (y + 0.05);
   };
+  const NAMES = ["paper", "ink", "muted", "surface", "line", "clawd", "level-1", "level-2", "level-3", "level-4"];
   function themeColours(theme) {
     const before = root.dataset.theme;
     root.dataset.theme = theme;                     // same task: nothing is painted in between
     const css = getComputedStyle(root);
-    const out = { paper: css.getPropertyValue("--paper").trim(), ink: css.getPropertyValue("--ink").trim() };
+    const out = {};
+    NAMES.forEach((n) => { out[n] = css.getPropertyValue("--" + n).trim(); });
     root.dataset.theme = before;
     return out;
   }
@@ -27,7 +29,11 @@
     const c = themeColours(theme);
     const rows = [
       [`${theme}: ink ${c.ink} on paper ${c.paper}`, ratio(c.ink, c.paper), 4.5],
-      [`${theme}: Clawd orange on paper`, ratio("#d97757", c.paper), 3],
+      [`${theme}: ink on a card ${c.surface}`, ratio(c.ink, c.surface), 4.5],
+      [`${theme}: muted text ${c.muted} on paper`, ratio(c.muted, c.paper), 4.5],
+      [`${theme}: muted text on a card`, ratio(c.muted, c.surface), 4.5],
+      [`${theme}: Clawd orange on paper (shapes, dots)`, ratio(c.clawd, c.paper), 3],
+      ...[1, 2, 3, 4].map((l) => [`${theme}: graph level ${l} ${c["level-" + l]} on paper`, ratio(c["level-" + l], c.paper), 3]),
     ];
     for (const [label, r, need] of rows) {
       const li = document.createElement("li");
@@ -150,19 +156,6 @@
     setTimeout(() => showClock(clocks[0], clockAt(new Date("2026-11-21T21:00:00Z"), zone), true), 600);
   });
 
-  // ---- The show's timeline.
-  const normal = buildTimeline(false), reduced = buildTimeline(true);
-  const body = document.querySelector("#timeline tbody");
-  normal.list.forEach((m, i) => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${m.start.toFixed(1)} s</td><td>${reduced.list[i].start.toFixed(1)} s</td><td></td>`;
-    tr.lastChild.textContent = m.name;
-    body.append(tr);
-  });
-  const end = document.createElement("tr");
-  end.innerHTML = `<td>${normal.length.toFixed(1)} s</td><td>${reduced.length.toFixed(1)} s</td><td>The loop starts again</td>`;
-  body.append(end);
-
   // ---- Clawd's poses, cell by cell.
   const poses = document.getElementById("poses");
   for (const [name, grid] of Object.entries(CLAWD_POSES)) {
@@ -181,48 +174,106 @@
     poses.append(f);
   }
 
-  // ---- Props in grey, as the shader receives them.
-  const props = document.getElementById("props");
-  for (const [label, t] of [["at the piano", 10], ["typing", 25], ["robot awake, waving", 40.05], ["robot open", 37]]) {
-    const layer = makeLayer(STAGE.W, STAGE.H);
-    paintProps(layer, showAt(normal, t));
-    const k = 2, c = document.createElement("canvas");
-    c.width = STAGE.W * k; c.height = STAGE.H * k;
-    const g = c.getContext("2d");
-    for (let y = 0; y < STAGE.H; y++) {
-      for (let x = 0; x < STAGE.W; x++) {
-        const i = (y * STAGE.W + x) * 4;
-        if (!layer.data[i + 3]) continue;
-        const v = layer.data[i];
-        g.fillStyle = `rgb(${v},${v},${v})`;
-        g.fillRect(x * k, y * k, k, k);
-      }
-    }
-    const f = document.createElement("figure");
-    const cap = document.createElement("figcaption");
-    cap.textContent = label + ` (t = ${t} s)`;
-    f.append(c, cap);
-    props.append(f);
-  }
-
-  // ---- The contribution graph: the five levels, then the live component.
-  const legend = document.getElementById("levels-legend");
-  const ink = getComputedStyle(root).getPropertyValue("--ink").trim();
-  ACTIVITY.DOTS.forEach((n, level) => {
-    const k = 8, c = document.createElement("canvas");
-    c.width = c.height = 4 * k;
-    const g = c.getContext("2d");
-    g.fillStyle = ink;
-    for (let i = 0; i < n; i++) g.fillRect(DOT_ORDER[i].x * k, DOT_ORDER[i].y * k, k, k);
-    const f = document.createElement("figure");
-    const cap = document.createElement("figcaption");
-    cap.textContent = `level ${level}: ${n} dot${n > 1 ? "s" : ""}`;
-    f.className = "swatch";
-    f.style.margin = "0";
-    f.append(c, cap);
-    legend.append(f);
+  // ---- Living dots: three variants per zone, side by side (js/dots.js).
+  const live = [];
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text) e.textContent = text; return e; };
+  const CHOSEN = { kw: "kwSparkle", fringe: "fringeFlow", end: "endDrift" };   // Yann, 2026-11-22
+  const VARIANTS = {
+    kw: [
+      ["A. Shuffle", "kwShuffle", "Appears once, its cells in a random order. Point at the word: a new pattern replaces the old one, cell by cell, in a random order."],
+      ["B. Sparkle", "kwSparkle", "Appears once in a random order. Point at the word: it crackles for under a second, then settles back exactly as it was."],
+      ["C. Write", "kwWrite", "Written once from left to right, the front ragged. Point at the word: it is written again with a new pattern."],
+    ],
+    fringe: [
+      ["A. Breathe", "fringeBreathe", "The band swells and settles about every 5 s, its edge rising and falling cell by cell; a few edge cells twinkle."],
+      ["B. Flow", "fringeFlow", "The patches drift sideways through the band, about 1.5 cells a second: cells light ahead of a patch and go out behind it."],
+      ["C. Embers", "fringeEmbers", "The band stays; sparks leave it, each lighting the cell above it for two to five steps, then going out."],
+    ],
+    end: [
+      ["A. Tide", "endTide", "Fills as you reach the end, from the bottom row up, in a random order; scrolling back up drains it. Only scrolling moves it."],
+      ["B. Ripple", "endRipple", "Still; the pointer moving over it (or a tap) sends a ring through it, flipping the cells it crosses."],
+      ["C. Drift", "endDrift", "Whenever it is on screen, its patches roll slowly up and sideways, like the light of embers."],
+    ],
+  };
+  VARIANTS.kw.forEach(([name, key, text], v) => {
+    const row = document.getElementById(CHOSEN.kw === key ? "live-kw" : "live-other-kw");
+    const box = el("div", "live");
+    box.append(el("h3", "", name), el("p", "", text));
+    const intro = el("p", "live-intro");
+    intro.append("I like ");
+    const word = el("b", "kw", "building apps");
+    intro.append(word, " with AI.");
+    box.append(intro);
+    row.append(box);
+    const canvas = el("canvas", "kw__dots");
+    word.append(canvas);
+    requestAnimationFrame(() => live.push(DOTS.run(new DOTS.Field(canvas, { shape: "kw", cell: 2, step: 4, salt: 10 + v }), BEHAVIOURS[key], { word })));
   });
+  VARIANTS.fringe.forEach(([name, key, text], v) => {
+    const row = document.getElementById(CHOSEN.fringe === key ? "live-fringe" : "live-other-fringe");
+    const box = el("div", "live");
+    box.append(el("h3", "", name), el("p", "", text));
+    const cards = el("div", "live-cards");
+    box.append(cards);
+    row.append(box);
+    const pair = [0, 1].map((k) => {
+      const card = el("div", "live-card");
+      card.tabIndex = 0;
+      card.append(el("b", "", k ? "Gem Clip" : "Shoji Bento"), el("span", "", "Open in Experiments"));
+      const strip = el("div", "live-strip");
+      const canvas = el("canvas");
+      strip.append(canvas);
+      card.append(strip);
+      cards.append(card);
+      return { card, canvas };
+    });
+    requestAnimationFrame(() => {
+      const items = pair.map(({ card, canvas }, k) => {
+        const item = DOTS.run(new DOTS.Field(canvas, { shape: "fringe", cell: 3, salt: 20 + v * 2 + k }), BEHAVIOURS[key], { card });
+        live.push(item);
+        return { card, item };
+      });
+      const activate = (which) => items.forEach(({ card, item }) => {
+        const on = card === which;
+        card.classList.toggle("is-on", on);
+        item.behaviour.card.set(on);
+      });
+      items.forEach(({ card }) => {
+        card.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") activate(card); });
+        card.addEventListener("pointerdown", () => activate(card));
+        card.addEventListener("focusin", () => activate(card));
+      });
+      activate(items[0].card);
+    });
+  });
+  VARIANTS.end.forEach(([name, key, text], v) => {
+    const row = document.getElementById(CHOSEN.end === key ? "live-end" : "live-other-end");
+    const box = el("div", "live");
+    box.append(el("h3", "", name), el("p", "", text));
+    const scroll = el("div", "live-scroll");
+    const filler = el("div", "filler");
+    for (let i = 0; i < 6; i++) filler.append(el("p", "", "The rest of the page. Scroll down to its end."));
+    const end = el("div", "live-end");
+    const canvas = el("canvas");
+    end.append(canvas);
+    scroll.append(filler, end);
+    box.append(scroll);
+    row.append(box);
+    requestAnimationFrame(() => live.push(DOTS.run(new DOTS.Field(canvas, { shape: "end", cell: 3, step: 9, salt: 30 + v }), BEHAVIOURS[key], { root: scroll })));
+  });
+  document.getElementById("live-seed").addEventListener("click", () => DOTS.newVisit());
+  const reducedButton = document.getElementById("live-reduced");
+  reducedButton.addEventListener("click", () => {
+    const on = reducedButton.getAttribute("aria-pressed") !== "true";
+    reducedButton.setAttribute("aria-pressed", String(on));
+    DOTS.setReduced(on);
+  });
+  document.getElementById("live-replay").addEventListener("click", () => {
+    live.filter((item) => item.field.shape === DOTS.SHAPES.kw).forEach((item) => { item.behaviour.reset(); item.behaviour.seen(item.time); item.field.paint(() => false); item.poke(); });
+  });
+  window.liveDots = live;
 
+  // ---- The contribution graph, live.
   // Made-up data for the board only, clearly labelled, when the real file is not there yet.
   function sampleData() {
     let seed = 7;
@@ -245,5 +296,6 @@
     section.querySelector(".activity__fallback").hidden = true;
     const graph = mountActivity(section, data);
     document.getElementById("replay-graph").addEventListener("click", () => graph.replay());
+    document.getElementById("poke-graph").addEventListener("click", () => graph.poke());
   });
 })();

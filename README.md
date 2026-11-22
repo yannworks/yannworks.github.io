@@ -1,6 +1,6 @@
 # yannworks.github.io
 
-The personal site of yannworks: one page with a short intro (with Yann's local time), three links, a GitHub contribution graph, and a small pixel-art theatre where Clawd, the Claude Code mascot, plays the piano, types and wakes up a little robot under a spotlight. Everything except Clawd is drawn in two colours by a dithering shader.
+The personal site of yannworks: one page with a short intro (with Yann's local time) and three links, then three real components from Yann's lab, Experiments, to try on the spot, then a GitHub contribution graph where a small Clawd, the Claude Code mascot, stands on today. Ink on paper, with Clawd's orange as the only accent: dithered dots that appear in empty space, under the intro's keywords, at the foot of the card you are using and at the end of the page.
 
 Plain HTML, CSS and JavaScript. No framework, no build step: GitHub Pages serves these files as they are.
 
@@ -8,15 +8,14 @@ Plain HTML, CSS and JavaScript. No framework, no build step: GitHub Pages serves
 
 | File | What it does |
 | --- | --- |
-| `index.html` | The page: name, intro, links, the scene, the graph, the showcase. Works without JavaScript. |
+| `index.html` | The page: name, intro, links, the showcase, the graph. Works without JavaScript. |
 | `style.css` | All the styles. Colours, fonts, sizes and timings are variables at the top. |
-| `js/show.js` | The show: what happens on stage at each second of the 50 s loop. |
-| `js/stage-art.js` | The props (piano, typewriter, robot...) drawn as text grids, and Clawd's layer. |
-| `js/stage.js` | The WebGL shader that lights the stage and turns it into black and white dots. |
-| `js/scene.js` | Runs the scene on the page: size, clock, follow-spot, pause button. |
+| `js/dots.js` | The living dots: one engine (a grid per zone, one animation loop at 12 steps a second) and the three motions in use, Sparkle, Flow and Drift. |
+| `js/accent.js` | Puts the dots in place: under the keywords, at the foot of the cards, at the end of the page; decides which card is active. |
+| `js/dots-lab.js` | The six motions not chosen, kept on the board for comparison. Not loaded by the page. |
 | `js/main.js` | Theme toggle with the dither dissolve, and the keywords printing in dots. |
 | `js/clock.js` | Yann's local time in the intro, and how far it is from the visitor's time. |
-| `js/activity.js` | The contribution graph: reads `contributions.json`, draws the dots, Clawd on today. |
+| `js/activity.js` | The contribution graph: reads `contributions.json`, draws the squares, Clawd on today. |
 | `js/showcase.js` | Loads the showcase (three Experiments components) when the visitor scrolls to it. |
 | `showcase/` | The showcase bundle: the three components and React, built by `tools/showcase/`. Do not edit by hand. |
 | `tools/showcase/` | Builds the bundle: `build.mjs`, the site's own `entry.tsx`, and `vendor/` (the components copied unchanged from Experiments, with the commit in `SOURCE.json`). |
@@ -25,23 +24,31 @@ Plain HTML, CSS and JavaScript. No framework, no build step: GitHub Pages serves
 | `tools/fetch-contributions.mjs` | What the Action runs: asks GitHub for the calendar and writes the JSON. |
 | `tools/sample-contributions.mjs` | Made-up data to try the graph on your computer (shown only on localhost). |
 | `js/clawd-sprites.js` | Clawd's poses. Generated, do not edit by hand (see below). |
-| `board.html`, `js/board.js` | The design board: tokens, components, dither levels, poses, timeline. |
+| `board.html`, `js/board.js` | The design board: colours and their contrast, type, the orange dots, the graph, the cards, Clawd's poses. |
 | `fonts/` | Geist and Geist Serif (woff2) with their licence, `OFL.txt`. |
-| `img/` | Still frames of the scene (used without WebGL or JavaScript) and the share image. |
+| `img/share.png` | The share image (Clawd waving over orange dots), made by `tools/make-clawd.py`. |
 | `tools/test-clock.mjs` | Browser tests for the local time (time zones, clock changes, midnight). |
 | `tools/test-showcase.mjs` | Browser tests for the showcase and the rest of the page (loading, failure, copy, keyboard, touch). |
 | `tools/measure-load.mjs` | Weight and load time of the page on a throttled phone, and of the showcase after scrolling. |
-| `tools/make-clawd.py` | Rebuilds `js/clawd-sprites.js` and the favicons from the clawd skill. |
+| `tools/capture.mjs` | Full-page screenshots at chosen widths, light and dark, reduced motion, without JavaScript. |
+| `tools/measure-dots.mjs` | What the living dots cost on a slowed-down phone: script time per step and main-thread share, animated and still. |
+| `tools/make-clawd.py` | Rebuilds `js/clawd-sprites.js`, the favicons and the share image from the clawd skill. |
 | `.web-craft/` | Notes on the current piece of work: brief, decisions, checks. Earlier ones are in `.web-craft-history/`. |
 
-## How the scene works
+## How the orange dots work
 
-1. **The show** (`show.js`) is a list of moments with durations. `showAt(t)` returns the state of the stage at any time `t`: where Clawd stands, which pose he has, what the props are doing, where the spot aims.
-2. **The art** (`stage-art.js`) paints that state into a small grid of 212 × 118 cells. Each prop is a text drawing where a digit is a shade: `0` black, `9` white.
-3. **The shader** (`stage.js`) runs once per cell, every frame. It adds the curtains, floor and seats, lights everything with the house lights plus the follow-spot (with shadows), then compares each cell's brightness with a threshold from an 8 × 8 Bayer grid: brighter gives the light colour, darker the dark one. That is ordered dithering. Clawd is drawn last, in his orange, never dithered.
-4. **The page** (`scene.js`) enlarges the canvas by a whole number of screen pixels so every dot stays a sharp square, runs at 30 frames per second, and stops when the scene is off screen, the tab is hidden, or the pause button is pressed.
+The dots are Clawd's orange, `#d97757`, the only colour on the page besides ink, paper and two greys. They never sit under text or a component: only in space left empty for them.
 
-In the dark theme the colours swap and the house lights go down, so the spot does the lighting. With reduced motion, Clawd does not walk: the spot dims, and when it comes back up he is at the next prop.
+1. **Where.** Under each keyword of the intro, a 4 px band of 2 px dots in the gap between lines. At the foot of each component card, a 40 px strip kept empty below the link. At the end of the page, a field of 56 px (72 px on wider screens).
+2. **The grid** (`js/dots.js`). Each place gets a canvas cut into cells (2 px under the keywords, 3 px elsewhere). Every cell has a density (how much the place wants a dot there: dense at the bottom of a card, fading upwards, broken into patches by a soft noise) and a threshold from the 8 × 8 Bayer grid, the same grid as the theme dissolve. A cell is on when its density is above its threshold. The cells never move, never fade and are never cut: motion only changes which cells are on.
+3. **One loop.** A single `requestAnimationFrame` loop moves all three places, but only 12 times a second, so the dots change in small jumps like pixels instead of gliding at 60 Hz. A place only gets steps while it is on screen (an `IntersectionObserver`), the tab is visible and its motion has something to do; when nothing does, the loop stops. Only the cells that change are painted. Every visit draws a new random seed, so the patterns are never the same twice.
+4. **The three motions**, each chosen by Yann among three:
+   - **Under the keywords: Sparkle.** The band appears once, its cells in a random order, after the word itself has printed. Pointing at the word makes it crackle for 600 ms, fewer and fewer cells flipping, then it is exactly as before. Nothing moves while you read.
+   - **The active card: Flow.** The card the visitor last pointed at, touched or reached with the keyboard has the class `is-active` (the first card before that). Its strip lights in a random order in 300 ms, with a faint warm light behind it; the previous card's strip goes out in a random order in 200 ms. While the card stays active and on screen, the noise under its strip drifts sideways, about 1.5 cells a second: cells light ahead of a patch and go out behind it. Reached with the Tab key, the switch is immediate. Changed halfway, it carries on from the cells already lit.
+   - **The end of the page: Drift.** Whenever it is on screen, the field rolls slowly up and sideways, like the glow of embers. It is the one place that moves without the visitor doing anything.
+5. **Reduced motion and no JavaScript.** With reduced motion, each place shows one still image (today's seed) and never moves. Without JavaScript there are no dots at all.
+
+**Cost** (`node tools/measure-dots.mjs`, phone 390 px with the processor slowed down 4 times): about 2.7 ms of script per step, 12 steps a second, so the main thread is about 9 to 11 % busy while a strip or the page end is on screen, under 0.5 % with reduced motion.
 
 ## How the contribution graph works
 
@@ -61,7 +68,9 @@ Three pieces, each with one job:
 
 **Until the first run** `contributions.json` holds no days and the section stays hidden. To see the graph on your computer, write made-up data with `node tools/sample-contributions.mjs contributions.json` and serve the folder; that file is marked as a sample and never shows on the real site. Do not commit it.
 
-The drawing: each day is 4 × 4 dots; GitHub's levels 0 to 4 show 1, 2, 4, 8 and 16 of them, in the order of the 4 × 4 Bayer grid (the small version of the scene's grid). A computer shows the last 53 weeks, a phone the last 26. Clawd walks to today once, then stays still until you tap or hover him.
+The drawing: one square per day for the last 26 weeks, on every screen, as large as the width allows (6 to 16 px). Empty days are grey; GitHub's levels 1 to 4 are four shades of Clawd's orange, each at least 3:1 against the background, darker for more in the light theme and brighter for more in the dark one. Month names sit under the columns. Hover a square, tap it, or focus the graph and use the arrow keys to read a day.
+
+Clawd is drawn from the approved grids, 2 px per cell (44 × 32 px). The first time the graph comes on screen he walks in from the left to today's column, blinks and bounces a couple of times, then stands still. Point at him or tap him and he waves with his happy face. With reduced motion he is already there, and only blinks.
 
 ## How the local time works
 
@@ -82,11 +91,11 @@ Screen readers get a `<time>` element with the full date and offset, and no live
 
 ## How the showcase works
 
-The last section holds three real components from [Experiments](https://github.com/yannworks/experiments): Shoji Bento, Gem Clip and Snooze Button. They are React components, and this site has no framework and no build step, so they arrive as one ready-made bundle.
+The section right under the intro holds three real components from [Experiments](https://github.com/yannworks/experiments): Shoji Bento, Gem Clip and Snooze Button, each on its own card. They are React components, and this site has no framework and no build step, so they arrive as one ready-made bundle.
 
 - `tools/showcase/build.mjs` downloads each component's `.tsx` and `.css` from GitHub at one exact commit into `tools/showcase/vendor/`, unchanged, and writes that commit in `vendor/SOURCE.json`. It then bundles them, React 19.3.1 and `entry.tsx` (which components, with which content) into `showcase/showcase.js` and `showcase/showcase.css` with esbuild.
-- The section's text and links are plain HTML in `index.html`. `js/showcase.js` waits until the page has loaded and the section has come on screen, then adds the two files and calls `showcase.mount()`, which draws each component in its `data-demo` stage. If the files fail to load, the stages are hidden and the names, lines and links stay, as without JavaScript.
-- The components keep their own look. Site-side adjustments live in `style.css`: the stage sizes, the corner marks, and `touch-action: pan-y` on Shoji Bento's lines on touch screens, so a vertical swipe that starts on a line still scrolls the page.
+- The section's text and links are plain HTML in `index.html`. `js/showcase.js` waits until the page has loaded and the section has stayed on screen for a quarter of a second (on most screens that is right away, since it starts in the first screen), then adds the two files and calls `showcase.mount()`, which draws each component in its `data-demo` stage. If the files fail to load, the stages are hidden and the names, lines and links stay, as without JavaScript.
+- The components keep their own look. Site-side adjustments live in `style.css`: the cards, the stage sizes (fixed, so nothing moves when the components arrive), and `touch-action: pan-y` on Shoji Bento's lines on touch screens, so a vertical swipe that starts on a line still scrolls the page.
 
 **Update to a newer Experiments:** `cd tools/showcase`, `npm ci` once, then `node build.mjs latest` (or `node build.mjs <commit>`). To build from a commit that is not on GitHub yet, read it from a local clone: `node build.mjs --from ../../../experiments <commit>`, and push Experiments before publishing the site. Check the page, run `node tools/test-showcase.mjs`, and commit `tools/showcase/vendor/` and `showcase/` together. `node build.mjs` with no argument rebuilds from the commit already in `SOURCE.json`, and stops if a file in `vendor/` was edited by hand: changes to a component belong in Experiments.
 
@@ -98,12 +107,10 @@ Pressing the toggle starts a view transition: the browser keeps a picture of the
 
 ## Changing things
 
-- Colours, fonts, sizes, timings: the variables at the top of `style.css`.
+- Colours, fonts, sizes, timings: the variables at the top of `style.css`. The graph's four oranges are `--level-1` to `--level-4`.
 - Text and links: `index.html`.
-- The show (order, durations): `moments()` in `js/show.js`. The board (`board.html`) lists every moment with its start time.
-- A prop's look: its text drawing in `js/stage-art.js`.
-- Light levels and the spot: `SCENE` at the top of `js/scene.js`.
-- To see one moment without waiting: open `index.html?at=40` (the scene pauses there).
+- The orange dots: their sizes in `ACCENT` at the top of `js/accent.js`; their shapes in `SHAPES`, the cadence in `FPS` and the three motions (speeds, durations) in `js/dots.js`; the card strip's height is `--fringe-h` in `style.css`. The board (`board.html`, "Living dots") shows the three motions in use and the six that were not chosen, with a button for a new seed and one for reduced motion.
+- The graph: number of weeks, square sizes and Clawd's timing in `ACTIVITY` at the top of `js/activity.js`.
 - The showcase: names and lines in `index.html`; what each component shows (the Shoji facts, the command Gem Clip copies, the Snooze labels) in `tools/showcase/entry.tsx`, then rebuild.
 - The local time: the zone and the swap duration are in `CLOCK` at the top of `js/clock.js`; the wording is in `gapText()` and `showClock()`.
 
@@ -111,7 +118,7 @@ To try the site on your computer, serve the folder (for example `python3 -m http
 
 ## Clawd
 
-Clawd is the Claude Code mascot; this is fan art. Its poses come from the approved pixel grids of the clawd skill in the owner's AIOS workspace, never redrawn by hand. To regenerate them and the favicons:
+Clawd is the Claude Code mascot; this is fan art. Its poses (the 18 the graph uses) come from the approved pixel grids of the clawd skill in the owner's AIOS workspace, never redrawn by hand. To regenerate them, the favicons and the share image:
 
 ```
 python3 tools/make-clawd.py /path/to/AIOS

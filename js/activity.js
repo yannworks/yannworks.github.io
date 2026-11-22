@@ -1,42 +1,43 @@
-// The GitHub contribution graph, drawn in dots like the scene, with a tiny
-// Clawd standing on today's column.
+// The GitHub contribution graph: one square per day for the last 26 weeks, in
+// Clawd's orange, with a small Clawd standing on today's column.
 //
 // Where the data comes from: a GitHub Action (.github/workflows/contributions.yml)
 // runs once a day, asks GitHub for the contribution calendar and saves it as
 // contributions.json next to this page. This file only reads that JSON.
 //
-// How a day is drawn: a square of 4 x 4 dots. GitHub gives each day a level
-// from 0 to 4; the square shows 1, 2, 4, 8 or 16 of its dots, picked in the
-// order of the 4 x 4 Bayer grid (the small version of the scene's 8 x 8 grid).
+// The squares are plain elements coloured by style.css (data-level 0 to 4), so
+// they follow the theme by themselves. Clawd is a small canvas drawn from the
+// approved grids in js/clawd-sprites.js, 2 CSS px per cell.
 
 const ACTIVITY = {
   FILE: "contributions.json",
-  SQUARE: 4,               // dots per side of a day
-  PITCH: 5,                // a square plus one dot of gap
-  DOTS: [1, 2, 4, 8, 16],  // dots shown for GitHub levels 0 to 4
-  BAND: 17,                // dot rows above the graph: Clawd (16) and one of air
-  PAD: 1,                  // one dot of margin, so the frame around a chosen day is never cut
-  MIN_DOT: 2.4,            // smallest dot (CSS px) for a full year; below that, 26 weeks
-  FILL_MS: 1000,           // fill-in the first time the graph is seen
-  FILL_REDUCED_MS: 400,
-  STEP_MS: 50,             // one walking step of Clawd...
-  STEP_CELLS: 2,           // ...moves him this many dots
-  FRAME_MS: 150,           // blink and bounce frames
-  SETTLE_MS: 10000,        // after this (from the fill), Clawd stops moving until tapped
+  WEEKS: 26,               // half a year, on every screen
+  GAP: 3,                  // px between squares
+  MIN_SQ: 6, MAX_SQ: 16,   // square size in px, picked to fill the width
+  CELL: 2,                 // CSS px per cell of Clawd's grid (22 x 16 cells: 44 x 32 px)...
+  CELL_SMALL: 1.5,         // ...or about this, rounded to whole screen pixels, when squares are under 12 px
+  WALK_FROM: 120,          // px: Clawd walks in from this far left of today
+  STEP_MS: 50,             // one walking step...
+  STEP_CELLS: 2,           // ...moves him this many cells
+  FRAME_MS: 150,           // blink, bounce and wave frames
+  SETTLE_MS: 8000,         // after this (from his arrival), Clawd stands still until poked
   STALE_DAYS: 3,           // older data says "updated <date>"
 };
-
-// Rank of each dot of a 4 x 4 square in Bayer order (same formula as the scene's shader).
-const bayer2 = (x, y) => ((x % 2) * 0.5 + (y % 2) * 0.75) % 1;
-const DOT_ORDER = [];
-for (let y = 0; y < 4; y++) {
-  for (let x = 0; x < 4; x++) DOT_ORDER.push({ x, y, rank: (bayer2(x >> 1, y >> 1) * 0.25 + bayer2(x, y)) * 16 });
-}
-DOT_ORDER.sort((a, b) => a.rank - b.rank);
 
 // The walk cycle of the clawd skill: [legs lifted, crouch] per step.
 const WALK_STEPS = [["A", 0], ["A", 0], [null, 0], [null, 1], ["B", 0], ["B", 0], [null, 0], [null, 1]];
 const BOUNCE = [0, 1, 1, 0];
+const WAVE = [0, 1, 1, 0, 1, 1, 0];       // crouches of the happy wave, one per frame
+
+// Name of a pose in CLAWD_POSES, e.g. pose("front", { face: "happy", arm: "left_up" }).
+function pose(view, o = {}) {
+  const parts = [view];
+  if (o.face && o.face !== "normal") parts.push(o.face);
+  if (o.arm) parts.push(o.arm);
+  if (o.crouch) parts.push("crouch");
+  if (o.legs) parts.push("legs" + o.legs);
+  return parts.join("/");
+}
 
 // ------------------------------------------------------------------ data
 
@@ -94,138 +95,151 @@ function mountActivity(section, data, options = {}) {
   const box = section.querySelector(".activity__graph");
   const summary = section.querySelector(".activity__summary");
   const line = section.querySelector(".activity__day");
-  const canvas = document.createElement("canvas");
-  canvas.className = "activity__canvas";
-  canvas.setAttribute("aria-hidden", "true");
-  box.append(canvas);
-  const g = canvas.getContext("2d");
-  const root = document.documentElement;
   const reducedQuery = matchMedia("(prefers-reduced-motion: reduce)");
   let reduced = options.reduced ?? reducedQuery.matches;
-
-  let weeks = 0, cells = [], cols = 0, W = 0, H = 0;
-  let selected = null, hoverSelect = false;
-  let ink = "#111";
-  // Animation clock (ms): starts when the graph is first seen, stops when nothing moves.
-  let clock = 0, started = false, running = false, raf = 0, last = null, inView = false;
-  let happyAt = -1e9, settledEarly = false;
   const lastDate = data.days[data.days.length - 1].date;
+  const { cells, cols } = layoutDays(data.days, ACTIVITY.WEEKS);
+  const today = cells[cells.length - 1];
 
-  // ---- sizes: a whole number of screen pixels per dot, so dots stay square and sharp
+  // ---- the squares: blanks first, so that each column starts on a Sunday
+  const days = document.createElement("div");
+  days.className = "activity__days";
+  days.setAttribute("aria-hidden", "true");
+  for (let i = 0; i < cells[0].row; i++) days.append(Object.assign(document.createElement("i"), { className: "is-blank" }));
+  const squares = cells.map((cell, i) => {
+    const sq = document.createElement("i");
+    sq.dataset.level = cell.level;
+    sq.dataset.i = i;
+    days.append(sq);
+    return sq;
+  });
+
+  // ---- the month names, under the columns where a month starts (skipped when cramped)
+  const months = document.createElement("div");
+  months.className = "activity__months";
+  months.setAttribute("aria-hidden", "true");
+  const starts = [];
+  cells.forEach((c) => {
+    if (c.row !== 0 && c !== cells[0]) return;
+    const m = new Date(utc(c.date)).toLocaleDateString("en-US", { month: "short", timeZone: "UTC" });
+    if (!starts.length || starts[starts.length - 1].m !== m) starts.push({ m, col: c.col });
+  });
+  const labels = starts.filter((s, k) => !(starts[k + 1] && starts[k + 1].col - s.col < 3) && s.col <= cols - 3)
+    .map((s) => { const el = document.createElement("span"); el.textContent = s.m; months.append(el); return { el, col: s.col }; });
+
+  // ---- Clawd: a canvas with as many pixels as the screen, cells drawn as squares
+  const canvas = document.createElement("canvas");
+  canvas.className = "activity__clawd";
+  canvas.setAttribute("aria-hidden", "true");
+  const g = canvas.getContext("2d");
+  box.append(days, months, canvas);
+
+  writeSummary();
+
+  // ---- sizes: squares fill the width, up to 16 px
+  let sq = ACTIVITY.MAX_SQ, pitch = sq + ACTIVITY.GAP, unit = ACTIVITY.CELL;   // CSS px per cell of Clawd's grid
   function fit() {
+    // The room the graph has: its column on wide screens (style.css puts it in the
+    // second of two), the whole width otherwise.
+    const body = box.parentElement, columns = getComputedStyle(body).gridTemplateColumns.split(" ");
+    const avail = getComputedStyle(body).display === "grid" && columns.length > 1 ? parseFloat(columns[1]) : body.clientWidth;
+    sq = Math.max(ACTIVITY.MIN_SQ, Math.min(ACTIVITY.MAX_SQ, Math.floor((avail - (cols - 1) * ACTIVITY.GAP) / cols)));
+    pitch = sq + ACTIVITY.GAP;
+    section.style.setProperty("--sq", sq + "px");               // the legend's swatches match the squares
+    labels.forEach((l) => { l.el.style.left = l.col * pitch + "px"; });
+    // Whole screen pixels per cell of Clawd's grid, so every cell is a sharp square.
     const dpr = window.devicePixelRatio || 1;
-    const avail = section.clientWidth;
-    const wanted = avail / (53 * ACTIVITY.PITCH - 1) >= ACTIVITY.MIN_DOT ? 53 : 26;
-    if (wanted !== weeks) {
-      weeks = wanted;
-      ({ cells, cols } = layoutDays(data.days, weeks));
-      W = cols * ACTIVITY.PITCH - 1 + 2 * ACTIVITY.PAD;
-      H = ACTIVITY.BAND + 7 * ACTIVITY.PITCH - 1 + ACTIVITY.PAD;
-      canvas.width = W;
-      canvas.height = H;
-      if (selected) selected = cells.find((c) => c.date === selected.date) || null;
-      writeSummary();
-    }
-    const k = Math.max(1, Math.floor((avail * dpr) / W));
-    canvas.style.width = (W * k) / dpr + "px";
-    canvas.style.height = (H * k) / dpr + "px";
-    canvas.style.marginLeft = (-ACTIVITY.PAD * k) / dpr + "px";      // the squares line up with the text
+    const px = Math.max(1, Math.round((sq >= 12 ? ACTIVITY.CELL : ACTIVITY.CELL_SMALL) * dpr));
+    unit = px / dpr;
+    canvas.width = 22 * px;
+    canvas.height = 16 * px;
+    canvas.style.width = 22 * unit + "px";
+    canvas.style.height = 16 * unit + "px";
+    box.style.setProperty("--clawd-h", 16 * unit + 2 + "px");
     draw();
   }
 
   function writeSummary() {
-    const year = weeks >= 53;
-    const total = year ? data.total : cells.reduce((n, c) => n + c.count, 0);
-    const word = total === 1 ? "contribution" : "contributions";
+    const total = cells.reduce((n, c) => n + c.count, 0);
     summary.textContent = "";
+    const text = document.createElement("span");
     const num = document.createElement("b");
     num.className = "kw";
     num.textContent = total.toLocaleString("en-US");
-    summary.append(num, ` ${word} in the last ${year ? "year" : "6 months"}`);
+    text.append(num, ` ${total === 1 ? "contribution" : "contributions"} in the last 6 months`);
     const age = Date.now() - Date.parse(data.fetchedAt || "");
     if (age > ACTIVITY.STALE_DAYS * dayMs) {
       const when = new Date(data.fetchedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
       const note = document.createElement("span");
       note.className = "activity__updated";
       note.textContent = ` · updated ${when}`;
-      summary.append(note);
+      text.append(note);
     }
+    // Less, the five colours, More (decorative: the numbers are in the day line).
+    const legend = document.createElement("span");
+    legend.className = "activity__legend";
+    legend.setAttribute("aria-hidden", "true");
+    legend.append("Less");
+    for (let level = 0; level <= 4; level++) {
+      const swatch = document.createElement("i");
+      swatch.style.background = level ? `var(--level-${level})` : "var(--line)";
+      legend.append(swatch);
+    }
+    legend.append("More");
+    summary.append(text, legend);
   }
 
-  const dayX = (cell) => ACTIVITY.PAD + cell.col * ACTIVITY.PITCH;
-  const dayY = (cell) => ACTIVITY.BAND + cell.row * ACTIVITY.PITCH;
+  // ---- Clawd's timing. His clock starts when the graph is first seen.
+  let clock = 0, started = false, running = false, raf = 0, last = null, inView = false;
+  let pokedAt = -1e9, settledEarly = false;
+  const todayX = () => Math.max(0, Math.min(cols * pitch - ACTIVITY.GAP - 22 * unit, today.col * pitch + sq / 2 - 11 * unit));
+  const walkStart = () => Math.max(0, todayX() - ACTIVITY.WALK_FROM);
+  const walkSteps = () => Math.ceil((todayX() - walkStart()) / (ACTIVITY.STEP_CELLS * unit));
+  const arrivalMs = () => (reduced ? 0 : walkSteps() * ACTIVITY.STEP_MS);
+  const settleMs = () => (settledEarly ? 0 : arrivalMs() + ACTIVITY.SETTLE_MS);
+  const waving = (t) => t - pokedAt >= 0 && t - pokedAt < WAVE.length * ACTIVITY.FRAME_MS;
 
-  // ---- timing of the fill-in and of Clawd
-  const fillMs = () => (reduced ? ACTIVITY.FILL_REDUCED_MS : ACTIVITY.FILL_MS);
-  const today = () => cells[cells.length - 1];
-  const targetX = () => Math.max(0, Math.min(W - 22, dayX(today()) + 2 - 11));
-  const walkStart = -23;
-  const walkSteps = () => Math.ceil((targetX() - walkStart) / ACTIVITY.STEP_CELLS);
-  const arrivalMs = () => (reduced ? 0 : fillMs() + walkSteps() * ACTIVITY.STEP_MS);
-  const settleMs = () => (settledEarly ? 0 : Math.max(ACTIVITY.SETTLE_MS, arrivalMs() + 3000));
-
-  // How many dots of a square are on at time t (each dot appears in Bayer order).
-  function dotsAt(cell, t) {
-    const target = ACTIVITY.DOTS[cell.level];
-    if (!started) return 0;
-    const spread = reduced ? 0 : 0.2 * fillMs() * (cols > 1 ? cell.col / (cols - 1) : 0);   // left to right
-    const span = fillMs() - (reduced ? 0 : 0.2 * fillMs());
-    return Math.max(0, Math.min(target, Math.floor(((t - spread) / span) * 16)));
-  }
-
-  // Clawd's pose and place at time t, or null before he appears.
+  // Clawd's pose and place at time t.
   function clawdAt(t) {
-    const x = targetX();
+    const x = todayX();
     const frame = (ms) => Math.floor(ms / ACTIVITY.FRAME_MS);
-    if (t - happyAt >= 0 && t - happyAt < 7 * ACTIVITY.FRAME_MS) {          // tapped: happy bounce
-      return { pose: pose("front", { face: "happy", crouch: [0, 1, 1, 0, 1, 1, 0][frame(t - happyAt)] }), x };
+    if (waving(t)) {                                                         // poked: happy, waving
+      const crouch = reduced ? 0 : WAVE[frame(t - pokedAt)];
+      return { pose: pose("front", { face: "happy", arm: "left_up", crouch }), x };
     }
-    if (!reduced && t < fillMs()) return null;
-    if (!reduced && t < arrivalMs()) {                                       // the walk
-      const step = Math.floor((t - fillMs()) / ACTIVITY.STEP_MS);
+    if (t < arrivalMs()) {                                                   // the walk
+      const step = Math.floor(t / ACTIVITY.STEP_MS);
       const [legs, crouch] = WALK_STEPS[step % WALK_STEPS.length];
-      return { pose: pose("side_right", { legs, crouch }), x: Math.min(x, walkStart + step * ACTIVITY.STEP_CELLS) };
+      return { pose: pose("side_right", { legs, crouch }), x: Math.min(x, walkStart() + step * ACTIVITY.STEP_CELLS * unit) };
     }
     const idle = t - arrivalMs();
-    if (t < settleMs()) {                                                    // idle: blinks and bounces
-      const bounce = [500, 4200].find((b) => idle >= b && idle < b + 4 * ACTIVITY.FRAME_MS);
+    if (t < settleMs()) {                                                    // a few blinks and bounces, then still
+      const bounce = reduced ? undefined : [400, 4200].find((b) => idle >= b && idle < b + 4 * ACTIVITY.FRAME_MS);
       if (bounce !== undefined) return { pose: pose("front", { crouch: BOUNCE[frame(idle - bounce)] }), x };
-      if ([1800, 6400].some((b) => idle >= b && idle < b + ACTIVITY.FRAME_MS)) return { pose: pose("front", { face: "blink" }), x };
+      if ([1800, 6200].some((b) => idle >= b && idle < b + ACTIVITY.FRAME_MS)) return { pose: pose("front", { face: "blink" }), x };
     }
     return { pose: pose("front"), x };
   }
 
-  const busy = (t) => t < Math.max(fillMs(), settleMs()) || t - happyAt < 7 * ACTIVITY.FRAME_MS;
+  const busy = (t) => t < settleMs() || waving(t);
 
-  // ---- drawing
   function draw() {
-    g.clearRect(0, 0, W, H);
-    g.fillStyle = ink;
-    for (const c of cells) {
-      const n = dotsAt(c, clock);
-      const x0 = dayX(c), y0 = dayY(c);
-      for (let i = 0; i < n; i++) g.fillRect(x0 + DOT_ORDER[i].x, y0 + DOT_ORDER[i].y, 1, 1);
-    }
-    if (selected) {                                   // a one-dot frame around the chosen day
-      const x0 = dayX(selected) - 1, y0 = dayY(selected) - 1;
-      for (let i = 0; i < 6; i++) {
-        g.fillRect(x0 + i, y0, 1, 1); g.fillRect(x0 + i, y0 + 5, 1, 1);
-        g.fillRect(x0, y0 + i, 1, 1); g.fillRect(x0 + 5, y0 + i, 1, 1);
-      }
-    }
-    const clawd = started ? clawdAt(clock) : null;
-    if (clawd) {
-      const grid = CLAWD_POSES[clawd.pose];
-      const top = ACTIVITY.BAND - 1 - grid.length;
-      grid.forEach((row, y) => [...row].forEach((ch, x) => {
-        if (!CLAWD_COLORS[ch]) return;
-        g.fillStyle = CLAWD_COLORS[ch];
-        g.fillRect(clawd.x + x, top + y, 1, 1);
-      }));
-    }
+    g.clearRect(0, 0, canvas.width, canvas.height);
+    if (!started) { canvas.hidden = true; return; }
+    canvas.hidden = false;
+    const c = clawdAt(clock);
+    canvas.style.transform = `translateX(${c.x}px)`;
+    const grid = CLAWD_POSES[c.pose];
+    const k = canvas.width / 22;                    // screen pixels per cell
+    const top = 16 - grid.length;                   // feet on the bottom edge
+    grid.forEach((row, y) => [...row].forEach((ch, x) => {
+      if (!CLAWD_COLORS[ch]) return;
+      g.fillStyle = CLAWD_COLORS[ch];
+      g.fillRect(Math.round(x * k), Math.round((top + y) * k), Math.round((x + 1) * k) - Math.round(x * k), Math.round((top + y + 1) * k) - Math.round((top + y) * k));
+    }));
   }
 
-  // ---- the clock: runs while something moves, the graph is on screen and the tab is visible
+  // ---- the clock: runs while Clawd moves, the graph is on screen and the tab is visible
   function tick(now) {
     raf = 0;
     if (!running || !inView || document.hidden) { last = null; return; }
@@ -242,87 +256,83 @@ function mountActivity(section, data, options = {}) {
 
   new IntersectionObserver(([entry]) => {
     inView = entry.isIntersecting;
-    if (inView && !started && entry.intersectionRatio >= 0.4) { started = true; clock = 0; }
+    if (inView && !started && entry.intersectionRatio >= 0.4) { started = true; clock = 0; draw(); }
     if (inView && started && busy(clock)) play();
-  }, { threshold: [0, 0.4] }).observe(canvas);
+  }, { threshold: [0, 0.4] }).observe(box);
   document.addEventListener("visibilitychange", () => { if (!document.hidden && started && busy(clock)) play(); });
 
-  // ---- choosing a day: mouse, finger or keyboard
-  function select(cell, fromHover = false) {
-    selected = cell;
-    hoverSelect = fromHover;
-    line.textContent = cell ? dayLabel(cell, lastDate) : " ";
-    draw();
-  }
-  function hit(e) {
-    const r = canvas.getBoundingClientRect();
-    const x = ((e.clientX - r.left) / r.width) * W, y = ((e.clientY - r.top) / r.height) * H;
-    const c = started ? clawdAt(clock) : null;
-    if (c && x >= c.x && x < c.x + 23 && y < ACTIVITY.BAND) return { clawd: true };
-    const col = Math.floor((x - ACTIVITY.PAD) / ACTIVITY.PITCH), row = Math.floor((y - ACTIVITY.BAND) / ACTIVITY.PITCH);
-    return { cell: cells.find((d) => d.col === col && d.row === row) || null };
-  }
-  function poke() {                                    // Clawd bounces with his happy face
-    if (!started || (!reduced && clock < arrivalMs())) return;
-    if (clock - happyAt < 7 * ACTIVITY.FRAME_MS) return;
-    happyAt = clock;
+  // Poked (pointer over him, or a tap): happy face and a wave.
+  function poke() {
+    if (!started || clock < arrivalMs() || waving(clock)) return;
+    pokedAt = clock;
     play();
   }
-  box.addEventListener("pointermove", (e) => {
+  canvas.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") poke(); });
+  canvas.addEventListener("pointerdown", poke);
+
+  // ---- choosing a day: mouse, finger or keyboard
+  let selected = null, hoverSelect = false;
+  function select(cell, fromHover = false) {
+    if (selected) squares[cells.indexOf(selected)].classList.remove("is-selected");
+    selected = cell;
+    hoverSelect = fromHover;
+    if (cell) squares[cells.indexOf(cell)].classList.add("is-selected");
+    line.textContent = dayLabel(cell || today, lastDate);       // with nothing chosen: today
+  }
+  const cellAt = (e) => {
+    const sqEl = e.target.closest && e.target.closest("i[data-i]");
+    return sqEl ? cells[Number(sqEl.dataset.i)] : null;
+  };
+  days.addEventListener("pointermove", (e) => {
     if (e.pointerType === "touch") return;
-    const h = hit(e);
-    if (h.clawd) { if (!box.dataset.overClawd) poke(); box.dataset.overClawd = "1"; return; }
-    delete box.dataset.overClawd;
-    if (h.cell || hoverSelect) select(h.cell, true);
+    const cell = cellAt(e);
+    if (cell && cell !== selected) select(cell, true);
   });
   box.addEventListener("pointerleave", () => {
-    delete box.dataset.overClawd;
     if (hoverSelect && document.activeElement !== box) select(null);
   });
-  box.addEventListener("pointerdown", (e) => {
+  days.addEventListener("pointerdown", (e) => {
     if (e.pointerType !== "touch") return;
-    const h = hit(e);
-    if (h.clawd) poke();
-    else if (h.cell) select(h.cell);
+    const cell = cellAt(e);
+    if (cell) select(cell);
   });
-  box.addEventListener("focus", () => { if (!selected) select(today()); });
+  box.addEventListener("focus", () => { if (!selected) select(today); });
   box.addEventListener("keydown", (e) => {
     const moves = { ArrowLeft: -7, ArrowRight: 7, ArrowUp: -1, ArrowDown: 1 };
     let next = null;
     const i = selected ? cells.indexOf(selected) : cells.length - 1;
     if (e.key in moves) next = cells[i + moves[e.key]];
     else if (e.key === "Home") next = cells[0];
-    else if (e.key === "End") next = today();
+    else if (e.key === "End") next = today;
     else return;
     e.preventDefault();
     if (next) select(next);
   });
 
-  // ---- follow the theme, the window size and the motion setting
-  function readInk() { ink = getComputedStyle(root).getPropertyValue("--ink").trim() || "#111"; }
-  new MutationObserver(() => { readInk(); draw(); }).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+  // ---- follow the window size and the motion setting
   new ResizeObserver(fit).observe(section);
   reducedQuery.addEventListener("change", () => { reduced = reducedQuery.matches; draw(); });
-  // When the visitor pauses the scene, Clawd stops here too.
-  document.addEventListener("scenepause", (e) => {
-    if (e.detail && !e.detail.playing) { settledEarly = true; if (started) clock = Math.max(clock, fillMs()); draw(); }
-  });
 
-  readInk();
   section.querySelector(".activity__body").hidden = false;
   fit();
-  line.textContent = " ";
+  line.textContent = dayLabel(today, lastDate);
 
   return {
-    replay() { started = true; clock = 0; happyAt = -1e9; settledEarly = false; play(); },
+    replay() { started = true; clock = 0; pokedAt = -1e9; settledEarly = false; play(); },
+    poke,
     // For tests and recordings: stop the clock and move it by hand.
     debug: {
       freeze() { running = false; started = true; clock = 0; draw(); },
       step(ms) { clock += ms; draw(); return canvas.toDataURL("image/png"); },
+      poke() { poke(); },
       get clock() { return clock; },
       get running() { return running; },
-      get weeks() { return weeks; },
+      get weeks() { return cols; },
+      get unit() { return unit; },
+      get square() { return sq; },
       get settleMs() { return settleMs(); },
+      get arrivalMs() { return arrivalMs(); },
+      get pose() { return started ? clawdAt(clock).pose : null; },
     },
   };
 }

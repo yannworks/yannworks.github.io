@@ -1,13 +1,27 @@
 /* ==========================================================================
    yannworks: styles
    Everything you may want to change is in :root just below: colours,
-   fonts, sizes and timings. The dark theme only swaps the two colours.
+   fonts, sizes and timings. The dark theme only swaps the colours.
    ========================================================================== */
 
 :root {
-  /* Colours: ink (text) and paper (background). Clawd's orange lives in the scene. */
+  /* Colours: ink (text) on paper (background), and Clawd's orange, the only
+     accent. The orange is for shapes and dots only: on white it is 3.1:1,
+     enough for a shape, too little for small text. */
   --paper: #ffffff;
   --ink: #111111;
+  --muted: #5c5c5c;          /* secondary text: 6.7:1 on paper, 6.1:1 on a card */
+  --surface: #f5f5f5;        /* the component cards */
+  --line: #e3e3e3;           /* card edges, empty days in the graph */
+  --clawd: #d97757;          /* Clawd's body, the dots, the busiest days */
+  --glow: rgb(217 119 87 / 0.14);   /* the warm light behind the dots */
+
+  /* The graph's four levels (GitHub's 1 to 4), from Clawd's orange to darker:
+     every level is at least 3:1 on paper, so a day with activity always shows. */
+  --level-1: #d97757;
+  --level-2: #bf5f3d;
+  --level-3: #a24a2d;
+  --level-4: #7c361f;
 
   /* Fonts: files in /fonts, licence in fonts/OFL.txt */
   --sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -21,7 +35,8 @@
 
   /* Space */
   --gutter: 16px;
-  --scene-max: 848px;        /* widest the scene gets: 212 dots x 4 */
+  --page-max: 1440px;
+  --fringe-h: 40px;          /* the empty strip at the foot of each card, where its dots live */
 
   /* Motion */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -30,9 +45,11 @@
   --enter-rise: 10px;        /* how far items rise (0 with reduced motion) */
   --hover-duration: 200ms;
   --press-duration: 140ms;
+  --fringe-in: 300ms;        /* the light behind the dots of the card you reach for (as long as their random lighting)... */
+  --fringe-out: 200ms;       /* ...and on the one you left (as long as their going out) */
   --dissolve: 500ms;         /* theme dissolve (main.js sets it again) */
 
-  /* Size of one scene dot on screen. scene.js sets the real value. */
+  /* One dot of the dither masks (theme dissolve, keyword print, clock digits). */
   --cell: 2px;
 
   color-scheme: light;
@@ -41,6 +58,15 @@
 :root[data-theme="dark"] {
   --paper: #0d0d0d;
   --ink: #ededed;
+  --muted: #a3a3a3;
+  --surface: #161616;
+  --line: #262626;
+  --glow: rgb(217 119 87 / 0.2);
+  /* In the dark, more is brighter. */
+  --level-1: #9a4f36;
+  --level-2: #b65e40;
+  --level-3: #d97757;
+  --level-4: #f3a587;
   color-scheme: dark;
 }
 
@@ -49,9 +75,20 @@
   :root:not([data-theme]) {
     --paper: #0d0d0d;
     --ink: #ededed;
+    --muted: #a3a3a3;
+    --surface: #161616;
+    --line: #262626;
+    --glow: rgb(217 119 87 / 0.2);
+    --level-1: #9a4f36;
+    --level-2: #b65e40;
+    --level-3: #d97757;
+    --level-4: #f3a587;
     color-scheme: dark;
   }
 }
+
+@media (min-width: 768px) { :root { --gutter: 32px; } }
+@media (min-width: 1280px) { :root { --gutter: 48px; } }
 
 @media (prefers-reduced-motion: reduce) {
   :root { --enter-rise: 0px; }
@@ -103,12 +140,12 @@ body {
   outline-offset: 3px;
 }
 
-/* ---- Layout: one column, two side by side on wide screens --------------- */
+/* ---- Layout: the intro, the three components, the graph ----------------- */
 
 .top,
 .page {
   width: 100%;
-  max-width: calc(var(--scene-max) + 2 * var(--gutter));
+  max-width: var(--page-max);
   margin-inline: auto;
   padding-inline: var(--gutter);
 }
@@ -122,24 +159,30 @@ body {
 
 .page {
   display: grid;
-  gap: clamp(2.75rem, 2rem + 3vw, 4.5rem);
-  padding-block: clamp(1.75rem, 1rem + 4vw, 4rem) 3rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2.5rem, 1.5rem + 3vw, 4.5rem);
+  padding-block: clamp(1rem, 0.5rem + 3vw, 3.5rem) 0;
 }
 
-@media (min-width: 1280px) {
-  :root { --gutter: 48px; }
+/* The intro on the left; on wide screens the links stand on its right, level with its last line. */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr); }
 
-  .top,
-  .page { max-width: 1440px; }
-
-  .page {
-    grid-template-columns: minmax(0, 27rem) minmax(0, var(--scene-max));
-    justify-content: space-between;
-    align-items: center;
-    column-gap: 64px;
-    min-height: calc(100svh - 76px);
-    padding-block: 0 76px;          /* same as the header: the content sits in the optical middle */
+/* Wide screens: the links in a column right beside the intro, level with its first line. */
+@media (min-width: 1100px) {
+  .hero {
+    grid-template-columns: minmax(0, 42.5rem) 17.5rem;
+    align-items: start;
+    column-gap: 80px;
   }
+
+  .hero .links {
+    display: grid;
+    justify-items: start;
+    margin: 0.45rem 0 0;           /* first link on the intro's first line */
+  }
+
+  .hero .links li { flex-wrap: wrap; row-gap: 0.15rem; }
+  .hero .link__note { flex-basis: 100%; }
 }
 
 /* ---- Name and intro ------------------------------------------------------- */
@@ -152,19 +195,18 @@ body {
   letter-spacing: -0.01em;
 }
 
-.about { max-width: 36rem; }
-
 .intro {
+  max-width: 40rem;
   margin: 0;
   font-size: var(--size-intro);
   font-weight: 400;
-  line-height: 1.4;
+  line-height: 1.65;               /* room between lines for the dots under the keywords */
   letter-spacing: -0.012em;
   text-wrap: pretty;
 }
 
 /* Highlighted keywords: Geist Serif, upright, bigger than the text around.
-   Its ELSH axis at 25 gives square dots, like the scene's pixels. */
+   Its ELSH axis at 25 gives square dots, like the dither's. */
 .kw {
   font-family: var(--serif);
   font-size: var(--size-keyword);
@@ -176,6 +218,8 @@ body {
 }
 
 /* While main.js prints them in dots. */
+.kw.is-printing .kw__dots { visibility: hidden; }   /* the dots come once the word has printed */
+
 .kw.is-printing {
   -webkit-mask-size: calc(var(--cell) * 8) calc(var(--cell) * 8);
   mask-size: calc(var(--cell) * 8) calc(var(--cell) * 8);
@@ -201,11 +245,12 @@ body {
 
 /* ---- Links ---------------------------------------------------------------- */
 
+/* In a row under the intro; in a column beside it on wide screens (see .hero). */
 .links {
-  display: grid;
-  justify-items: start;
-  gap: 0.85rem;
-  margin: 2.25rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem 1.75rem;
+  margin: 1.25rem 0 0;
   padding: 0;
   list-style: none;
   font-size: var(--size-links);
@@ -273,7 +318,7 @@ body {
   font-weight: 400;
 }
 
-/* ---- Square icon buttons (theme, pause) --------------------------------- */
+/* ---- Square icon button (theme) ------------------------------------------ */
 
 .icon-button {
   display: inline-grid;
@@ -312,139 +357,35 @@ body {
   .theme-toggle svg { transition: none; }
 }
 
-/* ---- The scene ------------------------------------------------------------ */
+/* ---- Orange dots: where they appear ----------------------------------------
+   js/accent.js draws them once per size on small canvases. They only ever sit
+   in empty space: under a keyword's line, in the strip at the foot of a card,
+   at the end of the page. Nothing is printed over them. */
 
-.scene {
-  min-width: 0;
-  margin: 0;
+/* Under the intro's keywords: a band of dots in the gap between two lines,
+   dense against the word and thinning out downwards. */
+.intro .kw {
+  position: relative;
+  white-space: nowrap;             /* one band per keyword */
 }
 
-.scene__frame,
-.scene__caption {
-  width: var(--scene-w, 100%);
-  max-width: 100%;
-  margin-inline: auto;
-}
-
-@media (min-width: 1280px) {
-  .scene__frame,
-  .scene__caption { margin-inline: auto 0; }
-}
-
-.scene__frame { touch-action: manipulation; }
-
-/* The dots are enlarged by a whole number without smoothing: sharp squares. */
-.scene__frame img,
-.scene__canvas {
-  display: block;
+.kw__dots {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 2px);           /* clear of the descenders (g, p) */
   width: 100%;
-  height: auto;
-  image-rendering: pixelated;
-}
-
-.scene.is-live .scene__still { display: none; }
-
-.scene__caption {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 0.875rem;
-  font-size: var(--size-small);
-  line-height: 1.4;
-}
-
-.icon-button.scene__pause svg { width: 14px; height: 14px; }
-.scene__pause[data-state="playing"] .icon-play,
-.scene__pause[data-state="paused"] .icon-pause { display: none; }
-
-/* The hint about the spotlight shows only where it is true. */
-.hint { display: none; }
-
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .scene.is-live .hint--pointer { display: inline; }
-}
-
-@media (hover: none) and (prefers-reduced-motion: no-preference) {
-  .scene.is-live .hint--touch { display: inline; }
-}
-
-/* ---- GitHub activity: the graph under the scene --------------------------- */
-
-/* The scene and the graph share one column. */
-.stage {
-  display: grid;
-  align-content: start;
-  gap: clamp(2.5rem, 2rem + 2vw, 3.25rem);
-  min-width: 0;
-}
-
-.activity {
-  width: var(--scene-w, 100%);
-  max-width: 100%;
-  margin-inline: auto;
-}
-
-@media (min-width: 1280px) {
-  .activity { margin-inline: auto 0; }
-}
-
-.activity[hidden] { display: none; }
-
-/* Without JavaScript: a plain link instead of the graph. */
-.activity__fallback {
-  margin: 0;
-  font-size: var(--size-links);
-  font-weight: 500;
-}
-
-.js .activity__fallback { display: none; }
-
-.activity__summary {
-  margin: 0 0 0.875rem;
-  font-size: var(--size-links);
-  line-height: 1.4;
-}
-
-.activity__updated { font-size: var(--size-small); }
-
-/* One focusable element; the arrow keys move between days. */
-.activity__graph {
-  display: block;
-  width: fit-content;
-  max-width: 100%;
-  touch-action: manipulation;
-}
-
-.activity__graph:focus-visible { outline-offset: 4px; }
-
-/* Dots enlarged by a whole number of screen pixels, like the scene. */
-.activity__canvas {
-  display: block;
-  image-rendering: pixelated;
-}
-
-.activity__day {
-  min-height: 1.4em;
-  margin: 0.625rem 0 0;
-  font-size: var(--size-small);
-  line-height: 1.4;
-  font-variant-numeric: tabular-nums;
+  height: 4px;                     /* two rows of 2 px dots, sparse. Two keyword lines in a row
+                                      leave 0.41 em of the intro between them (1.65 - 1.24):
+                                      8.6 px at 21 px, so 2 + 4 px always fit */
+  pointer-events: none;
 }
 
 /* ---- Showcase: three components from Experiments --------------------------
    The components keep their own look (their CSS comes with them in
-   showcase/showcase.css). Only the frame around them is styled here. */
-
-.showcase {
-  width: 100%;
-  max-width: calc(var(--scene-max) + 2 * var(--gutter));
-  margin-inline: auto;
-  padding: 0.5rem var(--gutter) 4rem;
-}
+   showcase/showcase.css). Only the card around them is styled here. */
 
 .showcase__title {
-  margin: 0 0 2rem;
+  margin: 0 0 1.5rem;
   font-size: var(--size-links);
   font-weight: 400;
   line-height: 1.4;
@@ -452,17 +393,25 @@ body {
 
 .showcase__list {
   display: grid;
-  gap: 2.75rem;
+  gap: 16px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+/* A card: name, line, the component on its stage, the link, then an empty
+   strip (--fringe-h) where the orange dots rise. */
 .showcase__item {
+  position: relative;
   display: grid;
   grid-template-rows: auto auto 1fr auto;
   justify-items: start;
   min-width: 0;
+  padding: 20px 20px var(--fringe-h);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  overflow: hidden;
+  isolation: isolate;
 }
 
 .showcase__name {
@@ -477,6 +426,7 @@ body {
   margin: 0.25rem 0 0;
   font-size: var(--size-small);
   line-height: 1.45;
+  color: var(--muted);
   text-wrap: pretty;
 }
 
@@ -495,7 +445,9 @@ body {
 }
 
 .showcase__link {
-  margin-top: calc(1rem - 0.35em);
+  position: relative;
+  z-index: 1;
+  margin-top: calc(0.75rem - 0.35em);
   font-size: var(--size-small);
   font-weight: 500;
 }
@@ -506,42 +458,32 @@ body {
 
 .js .showcase__stage {
   position: relative;
+  z-index: 1;
   display: grid;
   place-items: center;
   justify-self: stretch;
   height: var(--stage-h, 19rem);
-  margin-top: 1.125rem;
-  padding: 20px;
+  margin-top: 0.5rem;
+  padding: 16px 0;
 }
 
-/* Phones: each stage just fits its component, so the section stays short.
-   The heights are fixed, so nothing below moves when the components arrive. */
+/* Each stage just fits its component, so the section stays short. The heights
+   are fixed, so nothing below moves when the components arrive. Gem Clip's
+   command wraps on 1 to 4 lines depending on the card's width (measured), so its
+   stage follows the card's own width. */
+.showcase__item { container-type: inline-size; }
 .showcase__item--shoji { --stage-h: 16rem; }
-.showcase__item--clip { --stage-h: 11.5rem; }     /* four lines of command at 320 px */
+.showcase__item--clip { --stage-h: 11.5rem; }       /* 4 lines, narrowest phones */
 .showcase__item--snooze { --stage-h: 7.5rem; }
+
+@container (min-width: 270px) { .showcase__item--clip .showcase__stage { --stage-h: 10rem; } }  /* 3 lines */
+@container (min-width: 300px) { .showcase__item--clip .showcase__stage { --stage-h: 8.5rem; } } /* 2 lines */
+@container (min-width: 500px) { .showcase__item--clip .showcase__stage { --stage-h: 7rem; } }   /* 1 line */
+/* Shoji Bento is 3:2, at most 380 px wide here: from a 336 px card it needs 285 px. */
+@container (min-width: 336px) { .showcase__item--shoji .showcase__stage { --stage-h: 18.5rem; } }
 
 .showcase.is-failed .showcase__stage,
 .showcase__item.is-failed .showcase__stage { display: none; }
-
-/* Corner marks, like the crop marks on a printed sheet: four 1 px corners. */
-.js .showcase__stage::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border: 1px solid var(--ink);
-  pointer-events: none;
-  --arm: 8px;
-  -webkit-mask:
-    linear-gradient(#000 0 0) left top / var(--arm) var(--arm) no-repeat,
-    linear-gradient(#000 0 0) right top / var(--arm) var(--arm) no-repeat,
-    linear-gradient(#000 0 0) left bottom / var(--arm) var(--arm) no-repeat,
-    linear-gradient(#000 0 0) right bottom / var(--arm) var(--arm) no-repeat;
-  mask:
-    linear-gradient(#000 0 0) left top / var(--arm) var(--arm) no-repeat,
-    linear-gradient(#000 0 0) right top / var(--arm) var(--arm) no-repeat,
-    linear-gradient(#000 0 0) left bottom / var(--arm) var(--arm) no-repeat,
-    linear-gradient(#000 0 0) right bottom / var(--arm) var(--arm) no-repeat;
-}
 
 /* On a touch screen the page must keep scrolling when a finger lands on a
    Shoji Bento line: vertical swipes scroll, sideways drags move the line. */
@@ -549,25 +491,196 @@ body {
   .showcase .shoji__line { touch-action: pan-y; }
 }
 
-/* Wide screens: three columns under the two-column page, rows lined up. */
-@media (min-width: 1280px) {
-  .showcase {
-    max-width: 1440px;
-    padding-block: 1rem 6rem;
-  }
-
+/* Wide screens: Shoji Bento leads, as tall as the two others stacked beside it.
+   Its stage takes the room left in its card (still no shift: the card's height
+   comes from the two fixed stages on the right). Its width goes up through the
+   variable the component documents. */
+@media (min-width: 900px) {
   .showcase__list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    column-gap: 48px;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
   }
 
-  .showcase__item { --stage-h: 18.5rem; }
+  .showcase__item--shoji { grid-row: span 2; }
+  .js .showcase__item--shoji .showcase__stage { height: auto; min-height: var(--stage-h); }
+  .showcase .showcase__item--shoji .shoji { --shoji-width: 480px; }
+}
 
-  .showcase__item {
-    grid-row: span 4;
-    grid-template-rows: subgrid;
-    row-gap: 0;
+/* The fringe: dots at the foot of the active card, with a warm light behind
+   them. js/dots.js decides which cells are on (Flow): they light in a random
+   order when the card becomes active, drift while it stays active and on
+   screen, and go out in a random order when another card takes over. Only the
+   light behind them fades (the dots never do). */
+.fringe {
+  position: absolute;
+  inset: auto 0 0;
+  height: var(--fringe-h);
+  pointer-events: none;
+}
+
+.fringe::before {
+  content: "";
+  position: absolute;
+  inset: -100% 0 0;                /* the light starts above the strip, behind the link */
+  background: linear-gradient(to bottom, transparent, var(--glow));
+  opacity: 0;
+  transition: opacity var(--fringe-out) ease;
+}
+
+.fringe canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.js .showcase__item.is-active .fringe::before { opacity: 1; transition-duration: var(--fringe-in); }
+
+@media (prefers-reduced-motion: reduce) {
+  .fringe::before { transition: none; }
+}
+
+/* ---- GitHub activity: the graph under the components ---------------------- */
+
+.activity[hidden] { display: none; }
+
+/* Wide screens: the words under the lead card, the graph under the two others,
+   on the same two columns as the cards. */
+@media (min-width: 900px) {
+  .activity__body:not([hidden]) {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;    /* the day line right under the summary */
+    column-gap: 16px;
+    align-items: start;
   }
+
+  .activity__summary { grid-column: 1; grid-row: 1; padding: 34px 20px 0 0; }
+  .activity__graph { grid-column: 2; grid-row: 1 / span 2; }
+  .activity__day { grid-column: 1; grid-row: 2; }
+}
+
+/* Without JavaScript: a plain link instead of the graph. */
+.activity__fallback {
+  margin: 0;
+  font-size: var(--size-links);
+  font-weight: 500;
+}
+
+.js .activity__fallback { display: none; }
+
+.activity__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1.25rem;
+  margin: 0 0 0.75rem;
+  font-size: var(--size-links);
+  line-height: 1.4;
+}
+
+.activity__updated { font-size: var(--size-small); }
+
+/* Less, the five colours, More. */
+.activity__legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.activity__legend i { width: var(--sq, 10px); height: var(--sq, 10px); }
+.activity__legend i:first-of-type { margin-left: 0.35rem; }
+.activity__legend i:last-of-type { margin-right: 0.35rem; }
+
+/* One focusable element; the arrow keys move between days. js/activity.js sets
+   the square size (--sq) so 26 weeks fill the width, up to 16 px. */
+.activity__graph {
+  position: relative;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  padding-top: var(--clawd-h, 34px);   /* room for Clawd, who stands on the top row */
+  touch-action: manipulation;
+}
+
+.activity__graph:focus-visible { outline-offset: 6px; }
+
+.activity__months {
+  position: relative;
+  height: 14px;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  line-height: 1;
+  color: var(--muted);
+}
+
+.activity__months span { position: absolute; top: 0; }
+
+.activity__days {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, var(--sq, 12px));
+  grid-auto-columns: var(--sq, 12px);
+  gap: 3px;
+}
+
+.activity__days i { background: var(--line); }
+.activity__days i[data-level="1"] { background: var(--level-1); }
+.activity__days i[data-level="2"] { background: var(--level-2); }
+.activity__days i[data-level="3"] { background: var(--level-3); }
+.activity__days i[data-level="4"] { background: var(--level-4); }
+.activity__days i.is-blank { visibility: hidden; }
+
+/* The chosen day (hover, tap or arrow keys): a 1 px ink frame. */
+.activity__days i.is-selected { outline: 1px solid var(--ink); outline-offset: 1px; }
+
+/* Clawd stands on today's column. His grid is 22 x 16 cells: 2 px a cell (44 x
+   32 px) next to 16 px squares, about 1.5 px a cell on phones. js/activity.js
+   sizes the canvas in whole screen pixels per cell, so cells stay sharp. */
+.activity__clawd {
+  position: absolute;
+  top: 0;
+  left: 0;
+  image-rendering: pixelated;
+  cursor: default;
+}
+
+.activity__day {
+  min-height: 1.4em;
+  margin: 0.75rem 0 0;
+  font-size: var(--size-small);
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- The end of the page: orange dots rising from the bottom edge --------- */
+
+/* Without JavaScript there are no dots, so no strip and no light either. */
+.end { display: none; }
+
+.js .end {
+  display: block;
+  position: relative;
+  height: 56px;
+  margin-top: clamp(3.5rem, 2.5rem + 3vw, 5rem);
+  overflow: hidden;
+}
+
+.end::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 20%, var(--glow));
+}
+
+@media (min-width: 768px) { .js .end { height: 72px; } }
+
+.end canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
 /* ---- Entrance: fade in and rise a little, one after the other ------------ */
