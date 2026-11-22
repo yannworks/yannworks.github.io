@@ -1,14 +1,13 @@
-"""Export Clawd's poses, the favicons and the share image from the clawd skill's library.
+"""Export Clawd's poses for the contribution graph from the clawd skill's library.
 
 Clawd is never drawn by hand on this site: every grid comes from the
 approved grids of the AIOS clawd skill (.agents/skills/clawd/scripts/clawd.py).
 This script writes:
 
   js/clawd-sprites.js    the poses the contribution graph uses, one string per row
-  favicon.png            the "icon" preset: 24 x 24 cells at x4 = 96 px
-  favicon.svg            the same cells as squares (sharp at any size)
-  apple-touch-icon.png   180 x 180, Clawd at x7 on white
-  img/share.png          1200 x 630 share image: Clawd waving over orange dots
+
+The favicons and the share image show the yannworks logo, not Clawd: they
+come from tools/make-logo.mjs.
 
 Run it from anywhere, giving the path of the AIOS folder:
 
@@ -24,7 +23,6 @@ if len(sys.argv) != 2:
     sys.exit(__doc__)
 sys.path.insert(0, str(Path(sys.argv[1]) / ".agents/skills/clawd/scripts"))
 import clawd as c  # noqa: E402
-from PIL import Image  # noqa: E402
 
 
 def key(view, face, arm, crouch, legs):
@@ -73,75 +71,3 @@ for name, grid in poses.items():
 lines += ["};", ""]
 (SITE / "js/clawd-sprites.js").write_text("\n".join(lines))
 print(len(poses), "poses ->", SITE / "js/clawd-sprites.js")
-
-# Favicon: the icon preset (front view, one cell of margin on each side).
-icon = c.icon_canvas()
-c.stamp(icon, c.pose("front"), 1, 4)
-c.export(icon, SITE / "favicon.png", "icon")
-
-# The same cells as an SVG: one rectangle per run of same-colour cells.
-rects = []
-for y in range(icon.h):
-    x = 0
-    while x < icon.w:
-        col = icon.px[x, y]
-        end = x
-        while end < icon.w and icon.px[end, y] == col:
-            end += 1
-        if col[3]:
-            rects.append('<rect x="%d" y="%d" width="%d" height="1" fill="%s"/>' % (x, y, end - x, hexa(col)))
-        x = end
-svg = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" shape-rendering="crispEdges">'
-       + "".join(rects) + "</svg>\n")
-(SITE / "favicon.svg").write_text(svg)
-
-# Home-screen icon for iPhones: 180 px, Clawd at x7 on white (no transparency there).
-touch = Image.new("RGBA", (180, 180), (255, 255, 255, 255))
-cv = c.Canvas(22, 16)
-c.stamp(cv, c.pose("front"), 0, 0)
-art = cv.scaled(7)
-touch.alpha_composite(art, ((180 - art.width) // 2, (180 - art.height) // 2))
-touch.convert("RGB").save(SITE / "apple-touch-icon.png", optimize=True)
-print("favicon.png, favicon.svg, apple-touch-icon.png written")
-
-# Share image (img/share.png), 1200 x 630 at 6 px per cell: Clawd waving with
-# his happy face, standing on a field of orange dots that rises from the
-# bottom, as at the end of the page. Same 8 x 8 Bayer grid and soft noise as
-# js/accent.js, so the dots look like the site's.
-CELL, W, H = 6, 200, 105
-BAYER = [[0] * 8 for _ in range(8)]
-for y in range(8):
-    for x in range(8):
-        b2 = lambda a, b: ((a % 2) * 0.5 + (b % 2) * 0.75) % 1
-        BAYER[y][x] = (b2(x >> 2, y >> 2) * 0.25 + b2(x >> 1, y >> 1)) * 0.25 + b2(x, y)
-import random  # noqa: E402
-rnd = random.Random(99)
-lattice = {}
-def noise(x, y, step=9):
-    def at(i, j):
-        if (i, j) not in lattice:
-            lattice[(i, j)] = rnd.random()
-        return lattice[(i, j)]
-    i, j = x // step, y // step
-    fx, fy = (x / step - i), (y / step - j)
-    fx, fy = fx * fx * (3 - 2 * fx), fy * fy * (3 - 2 * fy)
-    a, b, cc, d = at(i, j), at(i + 1, j), at(i, j + 1), at(i + 1, j + 1)
-    return a + (b - a) * fx + (cc - a) * fy + (a - b - cc + d) * fx * fy
-def smooth(e0, e1, v):
-    t = min(1, max(0, (v - e0) / (e1 - e0)))
-    return t * t * (3 - 2 * t)
-share = c.Canvas(W, H, (255, 255, 255, 255))
-FIELD = 34                                  # rows of the field, at the bottom
-for y in range(H - FIELD, H):
-    v = (y - (H - FIELD)) / (FIELD - 1)
-    for x in range(W):
-        d = smooth(0.15, 1, v) ** 1.7 * (0.25 + 0.95 * noise(x, y))
-        if d > BAYER[y % 8][x % 8]:
-            share.dot(x, y, c.CLAWD)
-waving = c.pose("front", "happy", "left_up")
-gw, gh = c.size(waving)
-SCALE = 3                                   # Clawd at 3 cells per grid cell: 66 x 48 cells
-cx, cy = (W - gw * SCALE) // 2, H - FIELD - gh * SCALE + 8   # feet in the sparse top of the field
-c.stamp(share, waving, cx, cy, SCALE)
-share.scaled(CELL).convert("RGB").save(SITE / "img/share.png", optimize=True)
-print("img/share.png written")

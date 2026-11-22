@@ -27,6 +27,8 @@
   <script src="js/main.js" defer></script>
   <script src="js/showcase.js" defer></script>
   <script src="js/board.js" defer></script>
+  <script src="js/logo-pistes.js" defer></script>
+  <script src="js/board-logo.js" defer></script>
   <style>
     /* Layout of this board only. */
     .board { max-width: 960px; margin: 0 auto; padding: 0 16px 6rem; }
@@ -74,11 +76,40 @@
     .button { font: inherit; font-size: var(--size-small); color: var(--ink); background: var(--paper); border: 1px solid var(--ink); border-radius: 0; padding: 0.5rem 0.8rem; cursor: pointer; transition: transform var(--press-duration) var(--ease-out); }
     .button:active { transform: scale(0.97); }
     @media (hover: hover) and (pointer: fine) { .button:hover { background: var(--ink); color: var(--paper); } }
+    /* Logo: the candidate marks. Tiles keep their own theme whatever the board's. */
+    .lg-piste { margin-top: 2.5rem; }
+    .lg-piste h3 { margin: 0 0 0.25rem; font-size: var(--size-links); font-weight: 600; }
+    .lg-piste > p { margin: 0 0 1rem; max-width: 44rem; font-size: var(--size-small); }
+    .lg-muted { color: var(--muted); }
+    .lg-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-bottom: 12px; }
+    .lg-fig { margin: 0; display: grid; gap: 4px; justify-items: start; font-size: 0.75rem; color: var(--muted); }
+    .lg-tile { display: grid; place-items: center; padding: 14px; outline: 1px solid var(--line); }
+    .lg-tile svg { display: block; }
+    .lg-light { background: #ffffff; color: #111111; }
+    .lg-dark { background: #0d0d0d; color: #ededed; }
+    .lg-ctx { display: grid; gap: 12px; }
+    .lg-tab { padding: 6px 8px 0; font: 12px/1 system-ui, sans-serif; }
+    .lg-tab-light { background: #dee1e6; color: #1f1f1f; }
+    .lg-tab-dark { background: #202124; color: #e8eaed; }
+    .lg-tabitem { display: flex; align-items: center; gap: 8px; width: 180px; padding: 9px 10px; border-radius: 8px 8px 0 0; }
+    .lg-tab-light .lg-tabitem { background: #ffffff; }
+    .lg-tab-dark .lg-tabitem { background: #35363a; }
+    .lg-tab-light .lg-tabitem svg { color: #111111; }
+    .lg-tab-dark .lg-tabitem svg { color: #ededed; }
+    .lg-tile:has(.lg-tab) { padding: 0; }
+    .lg-head { display: grid; gap: 10px; padding: 0; }
+    .lg-head span { display: flex; align-items: center; gap: 8px; }
+    .lg-head b { font-size: 1.0625rem; font-weight: 600; letter-spacing: -0.01em; }
+    .lg-tile:has(.lg-avatar) { padding: 0; background: var(--line); }
+    .lg-avatar { display: grid; place-items: center; width: 180px; height: 180px; border-radius: 50%; background: inherit; }
+    .lg-light .lg-avatar { background: #ffffff; } .lg-dark .lg-avatar { background: #0d0d0d; }
+    .lg-big { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; }
+    .lg-big .lg-tile { padding: 0; }
   </style>
 </head>
 <body>
   <header class="top">
-    <h1 class="name">yannworks · design board</h1>
+    <h1 class="name"><!-- logo --><svg class="name__logo" viewBox="0 0 16 16" width="24" height="24" shape-rendering="crispEdges" aria-hidden="true" focusable="false"><path fill="currentColor" d="M2 1h3v1h-3zM11 1h3v1h-3zM2 2h3v1h-3zM11 2h3v1h-3zM2 3h3v1h-3zM11 3h3v1h-3zM2 4h3v1h-3zM11 4h3v1h-3zM2 5h3v1h-3zM11 5h3v1h-3zM2 6h3v1h-3zM11 6h3v1h-3zM2 7h4v1h-4zM10 7h4v1h-4zM3 8h11v1h-11zM5 9h9v1h-9zM11 10h3v1h-3zM11 11h3v1h-3zM6 12h1v1h-1zM8 12h6v1h-6zM4 13h1v1h-1zM7 13h6v1h-6zM2 14h1v1h-1zM7 14h4v1h-4z"/></svg><!-- /logo -->yannworks · design board</h1>
     <button class="icon-button theme-toggle" type="button" aria-label="Switch to dark theme" hidden>
       <svg viewBox="0 0 11 11" shape-rendering="crispEdges" aria-hidden="true"><path d="M3 0h5v1h-5zM2 1h4v1h-4zM7 1h2v1h-2zM1 2h6v1h-6zM8 2h2v1h-2zM0 3h6v1h-6zM7 3h1v1h-1zM9 3h2v1h-2zM0 4h7v1h-7zM8 4h1v1h-1zM10 4h1v1h-1zM0 5h6v1h-6zM7 5h1v1h-1zM9 5h2v1h-2zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM0 7h6v1h-6zM7 7h1v1h-1zM9 7h2v1h-2zM1 8h6v1h-6zM8 8h2v1h-2zM2 9h4v1h-4zM7 9h2v1h-2zM3 10h5v1h-5z" fill="currentColor"/></svg>
     </button>
@@ -86,6 +117,11 @@
 
   <main class="board">
     <p>The parts of yannworks.github.io, drawn from the same files as the page. The theme button above plays the real dissolve.</p>
+
+    <h2>Logo</h2>
+    <p>A heavy lowercase y whose tail breaks into dots, drawn on a 16 x 16 grid by tools/make-logo.mjs: exact at 16 px, whole multiples above. Chosen by Yann on 22 November 2026 among four directions, all kept below. The favicon, the Apple icon, the profile pictures (img/profile/) and the header use it in ink only; the share image alone shows its last dot in orange. Tiles keep their own theme, whatever the board's.</p>
+    <figure class="lg-fig" style="margin: 0 0 1rem"><img src="img/share-v2.png" width="600" height="315" alt="The share image: the logo, the name yannworks, the line, and black dots along the bottom." style="max-width: 100%; height: auto; outline: 1px solid var(--line)"><figcaption>img/share-v2.png, 1200 x 630, shown at half size</figcaption></figure>
+    <div id="logo-pistes"></div>
 
     <h2>Colours</h2>
     <p>Ink on paper, two greys for the cards and secondary text, and Clawd's orange as the only accent: in dots, in the graph's squares and in Clawd himself, never in small text. The ratios are computed from the live values of both themes.</p>

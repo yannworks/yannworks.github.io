@@ -1,6 +1,6 @@
 # yannworks.github.io
 
-The personal site of yannworks: one page with a short intro (with Yann's local time) and three links, then three real components from Yann's lab, Experiments, to try on the spot, then a GitHub contribution graph where a small Clawd, the Claude Code mascot, stands on today. Ink on paper, with Clawd's orange as the only accent: dithered dots that appear in empty space, under the intro's keywords, at the foot of the card you are using and at the end of the page.
+The personal site of yannworks: a pixel logo beside the name, then one page with a short intro (with Yann's local time) and three links, then three real components from Yann's lab, Experiments, to try on the spot, then a GitHub contribution graph where a small Clawd, the Claude Code mascot, stands on today. Ink on paper, with Clawd's orange as the only accent: dithered dots that appear in empty space, under the intro's keywords, at the foot of the card you are using and at the end of the page.
 
 Plain HTML, CSS and JavaScript. No framework, no build step: GitHub Pages serves these files as they are.
 
@@ -24,16 +24,34 @@ Plain HTML, CSS and JavaScript. No framework, no build step: GitHub Pages serves
 | `tools/fetch-contributions.mjs` | What the Action runs: asks GitHub for the calendar and writes the JSON. |
 | `tools/sample-contributions.mjs` | Made-up data to try the graph on your computer (shown only on localhost). |
 | `js/clawd-sprites.js` | Clawd's poses. Generated, do not edit by hand (see below). |
-| `board.html`, `js/board.js` | The design board: colours and their contrast, type, the orange dots, the graph, the cards, Clawd's poses. |
+| `board.html`, `js/board.js` | The design board: the logo and its four directions, colours and their contrast, type, the orange dots, the graph, the cards, Clawd's poses. |
 | `fonts/` | Geist and Geist Serif (woff2) with their licence, `OFL.txt`. |
-| `img/share.png` | The share image (Clawd waving over orange dots), made by `tools/make-clawd.py`. |
+| `favicon.svg`, `favicon.png`, `apple-touch-icon.png` | The icons: the logo in ink (light ink in a dark browser theme for the SVG). Made by `tools/make-logo.mjs`. |
+| `img/share-v2.png` | The share image for Discord, X and others: logo, name, line, ink dots. Made by `tools/make-logo.mjs`. |
+| `img/profile/` | Profile pictures for X, GitHub and Discord: 1024 px, light and dark, PNG and SVG. Made by `tools/make-logo.mjs`. |
+| `tools/make-logo.mjs` | Draws the logo from its pixel grid and writes the icons, the profile pictures, the share image, the header logo and the board's data. |
+| `js/logo-pistes.js`, `js/board-logo.js` | The four logo directions shown on the board (the data is generated). Not loaded by the page. |
 | `tools/test-clock.mjs` | Browser tests for the local time (time zones, clock changes, midnight). |
 | `tools/test-showcase.mjs` | Browser tests for the showcase and the rest of the page (loading, failure, copy, keyboard, touch). |
 | `tools/measure-load.mjs` | Weight and load time of the page on a throttled phone, and of the showcase after scrolling. |
 | `tools/capture.mjs` | Full-page screenshots at chosen widths, light and dark, reduced motion, without JavaScript. |
 | `tools/measure-dots.mjs` | What the living dots cost on a slowed-down phone: script time per step and main-thread share, animated and still. |
-| `tools/make-clawd.py` | Rebuilds `js/clawd-sprites.js`, the favicons and the share image from the clawd skill. |
+| `tools/make-clawd.py` | Rebuilds `js/clawd-sprites.js`, Clawd's poses for the graph, from the clawd skill. |
 | `.web-craft/` | Notes on the current piece of work: brief, decisions, checks. Earlier ones are in `.web-craft-history/`. |
+
+## The logo
+
+A heavy lowercase y whose tail breaks into dots, like the theme dissolve and the dots of the page. Yann chose it on 22 November 2026 among four directions (Dissolve, Note, Branch, Word), all four still on the board.
+
+- **One grid.** The logo is 16 x 16 cells in `tools/make-logo.mjs` (`#` ink, `o` the accent cell, `.` empty). The favicon is exact at 16 px; the header shows it at 24 px (3 screen pixels a cell on most phones and laptops); the profile pictures at 40 px a cell. Every copy comes from that grid, so changing it and running the script changes them all.
+- **Ink, not orange.** The icons, the profile pictures and the header are ink only: the accent cell is drawn in ink, and the logo is whole without it. The share image alone shows that last dot in orange. The site's orange is also Claude's, and orange pixels were what made the old icons read as Claude's.
+- **Light and dark.** `favicon.svg` turns light in a dark browser theme (a `prefers-color-scheme` rule inside the file). The header logo uses `currentColor`, so it follows the theme like the name. `favicon.png` (for browsers without SVG icons) and `apple-touch-icon.png` are ink on white.
+- **Profile pictures.** In `img/profile/`, light and dark, 1024 px: the grid takes the middle 640 px, so a round crop never touches it.
+- **The share image** (`img/share-v2.png`, 1200 x 630): the logo, "yannworks", the line "Building apps with AI, learning how things work, writing and music.", and ink dots rising from the bottom (the same Bayer thresholds and soft noise as the page's dots, with a fixed seed). The text is set in Geist by Chrome, from the site's own font file.
+
+**Regenerate:** `npm install --no-save playwright` once, then `node tools/make-logo.mjs`. It rewrites the files above and the logo in the headers of `index.html` and `board.html` (between the `<!-- logo -->` markers).
+
+**Changing the share image:** give it a new name (`SHARE` at the top of the script, then `share-v3.png` and so on) and update `og:image` and `twitter:image` in `index.html`. Discord and X keep a preview cached under the same address for a long time, so a new name is how they see the new image. To refresh a link already posted on Discord, post it again with something after it (`https://yannworks.github.io/?v=3`): Discord caches previews by the whole address.
 
 ## How the orange dots work
 
@@ -107,6 +125,7 @@ Pressing the toggle starts a view transition: the browser keeps a picture of the
 
 ## Changing things
 
+- The logo, the icons, the profile pictures and the share image: the grid and the layout in `tools/make-logo.mjs`, then run it (see "The logo").
 - Colours, fonts, sizes, timings: the variables at the top of `style.css`. The graph's four oranges are `--level-1` to `--level-4`.
 - Text and links: `index.html`.
 - The orange dots: their sizes in `ACCENT` at the top of `js/accent.js`; their shapes in `SHAPES`, the cadence in `FPS` and the three motions (speeds, durations) in `js/dots.js`; the card strip's height is `--fringe-h` in `style.css`. The board (`board.html`, "Living dots") shows the three motions in use and the six that were not chosen, with a button for a new seed and one for reduced motion.
@@ -118,7 +137,7 @@ To try the site on your computer, serve the folder (for example `python3 -m http
 
 ## Clawd
 
-Clawd is the Claude Code mascot; this is fan art. Its poses (the 18 the graph uses) come from the approved pixel grids of the clawd skill in the owner's AIOS workspace, never redrawn by hand. To regenerate them, the favicons and the share image:
+Clawd is the Claude Code mascot; this is fan art. He lives on the contribution graph only: the icons and the share image show the yannworks logo. His poses (the 18 the graph uses) come from the approved pixel grids of the clawd skill in the owner's AIOS workspace, never redrawn by hand. To regenerate them:
 
 ```
 python3 tools/make-clawd.py /path/to/AIOS

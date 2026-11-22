@@ -1,11 +1,75 @@
 # yannworks.github.io : état
 
-Skill : site-studio (missions ciblées sur un site existant). Mis à jour : 2026-11-22. Dernières missions : refonte, puis points vivants, publiées le 2026-11-22.
+Skill : site-studio (missions ciblées sur un site existant). Mis à jour : 2026-11-22. Mission en cours : identité (branche `identite`), prête, non publiée. Dernières missions publiées : refonte, puis points vivants (2026-11-22).
 
 Les missions précédentes (page et théâtre, puis graphe de contributions) sont décrites dans `.web-craft-history/2026-11-19-site/` et `.web-craft/`, deux archives à laisser telles quelles. Ce fichier suit les missions à partir de l'heure locale, la plus récente en haut.
 
 ## Prochaine action
-Aucune : refonte et points vivants publiés. Restent à essayer sur un vrai téléphone : le flux des points à 12 pas par seconde, le salut de Clawd au doigt, et la longueur de l'intro au téléphone (version 1 gardée par Yann). Après publication : vérifier en ligne avec `?v=2` et mettre à jour la ligne « Objectif » de l'entrée du site dans `projects/README.md` d'AIOS.
+Mission identité terminée sur la branche `identite`, non commitée et non publiée. Publication sur le mot « publish » de Yann : commit, fusion dans `main`, envoi, vérification en ligne de `share-v2.png` et des métadonnées, puis rafraîchir l'aperçu sur Discord (lien avec `?v=3`).
+
+Restes des missions précédentes : essayer sur un vrai téléphone le flux des points à 12 pas par seconde, le salut de Clawd au doigt et la longueur de l'intro ; après publication, vérifier en ligne avec `?v=2` et mettre à jour la ligne « Objectif » de l'entrée du site dans `projects/README.md` d'AIOS.
+
+# Mission « identité » (2026-11-22)
+
+## Brief
+- Problème : partagé sur Discord, le site ressemble à un site de Claude. La favicon, l'icône Apple et l'image de partage montrent Clawd (dessinés par `tools/make-clawd.py`), et l'orange d'accent `#d97757` est celui de la marque Claude.
+- À faire : trois ou quatre pistes de logo dessinées en code sur une grille de pixels, dans le style du site (encre sur papier, tramage Bayer), présentées dans `board.html` à 16, 32, 180 et 1024 px, en clair et en sombre ; Yann choisit. Ensuite : favicons, photo de profil (X, GitHub, Discord : carré de 1024 px, clair et sombre, PNG et SVG, lisible rognée en cercle), logo dans l'en-tête à côté de « yannworks », bannière 1200 × 630 (logo, « yannworks », la phrase actuelle, un peu de tramage, à l'encre, un accent orange au plus), métadonnées sous un nouveau nom de fichier (`img/share-v2.png`, car Discord et X gardent l'ancien aperçu en cache sous le même nom).
+- Clawd reste sur le graphe des contributions, inchangé. `tools/make-clawd.py` ne produit plus ni favicon ni image de partage ; le logo et la bannière ont leur propre script, relançable.
+- Contraintes : logo à l'encre, orange en accent facultatif (le retirer laisse un logo complet), lisible de 16 à 1024 px. À éviter : monogramme dans un cercle ou un carré arrondi, dégradés, néon, « Y » tiré d'une police sans travail. Site en anglais ; bannière et texte alternatif passés par le humanizer. Branche du dépôt du site ; tests existants qui passent. Publication seulement sur « publish ».
+- Budget d'images générées : 0 (tout est dessiné en code).
+
+## Pistes (board, section « Logo: four directions »)
+Chaque piste est une grille de 16 × 16 cases dans `tools/make-logo.py` (« # » encre, « o » accent, orange ou encre), écrite dans `js/logo-pistes.js` pour le board (`js/board-logo.js`).
+- A. Dissolve : un « y » épais dont la queue se défait en points, comme le fondu du thème et les points de la page. Accent : les derniers points.
+- B. Note : un « y » dont la queue finit en boule, qui est aussi une tête de note. Accent : le point après la note (note pointée). Premier dessin refait : avec un bras en diagonale, il se lisait comme une flèche « ↘ » à 16 px.
+- C. Branch : un « y » dessiné comme un graphe de commits, une branche qui rejoint la ligne principale, terminée par le dernier commit. Accent : ce dernier commit, comme le carré du jour dans le graphe.
+- D. Word : « yannworks » dans un alphabet de pixels dessiné pour lui, « yw » aux petites tailles. Pas d'accent dans la marque.
+
+## Choix de Yann
+**A, Dissolve** (2026-11-22). Les trois autres restent au board, marquées « not chosen ».
+
+## Fonctionnement
+- `tools/make-logo.mjs` (nouveau, remplace le brouillon `tools/make-logo.py`) : la grille du logo et celles des trois autres pistes ; écrit `favicon.svg` (encre, claire en thème sombre par une règle `prefers-color-scheme` dans le fichier), `favicon.png` (96 px, encre sur blanc), `apple-touch-icon.png` (180 px, 10 px par case), `img/profile/yannworks-{light,dark}.{svg,png}` (1024 px, grille sur les 640 px du milieu), `img/share-v2.png`, le logo de l'en-tête dans `index.html` et `board.html` (entre les marqueurs `<!-- logo -->`) et `js/logo-pistes.js`. Les PNG sont rendus par Chrome (Playwright), la bannière avec la vraie police Geist du site.
+- En-tête : `<svg class="name__logo">` de 24 px dans le `h1`, `aria-hidden`, `currentColor` ; `.name` passe en `flex` avec 10 px d'écart. Le nom lu reste « yannworks ».
+- Métadonnées : `og:image` et `twitter:image` vers `img/share-v2.png`, `og:image:width`/`height`, `og:image:alt` et `twitter:image:alt` décrivant le nouveau visuel (humanizer passé). `img/share.png` (Clawd) supprimé.
+- `tools/make-clawd.py` ne produit plus que `js/clawd-sprites.js` (relancé : 18 poses, fichier identique). Clawd ne reste que sur le graphe.
+- Board : section « Logo » (le logo retenu, la bannière à demi-taille, les quatre pistes avec rognage rond, onglet, en-tête et 1024 px).
+
+## Critique de Codex sur les pistes (`critiques/logo-demande.md`, `logo-1.md`, réponses `logo-reponses-1.md`)
+Classement de Codex : A Dissolve, D Word, B Note, C Branch. Huit points : cinq acceptés (queue de A en points de plus en plus rares, tête de B refaite, point de B réduit à une case, espacement de D, centrage), trois partiels (rognage en cercle montré dans le board ; C allégé mais jugé générique ; orange gardé en option, avec la recommandation d'icônes tout à l'encre). Un seul tour : les pistes vont à Yann, qui choisit.
+
+## Décisions
+| Date | Décision | Raison |
+| --- | --- | --- |
+| 2026-11-22 | Piste A, Dissolve | Choix de Yann ; aussi la première du classement de Codex et ma recommandation : c'est la marque qui parle la langue du site (le fondu en points) et elle reste nette à 16 px |
+| 2026-11-22 | Favicon, icône Apple, photos de profil et en-tête tout à l'encre ; un seul point orange, dans la bannière (la case la plus éloignée de la queue) | Recommandation faite avant le choix, sans objection de Yann ; Codex n° 6 : l'orange en pixels gardait l'association avec Clawd. Le brief autorise un accent au plus dans la bannière |
+| 2026-11-22 | Logo à 24 px dans l'en-tête (16 cases à 1,5 px) | À 16 px il paraissait maigre à côté du nom en 17 px gras ; 24 px donne 3 pixels d'écran par case sur la plupart des téléphones et portables (vérifié à 1x, 2x, 3x) |
+| 2026-11-22 | `favicon.png` et icône Apple encre sur blanc, non transparents | Un PNG ne peut pas suivre le thème : transparent, l'encre disparaîtrait dans un onglet sombre |
+| 2026-11-22 | Photo de profil : grille sur 640 px au milieu de 1024 | Même les coins de la grille restent dans le cercle (452 px du centre pour un rayon de 512) : rien n'est coupé, quel que soit le rognage |
+| 2026-11-22 | Bannière : logo de 288 px à gauche, nom en Geist 600 de 104 px, phrase en 40 px, bande de points d'encre de 120 px en bas (cases de 6 px, seuils Bayer et bruit à graine fixe) | Lisible dans un aperçu de 400 px (vérifié par réduction) ; les points restent des points à cette taille ; graine fixe pour que le script redonne la même image |
+| 2026-11-22 | Nouveau nom `share-v2.png` et nom de fichier versionné documenté dans le script et le README | Discord et X gardent l'ancien aperçu en cache sous la même adresse |
+| 2026-11-22 | Un script Node plutôt que Python | Playwright est déjà l'outil du dépôt ; Chrome rend la vraie police Geist (Pillow ne lit pas le woff2 sans fontTools) |
+| 2026-11-22 | Une seule critique de Codex (sur les pistes), pas de second tour sur la bannière | Changement ciblé ; relecture faite sur captures (320, 390, 1440 px, clair, sombre, sans JavaScript) et aperçu réduit de la bannière |
+| 2026-11-22 | Une seule grille de 16 × 16 cases par marque | La favicon est exacte à 16 px, et toutes les tailles utiles (32, 1024) en sont des multiples entiers |
+| 2026-11-22 | L'accent remplace des cases d'encre au lieu d'en ajouter | Sans orange, la marque garde exactement la même forme (tuile « ink only » du board) |
+| 2026-11-22 | Recommandation à Yann : favicon, icône Apple et photo de profil tout à l'encre, un seul point orange au plus dans la bannière | Codex n° 6 : de l'orange en pixels garde l'association avec Clawd ; le brief laisse l'orange facultatif |
+| 2026-11-22 | Test « Gem Clip: it says Copied » échoué une fois, puis passé deux fois de suite (et sur `main`) | Instable (presse-papiers), sans lien avec le board ; à surveiller |
+| 2026-11-22 | Les tuiles du board gardent leur propre thème, quel que soit celui du board | Comparer clair et sombre côte à côte sans basculer |
+
+## Vérifications
+- Favicon : `favicon.svg` rendu dans Chrome en clair et en sombre émulés (`captures/identite/favicon-{light,dark}.png`) : encre `#111111` en clair, `#ededed` en sombre. Non vu dans une vraie barre d'onglets (impossible à capturer en automatique) : à regarder dans ton navigateur après publication.
+- En-tête : 320, 390 (3x), 1440 (1x et 2x), clair et sombre, sans JavaScript : logo de 24 × 24, nom lu « yannworks », aucun défilement horizontal, aucune erreur de page (`captures/identite/header-*.png`, `final/`). Une erreur `ERR_CONNECTION_RESET` isolée vient du petit serveur Python partagé, pas du site.
+- Open Graph lu dans le HTML brut, comme un lecteur de liens : `og:image` et `twitter:image` → `img/share-v2.png` (200, `image/png`, 1200 × 630, 35,7 Ko) ; `favicon.svg`, `favicon.png`, `apple-touch-icon.png` en 200 ; plus aucune mention de Clawd dans le `<head>` (hors script des poses du graphe).
+- Tests : `node tools/test-showcase.mjs` et `node tools/test-clock.mjs` passent.
+
+## Critères de fin
+- [x] Piste choisie (A) dans la favicon (vérifiée en clair et en sombre), l'en-tête et la bannière
+- [x] Photo de profil exportée : `img/profile/`, clair et sombre, PNG et SVG, 1024 px, rognage rond vérifié
+- [x] Aucune image de partage ni favicon ne montre Clawd (`img/share.png` supprimé)
+- [x] Métadonnées vers `img/share-v2.png`, vérifiées en local
+- [x] `tools/make-clawd.py` réduit aux poses ; logo et bannière dans `tools/make-logo.mjs`, relançable
+- [x] board.html, README et STATE.md à jour
+- [ ] Publication : sur le mot « publish » de Yann
 
 # Mission « points vivants » (2026-11-22)
 

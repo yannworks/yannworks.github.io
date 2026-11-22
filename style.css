@@ -188,12 +188,19 @@ body {
 /* ---- Name and intro ------------------------------------------------------- */
 
 .name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin: 0;
   font-size: 1.0625rem;
   font-weight: 600;
   line-height: 1;
   letter-spacing: -0.01em;
 }
+
+/* The logo beside the name (drawn by tools/make-logo.mjs): 16 cells at 1.5 px,
+   so 3 screen pixels a cell on most phones and laptops. */
+.name__logo { flex: none; display: block; }
 
 .intro {
   max-width: 40rem;
