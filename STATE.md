@@ -1,11 +1,11 @@
 # yannworks.github.io : état
 
-Skill : site-studio (missions ciblées sur un site existant). Mis à jour : 2026-11-22. Mission en cours : identité (branche `identite`), prête, non publiée. Dernières missions publiées : refonte, puis points vivants (2026-11-22).
+Skill : site-studio (missions ciblées sur un site existant). Mis à jour : 2026-11-22. Dernières missions publiées : refonte, points vivants, puis identité (2026-11-22).
 
 Les missions précédentes (page et théâtre, puis graphe de contributions) sont décrites dans `.web-craft-history/2026-11-19-site/` et `.web-craft/`, deux archives à laisser telles quelles. Ce fichier suit les missions à partir de l'heure locale, la plus récente en haut.
 
 ## Prochaine action
-Mission identité terminée sur la branche `identite`, non commitée et non publiée. Publication sur le mot « publish » de Yann : commit, fusion dans `main`, envoi, vérification en ligne de `share-v2.png` et des métadonnées, puis rafraîchir l'aperçu sur Discord (lien avec `?v=3`).
+Aucune pour l'identité : publiée le 2026-11-22. Yann rafraîchit l'aperçu sur Discord en postant `https://yannworks.github.io/?v=3`, et regarde la favicon dans un vrai onglet clair et sombre.
 
 Restes des missions précédentes : essayer sur un vrai téléphone le flux des points à 12 pas par seconde, le salut de Clawd au doigt et la longueur de l'intro ; après publication, vérifier en ligne avec `?v=2` et mettre à jour la ligne « Objectif » de l'entrée du site dans `projects/README.md` d'AIOS.
 
@@ -69,7 +69,11 @@ Classement de Codex : A Dissolve, D Word, B Note, C Branch. Huit points : cinq a
 - [x] Métadonnées vers `img/share-v2.png`, vérifiées en local
 - [x] `tools/make-clawd.py` réduit aux poses ; logo et bannière dans `tools/make-logo.mjs`, relançable
 - [x] board.html, README et STATE.md à jour
-- [ ] Publication : sur le mot « publish » de Yann
+- [x] Publication : sur le mot « publish » de Yann
+
+## Publication
+- 2026-11-22, sur le mot « publish » de Yann. Aucun commit de l'Action sur `main` depuis le début de la branche (`85a3150`). Branche `identite` commitée (`ad8e223`), fusionnée dans `main` (`6890baa`), poussée ; build GitHub Pages réussi.
+- Vérifié en ligne (https://yannworks.github.io/?v=3) : `og:image` et `twitter:image` vers `img/share-v2.png` (200, `image/png`, 35 688 octets), textes alternatifs en place ; `favicon.svg` (avec sa règle de thème sombre), `favicon.png`, `apple-touch-icon.png` et les quatre fichiers de `img/profile/` en 200 ; `img/share.png` en 404 ; logo dans l'en-tête, console sans erreur.
 
 # Mission « points vivants » (2026-11-22)
 
