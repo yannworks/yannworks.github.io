@@ -51,6 +51,8 @@ A heavy lowercase y whose tail breaks into dots, like the theme dissolve and the
 
 **Regenerate:** `npm install --no-save playwright` once, then `node tools/make-logo.mjs`. It rewrites the files above and the logo in the headers of `index.html` and `board.html` (between the `<!-- logo -->` markers).
 
+**Changing the icons:** browsers keep favicons in their own store, apart from the page cache, and go on showing the old one at the same address. The icon links in `index.html` and `board.html` carry a version (`favicon.svg?v=2`); raise it (`?v=3`) whenever the icons change.
+
 **Changing the share image:** give it a new name (`SHARE` at the top of the script, then `share-v3.png` and so on) and update `og:image` and `twitter:image` in `index.html`. Discord and X keep a preview cached under the same address for a long time, so a new name is how they see the new image. To refresh a link already posted on Discord, post it again with something after it (`https://yannworks.github.io/?v=3`): Discord caches previews by the whole address.
 
 ## How the orange dots work
