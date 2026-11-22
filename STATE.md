@@ -74,6 +74,7 @@ Classement de Codex : A Dissolve, D Word, B Note, C Branch. Huit points : cinq a
 ## Publication
 - 2026-11-22, sur le mot « publish » de Yann. Aucun commit de l'Action sur `main` depuis le début de la branche (`85a3150`). Branche `identite` commitée (`ad8e223`), fusionnée dans `main` (`6890baa`), poussée ; build GitHub Pages réussi.
 - Vérifié en ligne (https://yannworks.github.io/?v=3) : `og:image` et `twitter:image` vers `img/share-v2.png` (200, `image/png`, 35 688 octets), textes alternatifs en place ; `favicon.svg` (avec sa règle de thème sombre), `favicon.png`, `apple-touch-icon.png` et les quatre fichiers de `img/profile/` en 200 ; `img/share.png` en 404 ; logo dans l'en-tête, console sans erreur.
+- Correctif (même jour) : l'onglet de Yann montrait encore Clawd, car les navigateurs gardent les favicons dans leur propre mémoire, à part du cache des pages. Liens des icônes versionnés (`favicon.svg?v=2`, `favicon.png?v=2`, `apple-touch-icon.png?v=2`) dans `index.html` et `board.html`, règle notée dans le README (monter le numéro à chaque changement d'icône). Commit `15d7192`, build réussi, liens vérifiés en ligne.
 
 # Mission « points vivants » (2026-11-22)
 
