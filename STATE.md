@@ -1,11 +1,11 @@
 # yannworks.github.io : état
 
-Skill : site-studio (missions ciblées sur un site existant). Mis à jour : 2026-11-22. Dernières missions : refonte, puis points vivants, sur la branche `refonte`, pas encore publiées.
+Skill : site-studio (missions ciblées sur un site existant). Mis à jour : 2026-11-22. Dernières missions : refonte, puis points vivants, publiées le 2026-11-22.
 
 Les missions précédentes (page et théâtre, puis graphe de contributions) sont décrites dans `.web-craft-history/2026-11-19-site/` et `.web-craft/`, deux archives à laisser telles quelles. Ce fichier suit les missions à partir de l'heure locale, la plus récente en haut.
 
 ## Prochaine action
-Intro : Yann garde la version 1 (2026-11-22). Publication demandée (« publish ») : voir « Publication » de la mission « points vivants ». Après publication : vérifier en ligne avec `?v=2` et mettre à jour la ligne « Objectif » de l'entrée du site dans `projects/README.md` d'AIOS.
+Aucune : refonte et points vivants publiés. Restent à essayer sur un vrai téléphone : le flux des points à 12 pas par seconde, le salut de Clawd au doigt, et la longueur de l'intro au téléphone (version 1 gardée par Yann). Après publication : vérifier en ligne avec `?v=2` et mettre à jour la ligne « Objectif » de l'entrée du site dans `projects/README.md` d'AIOS.
 
 # Mission « points vivants » (2026-11-22)
 
@@ -73,7 +73,12 @@ Téléphone 390 × 844, processeur ralenti 4 fois, 10 s par cas.
 - [x] Tests : `node tools/test-showcase.mjs` (98 vérifications, dont le test de pixels sous les mots-clés) et `node tools/test-clock.mjs` passent
 - [x] Aucune erreur dans la console, aucun défilement horizontal à 320, 390 et 1440 px (captures)
 - [x] Relecture d'Emil : Approuver ; coût mesuré
-- [ ] Publication : sur le mot « publish » de Yann seulement
+- [x] Publication : sur le mot « publish » de Yann
+
+## Publication
+- 2026-11-22, sur le mot « publish » de Yann, qui garde l'intro en version 1. Aucun commit de l'Action sur `main` depuis le début de la branche (`16b0373`). Branche `refonte` commitée (`82ffc4f`), fusionnée dans `main` (`16ddde9`), poussée vers 15:43 UTC ; build GitHub Pages réussi.
+- Avant le commit : captures en double retirées (`final/`, pages entières des maquettes, captures du board), 12 Mo de captures gardés ; les images de référence (captures d'une autre app) restent sur le Mac, ajoutées au `.gitignore`.
+- Vérifié en ligne (https://yannworks.github.io/?v=2) avec Chrome et Playwright à 16:44 heure de Paris, à 390 px (tactile) et 1440 px : plus de scène, les trois zones de points en place, bandes des mots-clés apparues, bande de la carte active qui coule, composants montés (Experiments `6342f05`), horloge écrite, 176 jours dans le graphe, aucune erreur dans la console, aucune ressource manquante, aucun défilement horizontal. Captures : `captures/refonte/live-390.png`, `live-1440.png`.
 
 # Mission « refonte » (2026-11-22)
 
